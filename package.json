@@ -5,5 +5,32 @@
   "repository": "https://github.com/typeofweb/schema",
   "author": "Michał Miszczyszyn - Type of Web <hi@typeofweb.com> (https://typeofweb.com/)",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "4.13.0",
+    "@typescript-eslint/parser": "4.13.0",
+    "eslint": "7.17.0",
+    "eslint-config-prettier": "7.1.0",
+    "eslint-plugin-functional": "3.2.1",
+    "eslint-plugin-import": "2.22.1",
+    "husky": "4.3.7",
+    "lint-staged": "10.5.3",
+    "tsd": "0.14.0",
+    "typescript": "4.1.3"
+  },
+  "scripts": {
+    "test": "tsd"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts}": [
+      "tsd",
+      "eslint --fix",
+      "yarn prettier --write"
+    ]
+  }
 }
