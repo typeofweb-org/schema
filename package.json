@@ -1,0 +1,9 @@
+{
+  "name": "@typeofweb/schema",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/typeofweb/schema",
+  "author": "Michał Miszczyszyn - Type of Web <hi@typeofweb.com> (https://typeofweb.com/)",
+  "license": "MIT",
+  "private": false
+}
