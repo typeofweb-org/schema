@@ -25,6 +25,7 @@
     "import/no-duplicates": "error",
     "import/no-cycle": "error",
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "functional/no-let": [
       "error",

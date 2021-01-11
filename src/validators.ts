@@ -9,9 +9,9 @@ export type VALIDATORS =
   | typeof DATE_VALIDATOR;
 
 export interface ValidatorToType {
-  [STRING_VALIDATOR]: string;
-  [NUMBER_VALIDATOR]: number;
-  [DATE_VALIDATOR]: Date;
+  readonly [STRING_VALIDATOR]: string;
+  readonly [NUMBER_VALIDATOR]: number;
+  readonly [DATE_VALIDATOR]: Date;
 }
 
 import { ValidationError } from './errors';
@@ -51,23 +51,23 @@ export const oneOf = <U extends readonly unknown[]>(values: U) => {
     __values: values,
     __type: {},
     __modifiers: { optional: false, nullable: false },
-  } as Schema<U[number], { optional: false; nullable: false }, U[number]>;
+  } as Schema<U[number], { readonly optional: false; readonly nullable: false }, U[number]>;
 };
 
 export const string = () => {
   return {
     __validator: STRING_VALIDATOR,
-  } as Schema<string, { optional: false; nullable: false }, never>;
+  } as Schema<string, { readonly optional: false; readonly nullable: false }, never>;
 };
 
 export const number = () => {
   return {
     __validator: NUMBER_VALIDATOR,
-  } as Schema<number, { optional: false; nullable: false }, never>;
+  } as Schema<number, { readonly optional: false; readonly nullable: false }, never>;
 };
 
 export const date = () => {
   return {
     __validator: DATE_VALIDATOR,
-  } as Schema<Date, { optional: false; nullable: false }, never>;
+  } as Schema<Date, { readonly optional: false; readonly nullable: false }, never>;
 };

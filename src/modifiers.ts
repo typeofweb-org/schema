@@ -1,4 +1,4 @@
-import { AnySchema, Schema } from './types';
+import type { AnySchema, Schema } from './types';
 
 export const optional = <S extends AnySchema>(schema: S) => {
   return {
@@ -9,7 +9,7 @@ export const optional = <S extends AnySchema>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    { nullable: S['__modifiers']['nullable']; optional: true },
+    { readonly nullable: S['__modifiers']['nullable']; readonly optional: true },
     S['__values'][number]
   >;
 };
@@ -23,7 +23,7 @@ export const nullable = <S extends AnySchema>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    { nullable: true; optional: S['__modifiers']['optional'] },
+    { readonly nullable: true; readonly optional: S['__modifiers']['optional'] },
     S['__values'][number]
   >;
 };
