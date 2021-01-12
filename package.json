@@ -13,10 +13,17 @@
   "homepage": "https://github.com/typeofweb/schema#readme",
   "author": "Michał Miszczyszyn - Type of Web <hi@typeofweb.com> (https://typeofweb.com/)",
   "license": "MIT",
-  "private": false,
   "engines": {
     "node": "14.x.x"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "package.json",
+    "yarn.lock",
+    "dist"
+  ],
   "devDependencies": {
     "@rollup/plugin-commonjs": "17.0.0",
     "@rollup/plugin-node-resolve": "11.0.1",
@@ -47,7 +54,8 @@
     "test": "yarn jest",
     "jest": "jest --detectOpenHandles --forceExit --passWithNoTests",
     "jest:ci": "jest --passWithNoTests",
-    "build": "rollup --config"
+    "build": "rollup --config",
+    "prepublish": "yarn build"
   },
   "husky": {
     "hooks": {
@@ -56,8 +64,8 @@
   },
   "lint-staged": {
     "*.{ts}": [
-      "tsd",
-      "eslint --fix",
+      "yarn jest",
+      "yarn eslint --fix",
       "yarn prettier --write"
     ]
   }
