@@ -17,8 +17,7 @@
     "node": "14.x.x"
   },
   "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "access": "public"
   },
   "files": [
     "package.json",
