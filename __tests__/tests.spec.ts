@@ -25,7 +25,7 @@ describe('@typeofweb/schema', () => {
   it('tsd', async () => {
     const diagnostics = await tsd({
       cwd: join(__dirname, '..'),
-      typingsFile: './src/index.ts',
+      typingsFile: './dist/index.d.ts',
       testFiles: ['./__tests__/*.test-d.ts'],
     });
 
