@@ -4,7 +4,7 @@ import Fc from 'fast-check';
 import { complement, identity, is, lt, prop, __ } from 'ramda';
 import tsd from 'tsd';
 
-import { validate, number, string, date, oneOf, object, array } from '../src';
+import { validate, number, string, date, oneOf, object, array, boolean } from '../src';
 
 const throws = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
   ...args: T
@@ -57,6 +57,16 @@ describe('@typeofweb/schema', () => {
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(Fc.anything().filter(complement(is(Number))), throws(validate(number()))),
+      ));
+  });
+
+  describe('boolean', () => {
+    it('should validate booleans', () =>
+      Fc.assert(Fc.property(Fc.boolean(), notThrows(validate(boolean())))));
+
+    it('should not allow other values', () =>
+      Fc.assert(
+        Fc.property(Fc.anything().filter(complement(is(Boolean))), throws(validate(boolean()))),
       ));
   });
 

@@ -1,8 +1,18 @@
 import { expectType } from 'tsd';
 
-import { nullable, optional } from '../src/modifiers';
-import type { TypeOf, Schema } from '../src/types';
-import { validate, date, number, oneOf, string, object, array } from '../src/validators';
+import {
+  validate,
+  date,
+  number,
+  oneOf,
+  string,
+  object,
+  array,
+  boolean,
+  nullable,
+  optional,
+} from '../src';
+import type { TypeOf, Schema } from '../src';
 
 // Schema
 declare const str1: TypeOf<Schema<string, {}, never>>;
@@ -54,6 +64,9 @@ expectType<'a' | null>(validate(validator6)(''));
 
 const validator7 = optional(nullable(oneOf(['a'])));
 expectType<'a' | null | undefined>(validate(validator7)(''));
+
+const validator8 = optional(nullable(boolean()));
+expectType<boolean | null | undefined>(validate(validator8)(false));
 
 // nested
 const nested1 = object({});

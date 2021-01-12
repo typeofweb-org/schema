@@ -1,11 +1,13 @@
 const LITERAL_VALIDATOR = Symbol('_literal');
 const STRING_VALIDATOR = Symbol('string');
 const NUMBER_VALIDATOR = Symbol('number');
+const BOOLEAN_VALIDATOR = Symbol('boolean');
 const DATE_VALIDATOR = Symbol('Date');
 export type VALIDATORS =
   | typeof LITERAL_VALIDATOR
   | typeof STRING_VALIDATOR
   | typeof NUMBER_VALIDATOR
+  | typeof BOOLEAN_VALIDATOR
   | typeof DATE_VALIDATOR
   | Record<keyof any, AnySchema>
   | readonly AnySchema[];
@@ -14,6 +16,7 @@ export interface ValidatorToType {
   readonly [STRING_VALIDATOR]: string;
   readonly [NUMBER_VALIDATOR]: number;
   readonly [DATE_VALIDATOR]: Date;
+  readonly [BOOLEAN_VALIDATOR]: boolean;
 }
 
 import { ValidationError } from './errors';
@@ -97,6 +100,11 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
         throw new ValidationError();
       }
       return value as TypeOf<S>;
+    case BOOLEAN_VALIDATOR:
+      if (typeof value !== 'boolean') {
+        throw new ValidationError();
+      }
+      return value as TypeOf<S>;
     case DATE_VALIDATOR:
       if (Object.prototype.toString.call(value) !== '[object Date]') {
         throw new ValidationError();
@@ -133,6 +141,12 @@ export const number = () => {
   return {
     __validator: NUMBER_VALIDATOR,
   } as Schema<number, { readonly optional: false; readonly nullable: false }, never>;
+};
+
+export const boolean = () => {
+  return {
+    __validator: BOOLEAN_VALIDATOR,
+  } as Schema<boolean, { readonly optional: false; readonly nullable: false }, never>;
 };
 
 export const date = () => {
