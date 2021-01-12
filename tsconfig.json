@@ -1,7 +1,6 @@
 {
+  "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2017",
-    "module": "commonjs",
     "isolatedModules": true,
     "strict": true,
     "alwaysStrict": true,
@@ -14,7 +13,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowUnreachableCode": true
   },
   "include": ["src"]
 }

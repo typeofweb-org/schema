@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "main": "dist/index.common.js",
   "module": "dist/index.esm.js",
+  "browser": "dist/index.umd.js",
+  "unpkg": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
   "repository": "https://github.com/typeofweb/schema",
   "bugs": {
@@ -12,27 +14,34 @@
   "author": "Michał Miszczyszyn - Type of Web <hi@typeofweb.com> (https://typeofweb.com/)",
   "license": "MIT",
   "private": false,
+  "engines": {
+    "node": "14.x.x"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "17.0.0",
     "@rollup/plugin-node-resolve": "11.0.1",
     "@rollup/plugin-typescript": "8.1.0",
     "@swc-node/jest": "1.0.3",
+    "@tsconfig/node14": "1.0.0",
     "@types/jest": "26.0.20",
+    "@types/ramda": "0.27.34",
     "@typescript-eslint/eslint-plugin": "4.13.0",
     "@typescript-eslint/parser": "4.13.0",
-    "babel-jest": "26.6.3",
     "eslint": "7.17.0",
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-functional": "3.2.1",
     "eslint-plugin-import": "2.22.1",
+    "fast-check": "2.11.0",
     "husky": "4.3.7",
     "jest": "26.6.3",
     "lint-staged": "10.5.3",
     "prettier": "2.2.1",
+    "ramda": "0.27.1",
     "rollup": "2.36.1",
     "tsd": "0.14.0",
     "tslib": "2.1.0",
-    "typescript": "4.1.3"
+    "typescript": "4.1.3",
+    "weak-napi": "2.0.2"
   },
   "scripts": {
     "test": "yarn tsd && yarn jest",

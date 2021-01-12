@@ -17,8 +17,15 @@ const rollupConfig = [
       },
       {
         name: '@typeofweb/schema',
-        file: pkg.main,
         format: 'cjs',
+        dir: './',
+        entryFileNames: pkg.main,
+      },
+      {
+        name: '@typeofweb/schema',
+        entryFileNames: pkg.browser,
+        format: 'umd',
+        dir: './'
       },
     ],
     plugins: [
@@ -30,7 +37,8 @@ const rollupConfig = [
         tsconfig: "tsconfig.json",
         declaration: true,
         declarationDir: 'dist/types/',
-        rootDir: 'src/'
+        rootDir: 'src/',
+        module: "ES2020",
       }),
     ],
   },

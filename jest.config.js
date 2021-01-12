@@ -1,11 +1,12 @@
 module.exports = {
   roots: ['<rootDir>'],
+  setupFiles: ['<rootDir>/jest.setup.js'],
   moduleFileExtensions: ['js', 'ts', 'json'],
   testPathIgnorePatterns: ['<rootDir>[/\\\\](node_modules)[/\\\\]'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(ts|tsx)$'],
   transform: {
-    '^.+\\.(ts|tsx)$': 'babel-jest',
+    '^.+\\.(t|j)sx?$': ['@swc-node/jest'],
   },
   setupFiles: ['./jest-setup.ts'],
-  testTimeout: 10000,
+  setupFilesAfterEnv: ['./jest-setup-after-env.ts'],
 };
