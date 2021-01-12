@@ -54,8 +54,7 @@
   },
   "scripts": {
     "test": "yarn jest",
-    "jest": "jest --detectOpenHandles --forceExit --passWithNoTests",
-    "jest:ci": "jest --passWithNoTests",
+    "jest": "jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
     "build": "rollup --config",
     "prepublishOnly": "yarn build"
   },
