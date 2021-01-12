@@ -180,7 +180,7 @@ const nullableRoleValidator = validate(nullableRoleSchema);
 // Returns 'User', the output type is null | 'User' | 'Admin'
 const role = nullableRoleValidator('User');
 
-// It's fine
+// It's also fine
 nullableRoleValidator(null);
 
 // Throws validation error
@@ -199,12 +199,12 @@ const optionalRoleValidator = validate(optionalRoleSchema);
 // Returns 'User', the output type is undefined | 'User' | 'Admin'
 const role = optionalRoleValidator('User');
 
-// It's fine
-nullableRoleValidator();
-nullableRoleValidator(undefined);
+// It's also fine
+optionalRoleValidator();
+optionalRoleValidator(undefined);
 
 // Throws validation error
-nullableRoleValidator(null);
+optionalRoleValidator(null);
 ```
 
 ### nil
@@ -218,8 +218,8 @@ const nilRoleValidator = validate(nilRoleSchema);
 // Returns 'User', the output type is undefined | null | 'User' | 'Admin'
 const role = nilRoleValidator('User');
 
-// It's fine
-nullableRoleValidator();
-nullableRoleValidator(undefined);
-nullableRoleValidator(null);
+// It's also fine
+nilRoleValidator();
+nilRoleValidator(undefined);
+nilRoleValidator(null);
 ```
