@@ -36,7 +36,7 @@ const rollupConfig = [
       typescript({
         tsconfig: "tsconfig.json",
         declaration: true,
-        declarationDir: 'dist/types/',
+        declarationDir: 'dist/',
         rootDir: 'src/',
         module: "ES2020",
       }),

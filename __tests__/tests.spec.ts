@@ -1,7 +1,10 @@
-import Fc from 'fast-check';
-import { complement, is, lt, prop, __ } from 'ramda';
+import { join } from 'path';
 
-import { validate, number, string, date, oneOf } from '../src';
+import Fc from 'fast-check';
+import { complement, identity, is, lt, prop, __ } from 'ramda';
+import tsd from 'tsd';
+
+import { validate, number, string, date, oneOf, object, array } from '../src';
 
 const throws = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
   ...args: T
@@ -19,6 +22,24 @@ const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unkn
 ) => !throws(predicate)(...args);
 
 describe('@typeofweb/schema', () => {
+  it('tsd', async () => {
+    const diagnostics = await tsd({
+      cwd: join(__dirname, '..'),
+      typingsFile: './src/index.ts',
+      testFiles: ['./__tests__/*.test-d.ts'],
+    });
+
+    if (diagnostics.length > 0) {
+      const errorMessage = diagnostics.map((test) => {
+        return (
+          [test.fileName, test.line, test.column].filter(identity).join(':') +
+          ` - ${test.severity} - ${test.message}`
+        );
+      });
+      fail('\n' + errorMessage.join('\n') + '\n');
+    }
+  });
+
   describe('string', () => {
     it('should validate strings', () =>
       Fc.assert(Fc.property(Fc.string(), notThrows(validate(string())))));
@@ -63,6 +84,49 @@ describe('@typeofweb/schema', () => {
         Fc.property(
           Fc.set(Fc.oneof(Fc.string(), Fc.double(), Fc.integer())).filter((x) => x.length > 1),
           ([el, ...arr]) => throws(validate(oneOf(arr)))(el),
+        ),
+      ));
+  });
+
+  describe('object', () => {
+    it('should validate numbers', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.record({
+            a: Fc.integer(),
+            b: Fc.string(),
+            c: Fc.array(Fc.string()),
+            d: Fc.record({
+              e: Fc.string(),
+            }),
+          }),
+          notThrows(
+            validate(
+              object({
+                a: number(),
+                b: string(),
+                c: array([string()]),
+                d: object({ e: string() }),
+              }),
+            ),
+          ),
+        ),
+      ));
+
+    it('should not allow other values', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.anything(),
+          throws(
+            validate(
+              object({
+                a: number(),
+                b: string(),
+                c: array([string()]),
+                d: object({ e: string() }),
+              }),
+            ),
+          ),
         ),
       ));
   });
