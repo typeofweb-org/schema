@@ -138,7 +138,7 @@ describe('@typeofweb/schema', () => {
           Fc.record({
             a: Fc.integer(),
             b: Fc.string(),
-            c: Fc.array(Fc.string()),
+            c: Fc.array(Fc.oneof(Fc.string(), Fc.integer(), Fc.boolean())),
             d: Fc.record({
               e: Fc.string(),
             }),
@@ -148,7 +148,7 @@ describe('@typeofweb/schema', () => {
               object({
                 a: number(),
                 b: string(),
-                c: array([string()]),
+                c: array([number(), string(), boolean()]),
                 d: object({ e: string() }),
               }),
             ),
