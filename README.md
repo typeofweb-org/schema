@@ -90,7 +90,7 @@ const micheal = stringValidator('Micheal');
 Generates schema that will match number.
 
 ```js
-const numberSchema = string();
+const numberSchema = number();
 const numberValidator = validate(numberSchema);
 
 // Return 3.14
@@ -102,7 +102,7 @@ const pi = numberValidator(3.14);
 Generates schema that will match boolean.
 
 ```js
-const booleanSchema = string();
+const booleanSchema = boolean();
 const booleanValidator = validate(booleanSchema);
 
 // Returns true
@@ -155,7 +155,7 @@ const matthewCar = carValidator({
 
 ### array
 
-Generates schema that will match all values specifiec in the schemas in the array.
+Generates schema that will match all values specified in the schemas in the array.
 
 ```js
 const musicGenresSchema = array([string()]);
@@ -179,6 +179,13 @@ const nullableRoleValidator = validate(nullableRoleSchema);
 
 // Returns 'User', the output type is null | 'User' | 'Admin'
 const role = nullableRoleValidator('User');
+
+// It's fine
+nullableRoleValidator(null);
+
+// Throws validation error
+nullableRoleValidator();
+nullableRoleValidator(undefined);
 ```
 
 ### optional
@@ -191,6 +198,13 @@ const optionalRoleValidator = validate(optionalRoleSchema);
 
 // Returns 'User', the output type is undefined | 'User' | 'Admin'
 const role = optionalRoleValidator('User');
+
+// It's fine
+nullableRoleValidator();
+nullableRoleValidator(undefined);
+
+// Throws validation error
+nullableRoleValidator(null);
 ```
 
 ### nil
@@ -203,4 +217,9 @@ const nilRoleValidator = validate(nilRoleSchema);
 
 // Returns 'User', the output type is undefined | null | 'User' | 'Admin'
 const role = nilRoleValidator('User');
+
+// It's fine
+nullableRoleValidator();
+nullableRoleValidator(undefined);
+nullableRoleValidator(null);
 ```
