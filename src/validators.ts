@@ -23,6 +23,7 @@ import { ValidationError } from './errors';
 import type { AnySchema, TypeOf, Schema } from './types';
 
 const assertUnreachable = (val: never): never => {
+  /* istanbul ignore next */
   throw new Error(val);
 };
 
@@ -117,6 +118,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       return value as TypeOf<S>;
   }
 
+  /* istanbul ignore next */
   return assertUnreachable(schema.__validator);
 };
 
@@ -134,24 +136,28 @@ export const oneOf = <U extends readonly (keyof any)[]>(values: readonly [...U])
 export const string = () => {
   return {
     __validator: STRING_VALIDATOR,
+    __modifiers: { optional: false, nullable: false },
   } as Schema<string, { readonly optional: false; readonly nullable: false }, never>;
 };
 
 export const number = () => {
   return {
     __validator: NUMBER_VALIDATOR,
+    __modifiers: { optional: false, nullable: false },
   } as Schema<number, { readonly optional: false; readonly nullable: false }, never>;
 };
 
 export const boolean = () => {
   return {
     __validator: BOOLEAN_VALIDATOR,
+    __modifiers: { optional: false, nullable: false },
   } as Schema<boolean, { readonly optional: false; readonly nullable: false }, never>;
 };
 
 export const date = () => {
   return {
     __validator: DATE_VALIDATOR,
+    __modifiers: { optional: false, nullable: false },
   } as Schema<Date, { readonly optional: false; readonly nullable: false }, never>;
 };
 
