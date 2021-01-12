@@ -63,7 +63,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts}": [
+    "**/*.ts": [
       "yarn jest",
       "yarn eslint --fix",
       "yarn prettier --write"

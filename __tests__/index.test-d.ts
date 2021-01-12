@@ -11,6 +11,7 @@ import {
   boolean,
   nullable,
   optional,
+  nil,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
 
@@ -67,6 +68,9 @@ expectType<'a' | null | undefined>(validate(validator7)(''));
 
 const validator8 = optional(nullable(boolean()));
 expectType<boolean | null | undefined>(validate(validator8)(false));
+
+const validator9 = nil(boolean());
+expectType<boolean | null | undefined>(validate(validator9)(false));
 
 // nested
 const nested1 = object({});
