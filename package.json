@@ -38,7 +38,8 @@
     "test": "yarn tsd && yarn jest",
     "tsd": "tsd",
     "jest": "jest --detectOpenHandles --forceExit --passWithNoTests",
-    "jest:ci": "jest --passWithNoTests"
+    "jest:ci": "jest --passWithNoTests",
+    "build": "rollup --config"
   },
   "husky": {
     "hooks": {
@@ -51,5 +52,8 @@
       "eslint --fix",
       "yarn prettier --write"
     ]
+  },
+  "tsd": {
+    "directory": "./src/"
   }
 }

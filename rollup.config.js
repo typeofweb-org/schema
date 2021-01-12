@@ -28,9 +28,9 @@ const rollupConfig = [
       }),
       typescript({
         tsconfig: "tsconfig.json",
-        // declaration: true,
-        // declarationDir: 'dist/types/',
-        // rootDir: 'src/'
+        declaration: true,
+        declarationDir: 'dist/types/',
+        rootDir: 'src/'
       }),
     ],
   },
