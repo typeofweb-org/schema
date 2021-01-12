@@ -24,6 +24,15 @@
     "yarn.lock",
     "dist"
   ],
+  "keywords": [
+    "typescript",
+    "validation",
+    "validation-library",
+    "schema",
+    "jsonschema",
+    "ts",
+    "validations"
+  ],
   "devDependencies": {
     "@rollup/plugin-commonjs": "17.0.0",
     "@rollup/plugin-node-resolve": "11.0.1",
