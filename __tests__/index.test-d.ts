@@ -84,21 +84,21 @@ const nested2 = object({
 });
 expectType<{ readonly a: string; readonly b: { readonly c: number } }>(validate(nested2)({}));
 
-const nested3 = array([]);
+const nested3 = array();
 expectType<readonly never[]>(validate(nested3)([]));
 
-const nested4 = array([string()]);
+const nested4 = array(string());
 expectType<readonly string[]>(validate(nested4)([]));
 
-const nested5 = array([string(), optional(number())]);
+const nested5 = array(string(), optional(number()));
 expectType<readonly (string | number | undefined)[]>(validate(nested5)([]));
 
-const nested6 = optional(array([string(), number()]));
+const nested6 = optional(array(string(), number()));
 expectType<readonly (string | number)[] | undefined>(validate(nested6)([]));
 
 const nested7 = optional(
   object({
-    arr: optional(array([string(), number()])),
+    arr: optional(array(string(), number())),
   }),
 );
 expectType<

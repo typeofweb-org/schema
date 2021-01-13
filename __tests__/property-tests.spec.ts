@@ -151,7 +151,7 @@ describe('@typeofweb/schema', () => {
               object({
                 a: number(),
                 b: string(),
-                c: array([number(), string(), boolean()]),
+                c: array(number(), string(), boolean()),
                 d: object({ e: string() }),
               }),
             ),
@@ -168,7 +168,7 @@ describe('@typeofweb/schema', () => {
               object({
                 a: number(),
                 b: string(),
-                c: array([string()]),
+                c: array(string()),
                 d: object({ e: string() }),
               }),
             ),
