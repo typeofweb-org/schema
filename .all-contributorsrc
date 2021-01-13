@@ -1,0 +1,47 @@
+{
+  "projectName": "schema",
+  "projectOwner": "typeofweb",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "gitmoji",
+  "contributors": [
+    {
+      "login": "mmiszy",
+      "name": "Michał Miszczyszyn",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1338731?v=4",
+      "profile": "https://typeofweb.com/",
+      "contributions": [
+        "code",
+        "maintenance",
+        "projectManagement",
+        "review"
+      ]
+    },
+    {
+      "login": "wisnie",
+      "name": "Bartłomiej Wiśniewski",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/47081011?v=4",
+      "profile": "https://github.com/wisnie",
+      "contributions": [
+        "code",
+        "review"
+      ]
+    },
+    {
+      "login": "AdamSiekierski",
+      "name": "Adam Siekierski",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/24841038?v=4",
+      "profile": "https://github.com/AdamSiekierski",
+      "contributions": [
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 3,
+  "skipCi": true
+}
