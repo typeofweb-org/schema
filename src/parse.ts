@@ -7,7 +7,7 @@ export const parse = <V extends VALIDATORS>(validator: V) => (
   switch (validator) {
     case NUMBER_VALIDATOR:
       if (typeof value === 'string') {
-        if (value === '') {
+        if (value.trim() === '') {
           return value as V extends keyof ValidatorToType ? ValidatorToType[V] : unknown;
         }
         const parsedNumber = Number(value);
