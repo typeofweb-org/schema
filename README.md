@@ -217,7 +217,7 @@ nullableRoleValidator();
 nullableRoleValidator(undefined);
 ```
 
-### optional
+#### optional
 
 If you use the `optional` modifier, given schema will be extended to also match `undefined` values, and its output type will be `undefined | T`.
 
@@ -236,7 +236,7 @@ optionalRoleValidator(undefined);
 optionalRoleValidator(null);
 ```
 
-### nil
+#### nil
 
 If you use the `nil` modifier, given schema will be extended to also match `null` and `undefined` values, and its output type will be `null | undefined | T`.
 
