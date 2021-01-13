@@ -1,5 +1,5 @@
 import Fc from 'fast-check';
-import { complement, is } from 'ramda';
+import { complement, construct, curry, is, not, or, pipe } from 'ramda';
 
 import {
   validate,
@@ -31,6 +31,19 @@ const throws = <T extends readonly unknown[], Err extends Error>(
   }
 };
 
+const orFunc = curry<
+  <A extends (...args: any) => any, B extends (...args: any) => any, V>(
+    a: A,
+    b: B,
+    value: V,
+  ) => boolean
+>((a, b, value) => or(a(value), b(value)));
+const isNum = (value: unknown) => Boolean(Number(value));
+const isISOString = (value: unknown) =>
+  pipe(construct(Date), Number, Number.isNaN, not)(value as string);
+const isDate = (value: unknown) =>
+  Boolean(Object.prototype.toString.call(value) === '[object Date]');
+
 const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
   ...args: T
 ) => !throws(predicate)(...args);
@@ -42,10 +55,14 @@ describe('@typeofweb/schema', () => {
     it('should validate strings', () =>
       Fc.assert(Fc.property(Fc.string(), notThrows(validate(string())))));
 
+    it('should validate `Date` instances', () => {
+      Fc.assert(Fc.property(Fc.date(), notThrows(validate(string()))));
+    });
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(is(String))),
+          Fc.anything().filter(complement(orFunc(is(String), isDate))),
           throws(validate(string()), ValidationError),
         ),
       ));
@@ -55,10 +72,18 @@ describe('@typeofweb/schema', () => {
     it('should validate numbers', () =>
       Fc.assert(Fc.property(Fc.oneof(Fc.double(), Fc.integer()), notThrows(validate(number())))));
 
+    it('should validate strings that can be coerced to number', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.oneof(Fc.double(), Fc.integer()).map((number) => String(number)),
+          notThrows(validate(number())),
+        ),
+      ));
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(is(Number))),
+          Fc.anything().filter(complement(orFunc(is(Number), isNum))),
           throws(validate(number()), ValidationError),
         ),
       ));
@@ -81,10 +106,18 @@ describe('@typeofweb/schema', () => {
     it('should validate dates', () =>
       Fc.assert(Fc.property(Fc.date(), notThrows(validate(date())))));
 
+    it('should validate ISOStrings', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.date().map((date) => date.toISOString()),
+          notThrows(validate(date())),
+        ),
+      ));
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(is(Date))),
+          Fc.anything().filter(complement(orFunc(is(Date), isISOString))),
           throws(validate(date()), ValidationError),
         ),
       ));
