@@ -113,6 +113,16 @@ expectType<
   | undefined
 >(validate(nested7)({}));
 
+// parsed
+const parsed1 = number();
+expectType<number>(validate(parsed1)('1'));
+
+const parsed2 = string();
+expectType<string>(validate(parsed2)(new Date(0)));
+
+const parsed3 = date();
+expectType<Date>(validate(parsed3)('1970-01-01T00:00:00.000Z'));
+
 // minLength and nonEmpty
 const len1 = minLength(1)(array(string()));
 const resLen1 = validate(len1)([]);

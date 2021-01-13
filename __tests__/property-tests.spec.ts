@@ -1,5 +1,5 @@
 import Fc from 'fast-check';
-import { complement, is, sort } from 'ramda';
+import { anyPass, complement, is, sort } from 'ramda';
 
 import {
   validate,
@@ -17,6 +17,7 @@ import {
   minLength,
   nonEmpty,
 } from '../src';
+import { isISODateString } from '../src/parse';
 
 const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 
@@ -35,6 +36,8 @@ const throws = <T extends readonly unknown[], Err extends Error>(
   }
 };
 
+const isCoercibleToNum = (value: unknown) => !Number.isNaN(Number(value));
+
 const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
   ...args: T
 ) => !throws(predicate)(...args);
@@ -46,10 +49,14 @@ describe('@typeofweb/schema', () => {
     it('should validate strings', () =>
       Fc.assert(Fc.property(Fc.string(), notThrows(validate(string())))));
 
+    it('should validate `Date` instances', () => {
+      Fc.assert(Fc.property(Fc.date(), notThrows(validate(string()))));
+    });
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(is(String))),
+          Fc.anything().filter(complement(anyPass([is(String), is(Date)]))),
           throws(validate(string()), ValidationError),
         ),
       ));
@@ -59,10 +66,18 @@ describe('@typeofweb/schema', () => {
     it('should validate numbers', () =>
       Fc.assert(Fc.property(Fc.oneof(Fc.double(), Fc.integer()), notThrows(validate(number())))));
 
+    it('should validate strings that can be coerced to number', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.oneof(Fc.double(), Fc.integer()).map((number) => String(number)),
+          notThrows(validate(number())),
+        ),
+      ));
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(is(Number))),
+          Fc.anything().filter(complement(anyPass([is(Number), isCoercibleToNum]))),
           throws(validate(number()), ValidationError),
         ),
       ));
@@ -85,10 +100,26 @@ describe('@typeofweb/schema', () => {
     it('should validate dates', () =>
       Fc.assert(Fc.property(Fc.date(), notThrows(validate(date())))));
 
+    it('should validate ISOStrings', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.date().map((date) => date.toISOString()),
+          notThrows(validate(date())),
+        ),
+      ));
+
+    it('should not allow invalid strings', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.string().filter(complement(isISODateString)),
+          throws(validate(date()), ValidationError),
+        ),
+      ));
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(is(Date))),
+          Fc.anything().filter(complement(anyPass([is(Date), isISODateString]))),
           throws(validate(date()), ValidationError),
         ),
       ));
