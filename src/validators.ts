@@ -49,6 +49,12 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     if (!Array.isArray(value)) {
       throw new ValidationError();
     }
+    if (
+      typeof schema.__modifiers.minLength === 'number' &&
+      value.length < schema.__modifiers.minLength
+    ) {
+      throw new ValidationError();
+    }
     return value.map((val: unknown) => {
       const validationResult = validators.reduce(
         (acc, validator) => {
@@ -93,6 +99,12 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
   switch (schema.__validator) {
     case STRING_VALIDATOR:
       if (typeof value !== 'string') {
+        throw new ValidationError();
+      }
+      if (
+        typeof schema.__modifiers.minLength === 'number' &&
+        value.length < schema.__modifiers.minLength
+      ) {
         throw new ValidationError();
       }
       return value as TypeOf<S>;

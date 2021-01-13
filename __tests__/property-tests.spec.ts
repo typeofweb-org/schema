@@ -15,6 +15,7 @@ import {
   nil,
   ValidationError,
 } from '../src';
+import { minLength, nonEmpty } from '../src/modifiers';
 
 const throws = <T extends readonly unknown[], Err extends Error>(
   predicate: (...args: T) => unknown,
@@ -197,6 +198,64 @@ describe('@typeofweb/schema', () => {
           Fc.subarray(primitiveValidators, { maxLength: 1, minLength: 1 }),
           Fc.subarray([null, undefined], { maxLength: 1, minLength: 1 }),
           ([validator], [val]) => notThrows(validate(nil(validator())))(val),
+        ),
+      ));
+  });
+
+  describe('nonEmpty', () => {
+    it('should only accept arrays with at least one element', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.array(Fc.oneof(Fc.string(), Fc.integer(), Fc.date(), Fc.boolean())),
+          (arr) => {
+            const assertion = arr.length > 0 ? notThrows : throws;
+            return assertion(validate(nonEmpty(array(...primitiveValidators.map((v) => v())))))(
+              arr,
+            );
+          },
+        ),
+      ));
+
+    it('should only accept strings at least 1 char long', () =>
+      Fc.assert(
+        Fc.property(Fc.string(), (str) => {
+          const assertion = str.length > 0 ? notThrows : throws;
+          return assertion(validate(nonEmpty(string())))(str);
+        }),
+      ));
+  });
+
+  describe('minLength', () => {
+    const min = 0;
+    const max = 1000;
+
+    it('should only accept arrays with at least X elements', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.array(Fc.oneof(Fc.string(), Fc.integer(), Fc.date(), Fc.boolean()), {
+            minLength: min,
+            maxLength: max,
+          }),
+          Fc.integer({ min, max }),
+          (arr, length) => {
+            const assertion = arr.length >= length ? notThrows : throws;
+
+            return assertion(
+              validate(minLength(length)(array(...primitiveValidators.map((v) => v())))),
+            )(arr);
+          },
+        ),
+      ));
+
+    it('should only accept strings at least X chars long', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.string({ minLength: min, maxLength: max }),
+          Fc.integer({ min, max }),
+          (str, length) => {
+            const assertion = str.length >= length ? notThrows : throws;
+            return assertion(validate(minLength(length)(string())))(str);
+          },
         ),
       ));
   });
