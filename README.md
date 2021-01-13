@@ -89,7 +89,7 @@ const validatedPerson = personValidator(mark);
 
 ### oneOf
 
-Creates a schema which matches only specified values.
+Creates a schema that matches only specified values.
 
 ```ts
 const fishSchema = oneOf(['trout', 'catfish']);
