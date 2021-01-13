@@ -23,6 +23,7 @@ type DefaultModifiers<MinLength extends number = number> = {
   readonly nullable?: boolean;
   readonly minLength?: MinLength;
 };
+
 type DefaultValues = AnySchema | Primitives;
 
 type TupleOf<
