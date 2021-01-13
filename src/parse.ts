@@ -3,9 +3,7 @@ import { NUMBER_VALIDATOR, DATE_VALIDATOR, STRING_VALIDATOR } from './validators
 
 const simplifiedISODateStringRegex = /^[+-]?\d{4}/;
 export const isISODateString = (value: unknown) =>
-  simplifiedISODateStringRegex.test(value as string)
-    ? !Number.isNaN(Number(new Date(value as string)))
-    : false;
+  simplifiedISODateStringRegex.test(value as string);
 
 export const parse = <V extends VALIDATORS>(validator: V) => (
   value: unknown,
