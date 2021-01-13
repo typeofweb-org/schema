@@ -28,6 +28,8 @@
     - [nullable](#nullable)
     - [optional](#optional)
     - [nil](#nil)
+    - [nonEmpty](#nonEmpty)
+    - [minLength](#minLength)
 
 ## Introduction
 
@@ -254,4 +256,32 @@ const role = nilRoleValidator('User');
 nilRoleValidator();
 nilRoleValidator(undefined);
 nilRoleValidator(null);
+```
+
+#### nonEmpty
+
+The `nonEmpty` modifier can be applied to `string` or `array` schemas in order to make sure they contain at least one character or one item respectively.
+
+```ts
+const nonEmptyArrayValidator = validate(nonEmpty(array(string())));
+
+// OK
+const ok = nonEmptyArrayValidator(['a', 'b', 'c']);
+
+// Throws ValidationError
+const notOk = nonEmptyArrayValidator([]);
+```
+
+#### minLength
+
+The `minLength` modifier is used to contraint length of `string` or `array` values.
+
+```ts
+const atLeastTwoCharsValidator = validate(minLength(2)(string()));
+
+// OK
+const ok = atLeastTwoCharsValidator('ok');
+
+// Throws ValidationError
+const notOk = atLeastTwoCharsValidator('?');
 ```
