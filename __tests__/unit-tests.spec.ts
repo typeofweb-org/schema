@@ -33,4 +33,10 @@ describe('@typeofweb/schema unit tests', () => {
   it('date validator should not coerce invalid string', () => {
     expect(() => validate(date())('abc')).toThrowError(ValidationError);
   });
+
+  it('date validator should coerce ISODateString that starts with +/-', () => {
+    expect(validate(date())('+010000-01-01T00:00:00.000Z')).toEqual(
+      new Date('Sat Jan 01 10000 01:00:00 GMT+0100 (Central European Standard Time)'),
+    );
+  });
 });
