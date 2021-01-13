@@ -12,7 +12,7 @@
 
 ## Table of contents
 
-- [Contributors ✨](#contributors)
+- [Contributors ✨](#contributors-)
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Example](#example)
