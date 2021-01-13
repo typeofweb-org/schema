@@ -184,14 +184,17 @@ const matthewCar = carValidator({
 
 ### array
 
-Creates a schema that matches arrays containing values specified by the schemas passed in the array.
+Creates a schema that matches arrays containing values specified by the schemas passed as parameters.
 
 ```ts
-const musicGenresSchema = array([string()]);
+const musicGenresSchema = array(string());
 const musicGenresValidator = validate(musicGenresSchema);
 
 // Returns ['classical', 'lofi', 'pop']
 const musicGenres = musicGenresValidator(['classical', 'lofi', 'pop']);
+
+const primitiveValidator = validate(array(string(), number(), boolean()));
+primitiveValidator([false, 'string', 123, 42, ':)']); // OK
 ```
 
 ### Modifiers
