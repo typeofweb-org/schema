@@ -81,7 +81,7 @@ const mark = {
 
 const personValidator = validate(personSchema);
 
-// If validation is successful returns data with correct type, throws error otherwise
+// If validation is successful returns data with correct type, throws ValidationError otherwise
 const validatedPerson = personValidator(mark);
 ```
 
@@ -167,7 +167,7 @@ const carSchema = object({
 const carValidator = validate(carSchema);
 
 /* Returns {
-  manufacturer: 'Typeofweb enterprise',
+  manufacturer: 'Type of Web Enterprise',
   model: 'x1024',
   mass: 1600,
   enginePower: 135,
