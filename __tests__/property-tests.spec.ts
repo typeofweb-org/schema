@@ -1,5 +1,5 @@
 import Fc from 'fast-check';
-import { complement, construct, curry, is, not, or, pipe } from 'ramda';
+import { anyPass, complement, construct, curry, is, not, or, pipe } from 'ramda';
 
 import {
   validate,
@@ -31,18 +31,9 @@ const throws = <T extends readonly unknown[], Err extends Error>(
   }
 };
 
-const orFunc = curry<
-  <A extends (...args: any) => any, B extends (...args: any) => any, V>(
-    a: A,
-    b: B,
-    value: V,
-  ) => boolean
->((a, b, value) => or(a(value), b(value)));
-const isNum = (value: unknown) => Boolean(Number(value));
+const isCoercibleToNum = (value: unknown) => Boolean(Number(value));
 const isISOString = (value: unknown) =>
   pipe(construct(Date), Number, Number.isNaN, not)(value as string);
-const isDate = (value: unknown) =>
-  Boolean(Object.prototype.toString.call(value) === '[object Date]');
 
 const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
   ...args: T
@@ -62,7 +53,7 @@ describe('@typeofweb/schema', () => {
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(orFunc(is(String), isDate))),
+          Fc.anything().filter(complement(anyPass([is(String), is(Date)]))),
           throws(validate(string()), ValidationError),
         ),
       ));
@@ -83,7 +74,7 @@ describe('@typeofweb/schema', () => {
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(orFunc(is(Number), isNum))),
+          Fc.anything().filter(complement(anyPass([is(Number), isCoercibleToNum]))),
           throws(validate(number()), ValidationError),
         ),
       ));
@@ -117,7 +108,7 @@ describe('@typeofweb/schema', () => {
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(orFunc(is(Date), isISOString))),
+          Fc.anything().filter(complement(anyPass([is(Date), isISOString]))),
           throws(validate(date()), ValidationError),
         ),
       ));
