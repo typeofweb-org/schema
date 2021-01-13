@@ -1,5 +1,5 @@
 import Fc from 'fast-check';
-import { complement, is, pipe, sort } from 'ramda';
+import { complement, is, sort } from 'ramda';
 
 import {
   validate,

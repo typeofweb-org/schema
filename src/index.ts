@@ -8,7 +8,6 @@ export {
   object,
   oneOf,
   string,
-  TYPEOFWEB_SCHEMA,
   validate,
 } from './validators';
 
