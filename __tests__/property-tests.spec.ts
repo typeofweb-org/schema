@@ -14,8 +14,9 @@ import {
   optional,
   nil,
   ValidationError,
+  minLength,
+  nonEmpty,
 } from '../src';
-import { minLength, nonEmpty } from '../src/modifiers';
 
 const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 

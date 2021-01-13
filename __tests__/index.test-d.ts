@@ -12,9 +12,10 @@ import {
   nullable,
   optional,
   nil,
+  minLength,
+  nonEmpty,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
-import { minLength, nonEmpty } from '../src/modifiers';
 
 // Schema
 declare const str1: TypeOf<Schema<string, {}, never>>;
