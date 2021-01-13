@@ -12,8 +12,8 @@
 
 ## Table of contents
 
-- [Contributors ✨](#contributors-)
 - [Introduction](#introduction)
+- [Contributors ✨](#contributors-)
 - [Installation](#installation)
 - [Example](#example)
 - [API](#api)
@@ -30,6 +30,10 @@
     - [nullable](#nullable)
     - [optional](#optional)
     - [nil](#nil)
+
+## Introduction
+
+`@typeofweb/schema` is a lightweight and extensible library for data validation with full support for TypeScript!
 
 ## Contributors ✨
 
@@ -52,10 +56,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
-
-## Introduction
-
-@typeofweb/schema is a lightweight and extensible library for data validation with full support for TypeScript!
 
 ## Installation
 
@@ -219,14 +219,17 @@ const matthewCar = carValidator({
 
 ### array
 
-Creates a schema that matches arrays containing values specified by the schemas passed in the array.
+Creates a schema that matches arrays containing values specified by the schemas passed as parameters.
 
 ```ts
-const musicGenresSchema = array([string()]);
+const musicGenresSchema = array(string());
 const musicGenresValidator = validate(musicGenresSchema);
 
 // Returns ['classical', 'lofi', 'pop']
 const musicGenres = musicGenresValidator(['classical', 'lofi', 'pop']);
+
+const primitiveValidator = validate(array(string(), number(), boolean()));
+primitiveValidator([false, 'string', 123, 42, ':)']); // OK
 ```
 
 ### Modifiers

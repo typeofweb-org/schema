@@ -75,7 +75,7 @@ export const object = <U extends Record<string, AnySchema>>(obj: U) => {
   >;
 };
 
-export const array = <U extends readonly AnySchema[]>(arr: readonly [...U]) => {
+export const array = <U extends readonly AnySchema[]>(...arr: readonly [...U]) => {
   return {
     __validator: arr,
     __type: {} as unknown,
