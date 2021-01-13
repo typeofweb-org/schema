@@ -12,9 +12,10 @@ import {
   nullable,
   optional,
   nil,
+  minLength,
+  nonEmpty,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
-import { minLength, nonEmpty } from '../src/modifiers';
 
 // Schema
 declare const str1: TypeOf<Schema<string, {}, never>>;
@@ -56,7 +57,10 @@ const validator3 = date();
 expectType<Date>(validate(validator3)(''));
 
 const validator4 = oneOf(['a', 'b']);
-expectType<'a' | 'b'>(validate(validator4)(''));
+expectType<'a' | 'b'>(validate(validator4)('a'));
+
+const validator41 = validate(oneOf([number(), false]))('');
+expectType<number | false>(validator41);
 
 const validator5 = nullable(string());
 expectType<string | null>(validate(validator5)(''));
