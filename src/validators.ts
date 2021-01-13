@@ -72,11 +72,11 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
 
   if (typeof schema.__validator === 'object') {
     const validators = schema.__validator as Record<keyof any, AnySchema>;
-    if (typeof value !== 'object' || value === null) {
+    if (typeof value !== 'object') {
       throw new ValidationError();
     }
 
-    const valueEntries = Object.entries(value);
+    const valueEntries = Object.entries(value!);
     const validatorEntries = Object.entries(validators);
     if (valueEntries.length !== validatorEntries.length) {
       throw new ValidationError();
@@ -107,7 +107,10 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       }
       return value as TypeOf<S>;
     case DATE_VALIDATOR:
-      if (Object.prototype.toString.call(value) !== '[object Date]') {
+      if (
+        Object.prototype.toString.call(value) !== '[object Date]' ||
+        Number.isNaN(Number(value))
+      ) {
         throw new ValidationError();
       }
       return value as TypeOf<S>;
