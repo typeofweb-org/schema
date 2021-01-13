@@ -58,7 +58,8 @@ const rollupConfig = [
         declarationDir: 'dist/',
         rootDir: 'src/',
         module: "ES2020",
-        resolveJsonModule: false
+        resolveJsonModule: false,
+        "include": ["src/**/*.ts"]
       }),
     ],
   },

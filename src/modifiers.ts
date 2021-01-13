@@ -56,7 +56,11 @@ export const minLength = <L extends number>(length: L) => <
     },
   } as unknown) as Schema<
     S['__type'],
-    { readonly nullable: true; readonly optional: true; readonly minLength: L },
+    {
+      readonly nullable: S['__modifiers']['nullable'];
+      readonly optional: S['__modifiers']['optional'];
+      readonly minLength: L;
+    },
     S['__values'][number]
   >;
 };
