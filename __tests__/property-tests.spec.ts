@@ -15,6 +15,7 @@ import {
   nil,
   ValidationError,
 } from '../src';
+import { isISODateString } from '../src/parse';
 
 const throws = <T extends readonly unknown[], Err extends Error>(
   predicate: (...args: T) => unknown,
@@ -31,9 +32,7 @@ const throws = <T extends readonly unknown[], Err extends Error>(
   }
 };
 
-const isCoercibleToNum = (value: unknown) => Boolean(Number(value));
-const isISOString = (value: unknown) =>
-  pipe(construct(Date), Number, Number.isNaN, not)(value as string);
+const isCoercibleToNum = (value: unknown) => !Number.isNaN(Number(value));
 
 const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
   ...args: T
@@ -105,10 +104,18 @@ describe('@typeofweb/schema', () => {
         ),
       ));
 
+    it('should not allow invalid strings', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.string().filter(complement(isISODateString)),
+          throws(validate(date()), ValidationError),
+        ),
+      ));
+
     it('should not allow other values', () =>
       Fc.assert(
         Fc.property(
-          Fc.anything().filter(complement(anyPass([is(Date), isISOString]))),
+          Fc.anything().filter(complement(anyPass([is(Date), isISODateString]))),
           throws(validate(date()), ValidationError),
         ),
       ));

@@ -1,6 +1,12 @@
 import type { VALIDATORS, ValidatorToType } from './validators';
 import { NUMBER_VALIDATOR, DATE_VALIDATOR, STRING_VALIDATOR } from './validators';
 
+const simplifiedISODateStringRegex = /^[+-]?\d{4}/;
+export const isISODateString = (value: unknown) =>
+  simplifiedISODateStringRegex.test(value as string)
+    ? !Number.isNaN(Number(new Date('1970-01-01T00:00:00.000Z')))
+    : false;
+
 export const parse = <V extends VALIDATORS>(validator: V) => (
   value: unknown,
 ): V extends keyof ValidatorToType ? ValidatorToType[V] : unknown => {
@@ -16,8 +22,11 @@ export const parse = <V extends VALIDATORS>(validator: V) => (
       break;
     case DATE_VALIDATOR:
       if (typeof value === 'string') {
-        const parsedDate = new Date(value);
-        return parsedDate as V extends keyof ValidatorToType ? ValidatorToType[V] : unknown;
+        if (isISODateString(value)) {
+          const parsedDate = new Date(value);
+          return parsedDate as V extends keyof ValidatorToType ? ValidatorToType[V] : unknown;
+        }
+        return value as V extends keyof ValidatorToType ? ValidatorToType[V] : unknown;
       }
       break;
     case STRING_VALIDATOR:
