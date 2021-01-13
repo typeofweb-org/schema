@@ -1,4 +1,21 @@
-import { date, number, string, validate, ValidationError } from '../src';
+import type { AnySchema } from '../src';
+import {
+  array,
+  boolean,
+  date,
+  isSchema,
+  minLength,
+  nil,
+  nonEmpty,
+  nullable,
+  number,
+  object,
+  oneOf,
+  optional,
+  string,
+  validate,
+  ValidationError,
+} from '../src';
 import { isISODateString } from '../src/parse';
 
 describe('@typeofweb/schema unit tests', () => {
@@ -38,5 +55,32 @@ describe('@typeofweb/schema unit tests', () => {
     expect(validate(date())('+010000-01-01T00:00:00.000Z')).toEqual(
       new Date('Sat Jan 01 10000 01:00:00 GMT+0100 (Central European Standard Time)'),
     );
+  });
+
+  it('should detect schemas', () => {
+    const validators: ReadonlyArray<() => AnySchema> = [
+      boolean,
+      date,
+      number,
+      string,
+      () => object({}),
+      () => array(string()),
+      () => oneOf(['a']),
+    ];
+
+    const modifiers: ReadonlyArray<(schema: AnySchema) => AnySchema> = [
+      minLength(123),
+      nil,
+      nonEmpty,
+      nullable,
+      optional,
+    ];
+
+    validators.forEach((v) => {
+      expect(isSchema(v())).toBe(true);
+      modifiers.forEach((m) => {
+        expect(isSchema(m(v()))).toBe(true);
+      });
+    });
   });
 });

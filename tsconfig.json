@@ -16,5 +16,5 @@
     "resolveJsonModule": true,
     "allowUnreachableCode": true
   },
-  "include": ["src"]
+  "include": ["src", "__tests__"]
 }

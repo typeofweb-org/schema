@@ -12,6 +12,8 @@ import {
   nullable,
   optional,
   nil,
+  minLength,
+  nonEmpty,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
 
@@ -55,7 +57,10 @@ const validator3 = date();
 expectType<Date>(validate(validator3)(''));
 
 const validator4 = oneOf(['a', 'b']);
-expectType<'a' | 'b'>(validate(validator4)(''));
+expectType<'a' | 'b'>(validate(validator4)('a'));
+
+const validator41 = validate(oneOf([number(), false]))('');
+expectType<number | false>(validator41);
 
 const validator5 = nullable(string());
 expectType<string | null>(validate(validator5)(''));
@@ -117,3 +122,49 @@ expectType<string>(validate(parsed2)(new Date(0)));
 
 const parsed3 = date();
 expectType<Date>(validate(parsed3)('1970-01-01T00:00:00.000Z'));
+
+// minLength and nonEmpty
+const len1 = minLength(1)(array(string()));
+const resLen1 = validate(len1)([]);
+expectType<readonly [string, ...(readonly string[])]>(resLen1);
+expectType<string>(resLen1[0]);
+expectType<string | undefined>(resLen1[1]);
+
+const len10 = minLength(10)(array(string()));
+const resLen10 = validate(len10)([]);
+expectType<
+  readonly [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    ...(readonly string[])
+  ]
+>(resLen10);
+expectType<string>(resLen10[0]);
+expectType<string>(resLen10[1]);
+expectType<string>(resLen10[2]);
+expectType<string>(resLen10[3]);
+expectType<string>(resLen10[4]);
+expectType<string>(resLen10[5]);
+expectType<string>(resLen10[6]);
+expectType<string>(resLen10[7]);
+expectType<string>(resLen10[8]);
+expectType<string>(resLen10[9]);
+expectType<string | undefined>(resLen10[10]);
+expectType<string | undefined>(resLen10[11]);
+
+const nonEmptyArr = validate(nonEmpty(array(string())))('');
+expectType<readonly [string, ...(readonly string[])]>(nonEmptyArr);
+
+const nonEmptyStr1 = validate(nonEmpty(string()))('');
+expectType<string>(nonEmptyStr1);
+
+const nonEmptyStr2 = validate(minLength(10)(string()))('');
+expectType<string>(nonEmptyStr2);

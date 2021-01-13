@@ -7,6 +7,7 @@ import {
   NUMBER_VALIDATOR,
   BOOLEAN_VALIDATOR,
   DATE_VALIDATOR,
+  isSchema,
 } from './validators';
 
 const assertUnreachable = (val: never): never => {
@@ -34,6 +35,12 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
   if (Array.isArray(schema.__validator)) {
     const validators = schema.__validator as readonly AnySchema[];
     if (!Array.isArray(value)) {
+      throw new ValidationError();
+    }
+    if (
+      typeof schema.__modifiers.minLength === 'number' &&
+      value.length < schema.__modifiers.minLength
+    ) {
       throw new ValidationError();
     }
     return value.map((val: unknown) => {
@@ -83,6 +90,12 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       if (typeof parsedValue !== 'string') {
         throw new ValidationError();
       }
+      if (
+        typeof schema.__modifiers.minLength === 'number' &&
+        parsedValue.length < schema.__modifiers.minLength
+      ) {
+        throw new ValidationError();
+      }
       return parsedValue as TypeOf<S>;
     case NUMBER_VALIDATOR:
       if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
@@ -103,10 +116,27 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       }
       return parsedValue as TypeOf<S>;
     case LITERAL_VALIDATOR:
-      if (!schema.__values?.includes(parsedValue)) {
+      const validationResult = schema.__values.reduce(
+        (acc, valueOrValidator) => {
+          if (acc.isValid) {
+            return acc;
+          }
+          if (isSchema(valueOrValidator)) {
+            try {
+              const result: unknown = validate(valueOrValidator)(value);
+              return { isValid: true, result };
+            } catch {}
+            return { isValid: false, result: undefined };
+          } else {
+            return { isValid: value === valueOrValidator, result: valueOrValidator };
+          }
+        },
+        { isValid: false, result: undefined as unknown },
+      );
+      if (!validationResult.isValid) {
         throw new ValidationError();
       }
-      return parsedValue as TypeOf<S>;
+      return validationResult.result as TypeOf<S>;
   }
 
   /* istanbul ignore next */
