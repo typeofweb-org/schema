@@ -81,7 +81,7 @@ const mark = {
 
 const personValidator = validate(personSchema);
 
-// If validation is successful returns data with correct type, throws error otherwise
+// If validation is successful returns data with correct type, throws ValidationError otherwise
 const validatedPerson = personValidator(mark);
 ```
 
@@ -89,7 +89,7 @@ const validatedPerson = personValidator(mark);
 
 ### oneOf
 
-Generates a schema which matches only specified values.
+Creates a schema that matches only specified values.
 
 ```ts
 const fishSchema = oneOf(['trout', 'catfish']);
@@ -167,7 +167,7 @@ const carSchema = object({
 const carValidator = validate(carSchema);
 
 /* Returns {
-  manufacturer: 'Typeofweb enterprise',
+  manufacturer: 'Type of Web Enterprise',
   model: 'x1024',
   mass: 1600,
   enginePower: 135,
@@ -217,7 +217,7 @@ nullableRoleValidator();
 nullableRoleValidator(undefined);
 ```
 
-### optional
+#### optional
 
 If you use the `optional` modifier, given schema will be extended to also match `undefined` values, and its output type will be `undefined | T`.
 
@@ -236,7 +236,7 @@ optionalRoleValidator(undefined);
 optionalRoleValidator(null);
 ```
 
-### nil
+#### nil
 
 If you use the `nil` modifier, given schema will be extended to also match `null` and `undefined` values, and its output type will be `null | undefined | T`.
 
