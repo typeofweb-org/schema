@@ -24,15 +24,15 @@
 
 ## Introduction
 
-@typeofweb/schema is lightweight, extensible library for data validation.
+@typeofweb/schema is a lightweight and extensible library for data validation with full support for TypeScript!
 
 ## Installation
 
-Install package with npm:
+Install the package with npm:
 
 `npm install @typeofweb/schema`
 
-Install package with yarn:
+or install the package with yarn:
 
 `yarn add @typeofweb/schema`
 
@@ -60,7 +60,7 @@ const validatedPerson = personValidator(mark);
 
 ### oneOf
 
-Generates a schema which will match only specified values.
+Generates a schema which matches only specified values.
 
 ```js
 const fishSchema = oneOf(['trout', 'catfish']);
@@ -69,13 +69,13 @@ const fishValidator = validate(fishSchema);
 // Returns 'trout'
 const trout = fishValidator('trout');
 
-// Throws validation error
+// Throws ValidationError
 const salmon = fishValidator('salmon');
 ```
 
 ### string
 
-Generates schema that will match string.
+Creates a schema that matches strings.
 
 ```js
 const stringSchema = string();
@@ -87,19 +87,19 @@ const micheal = stringValidator('Micheal');
 
 ### number
 
-Generates schema that will match number.
+Creates a schema that matches numbers.
 
 ```js
 const numberSchema = number();
 const numberValidator = validate(numberSchema);
 
-// Return 3.14
+// Returns 3.14
 const pi = numberValidator(3.14);
 ```
 
 ### boolean
 
-Generates schema that will match boolean.
+Creates a schema that matches booleans.
 
 ```js
 const booleanSchema = boolean();
@@ -111,7 +111,7 @@ const loading = booleanValidator(true);
 
 ### date
 
-Generates schema that will match date.
+Creates a schema that matches JavaScript `Date` objects.
 
 ```js
 const dateSchema = date();
@@ -125,9 +125,9 @@ const annieBirthday = dateValidator(
 
 ### object
 
-Generates schema that will match object.
+Creates a schema that matches objects of provided shape.
 
-```js
+```ts
 const carSchema = object({
   manufacturer: string(),
   model: string(),
@@ -145,7 +145,7 @@ const carValidator = validate(carSchema);
   fuelCapacity: 59,
 } */
 const matthewCar = carValidator({
-  manufacturer: 'Typeofweb enterprise',
+  manufacturer: 'Type of Web Enterprise',
   model: 'x1024',
   mass: 1600,
   enginePower: 135,
@@ -155,7 +155,7 @@ const matthewCar = carValidator({
 
 ### array
 
-Generates schema that will match all values specified in the schemas in the array.
+Creates a schema that matches arrays containing values specified by the schemas passed in the array.
 
 ```js
 const musicGenresSchema = array([string()]);
@@ -167,11 +167,11 @@ const musicGenres = musicGenresValidator(['classical', 'lofi', 'pop']);
 
 ### Modifiers
 
-Modifers are used to customize the schema and change the validation behaviour.
+Modifiers are used to customize schemas and change their validation behaviour.
 
 #### nullable
 
-If you use nullable modifier, output type will be `null | InferredType`.
+If you use the `nullable` modifier, given schema will be extended to also match `null` values, and its output type will be `null | T`.
 
 ```js
 const nullableRoleSchema = nullable(oneOf(['User', 'Admin']));
@@ -183,14 +183,14 @@ const role = nullableRoleValidator('User');
 // It's also fine
 nullableRoleValidator(null);
 
-// Throws validation error
+// Throws ValidationError
 nullableRoleValidator();
 nullableRoleValidator(undefined);
 ```
 
 ### optional
 
-If you use optional modifier, output type will be `undefined | InferredType`.
+If you use the `optional` modifier, given schema will be extended to also match `undefined` values, and its output type will be `undefined | T`.
 
 ```js
 const optionalRoleSchema = optional(oneOf(['User', 'Admin']));
@@ -209,7 +209,7 @@ optionalRoleValidator(null);
 
 ### nil
 
-If you use nil modifier, output type will be `undefined | null | InferredType`.
+If you use the `nil` modifier, given schema will be extended to also match `null` and `undefined` values, and its output type will be `null | undefined | T`.
 
 ```js
 const nilRoleSchema = nil(oneOf(['User', 'Admin']));
