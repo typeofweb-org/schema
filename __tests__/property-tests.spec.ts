@@ -1,5 +1,5 @@
 import Fc from 'fast-check';
-import { complement, is } from 'ramda';
+import { complement, is, pipe, sort } from 'ramda';
 
 import {
   validate,
@@ -16,6 +16,8 @@ import {
   ValidationError,
 } from '../src';
 import { minLength, nonEmpty } from '../src/modifiers';
+
+const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 
 const throws = <T extends readonly unknown[], Err extends Error>(
   predicate: (...args: T) => unknown,
@@ -99,6 +101,19 @@ describe('@typeofweb/schema', () => {
             (arr) => arr.length > 0,
           ),
           (arr) => notThrows(validate(oneOf(arr)))(arr[0]),
+        ),
+      ));
+
+    it('should validate values and validators', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.array(Fc.oneof(Fc.string(), Fc.double(), Fc.integer())).filter(
+            (arr) => arr.length > 0,
+          ),
+          (arr) =>
+            notThrows(validate(oneOf(shuffle([...arr, ...primitiveValidators.map((v) => v())]))))(
+              shuffle(arr)[0],
+            ),
         ),
       ));
 

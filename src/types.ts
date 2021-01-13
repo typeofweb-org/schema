@@ -1,15 +1,21 @@
-import type { VALIDATORS } from './validators';
+import type { TYPEOFWEB_SCHEMA, VALIDATORS } from './validators';
 
 export type TypeOf<S extends AnySchema> = TypeOfModifiers<S> | TypeOfSchema<S>;
 
-export interface Schema<Type extends unknown, Modifiers extends DefaultModifiers, Values> {
+type Primitives = keyof any | boolean;
+export interface Schema<
+  Type extends unknown,
+  Modifiers extends DefaultModifiers,
+  Values extends DefaultValues
+> {
+  readonly [TYPEOFWEB_SCHEMA]: true;
   readonly __type: Type;
   readonly __validator: VALIDATORS;
   readonly __values: readonly Values[];
   readonly __modifiers: Modifiers;
 }
 
-export type SomeSchema<T> = Schema<T, DefaultModifiers, any>;
+export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues>;
 export type AnySchema = SomeSchema<any>;
 
 type DefaultModifiers<MinLength extends number = number> = {
@@ -17,6 +23,7 @@ type DefaultModifiers<MinLength extends number = number> = {
   readonly nullable?: boolean;
   readonly minLength?: MinLength;
 };
+type DefaultValues = AnySchema | Primitives;
 
 type TupleOf<
   T,
@@ -36,9 +43,11 @@ type TypeOfSchema<S extends AnySchema> = TypeOfValues<S> extends infer Result
     : Result
   : never;
 
+type TypeOfValue<Value> = Value extends SomeSchema<infer R> ? R : Value;
+
 type TypeOfValues<S extends AnySchema> = S['__values'][number] extends never
   ? S['__type']
-  : S['__values'][number];
+  : TypeOfValue<S['__values'][number]>;
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 type IfIsArray<S extends AnySchema, Y, N = never> = If<S['__type'], readonly unknown[], Y, N>;
