@@ -62,7 +62,7 @@ const validatedPerson = personValidator(mark);
 
 Generates a schema which matches only specified values.
 
-```js
+```ts
 const fishSchema = oneOf(['trout', 'catfish']);
 const fishValidator = validate(fishSchema);
 
@@ -77,7 +77,7 @@ const salmon = fishValidator('salmon');
 
 Creates a schema that matches strings.
 
-```js
+```ts
 const stringSchema = string();
 const stringValidator = validate(stringSchema);
 
@@ -89,7 +89,7 @@ const micheal = stringValidator('Micheal');
 
 Creates a schema that matches numbers.
 
-```js
+```ts
 const numberSchema = number();
 const numberValidator = validate(numberSchema);
 
@@ -101,7 +101,7 @@ const pi = numberValidator(3.14);
 
 Creates a schema that matches booleans.
 
-```js
+```ts
 const booleanSchema = boolean();
 const booleanValidator = validate(booleanSchema);
 
@@ -113,7 +113,7 @@ const loading = booleanValidator(true);
 
 Creates a schema that matches JavaScript `Date` objects.
 
-```js
+```ts
 const dateSchema = date();
 const dateValidator = validate(dateSchema);
 
@@ -157,7 +157,7 @@ const matthewCar = carValidator({
 
 Creates a schema that matches arrays containing values specified by the schemas passed in the array.
 
-```js
+```ts
 const musicGenresSchema = array([string()]);
 const musicGenresValidator = validate(musicGenresSchema);
 
@@ -173,7 +173,7 @@ Modifiers are used to customize schemas and change their validation behaviour.
 
 If you use the `nullable` modifier, given schema will be extended to also match `null` values, and its output type will be `null | T`.
 
-```js
+```ts
 const nullableRoleSchema = nullable(oneOf(['User', 'Admin']));
 const nullableRoleValidator = validate(nullableRoleSchema);
 
@@ -192,7 +192,7 @@ nullableRoleValidator(undefined);
 
 If you use the `optional` modifier, given schema will be extended to also match `undefined` values, and its output type will be `undefined | T`.
 
-```js
+```ts
 const optionalRoleSchema = optional(oneOf(['User', 'Admin']));
 const optionalRoleValidator = validate(optionalRoleSchema);
 
@@ -211,7 +211,7 @@ optionalRoleValidator(null);
 
 If you use the `nil` modifier, given schema will be extended to also match `null` and `undefined` values, and its output type will be `null | undefined | T`.
 
-```js
+```ts
 const nilRoleSchema = nil(oneOf(['User', 'Admin']));
 const nilRoleValidator = validate(nilRoleSchema);
 
