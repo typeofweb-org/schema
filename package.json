@@ -14,7 +14,7 @@
   "author": "Michał Miszczyszyn - Type of Web <hi@typeofweb.com> (https://typeofweb.com/)",
   "license": "MIT",
   "engines": {
-    "node": "14.x.x"
+    "node": ">12.0.0"
   },
   "publishConfig": {
     "access": "public"
@@ -37,6 +37,7 @@
     "@rollup/plugin-node-resolve": "11.0.1",
     "@rollup/plugin-typescript": "8.1.0",
     "@swc-node/jest": "1.0.3",
+    "@tsconfig/node12": "1.0.7",
     "@tsconfig/node14": "1.0.0",
     "@types/jest": "26.0.20",
     "@types/ramda": "0.27.34",

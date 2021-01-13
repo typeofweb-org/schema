@@ -42,7 +42,7 @@ const rollupConfig = [
           terser({
             compress: true,
             mangle: true,
-            ecma: 2020,
+            ecma: 2019,
           })
         ]
       },
