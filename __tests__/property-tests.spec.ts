@@ -16,6 +16,7 @@ import {
   ValidationError,
   minLength,
   nonEmpty,
+  λ,
 } from '../src';
 import { isISODateString } from '../src/parse';
 
@@ -207,7 +208,7 @@ describe('@typeofweb/schema', () => {
       Fc.assert(
         Fc.property(
           Fc.subarray(primitiveValidators, { maxLength: 1, minLength: 1 }),
-          ([validator]) => notThrows(validate(nullable(validator())))(null),
+          ([validator]) => notThrows(validate(nullable(validator!())))(null),
         ),
       ));
 
@@ -215,7 +216,7 @@ describe('@typeofweb/schema', () => {
       Fc.assert(
         Fc.property(
           Fc.subarray(primitiveValidators, { maxLength: 1, minLength: 1 }),
-          ([validator]) => throws(validate(nullable(validator())), ValidationError)(undefined),
+          ([validator]) => throws(validate(nullable(validator!())), ValidationError)(undefined),
         ),
       ));
   });
@@ -225,7 +226,7 @@ describe('@typeofweb/schema', () => {
       Fc.assert(
         Fc.property(
           Fc.subarray(primitiveValidators, { maxLength: 1, minLength: 1 }),
-          ([validator]) => notThrows(validate(optional(validator())))(undefined),
+          ([validator]) => notThrows(validate(optional(validator!())))(undefined),
         ),
       ));
 
@@ -233,7 +234,7 @@ describe('@typeofweb/schema', () => {
       Fc.assert(
         Fc.property(
           Fc.subarray(primitiveValidators, { maxLength: 1, minLength: 1 }),
-          ([validator]) => throws(validate(optional(validator())), ValidationError)(null),
+          ([validator]) => throws(validate(optional(validator!())), ValidationError)(null),
         ),
       ));
   });
@@ -244,7 +245,7 @@ describe('@typeofweb/schema', () => {
         Fc.property(
           Fc.subarray(primitiveValidators, { maxLength: 1, minLength: 1 }),
           Fc.subarray([null, undefined], { maxLength: 1, minLength: 1 }),
-          ([validator], [val]) => notThrows(validate(nil(validator())))(val),
+          ([validator], [val]) => notThrows(validate(nil(validator!())))(val),
         ),
       ));
   });
@@ -304,6 +305,18 @@ describe('@typeofweb/schema', () => {
             return assertion(validate(minLength(length)(string())))(str);
           },
         ),
+      ));
+  });
+
+  describe('λ', () => {
+    it('should only accept arrays with at least one element OR nulls OR undefined', () =>
+      Fc.assert(
+        Fc.property(Fc.oneof(Fc.constant(null), Fc.constant(undefined), Fc.string()), (value) => {
+          const assertion =
+            typeof value === 'string' ? (value.length > 0 ? notThrows : throws) : notThrows;
+          const validator = λ(string, nonEmpty, nullable, optional);
+          return assertion(validate(validator))(value);
+        }),
       ));
   });
 });
