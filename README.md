@@ -34,8 +34,8 @@
     - [nullable](#nullable)
     - [optional](#optional)
     - [nil](#nil)
-    - [nonEmpty](#nonEmpty)
-    - [minLength](#minLength)
+    - [nonEmpty](#nonempty)
+    - [minLength](#minlength)
 - [Early benchmarks](#early-benchmarks)
 
 ## Contributors ✨
