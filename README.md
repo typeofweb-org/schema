@@ -341,7 +341,7 @@ The `minLength` modifier also changes the return validation type when used on ar
 const len10Validator = validate(minLength(10)(array(number())));
 // type of result is
 // readonly [string, string, string, string, string, string, string, string, string, string, ...string[]]
-const result = validate(len10)([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+const result = validate(len10Validator)([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 ```
 
 As a result, it makes using such arrays/tuples more typesafe. Notice how the type of the `eleventhElement` is different:
@@ -352,7 +352,7 @@ const firstElement = result[0];
 // number
 const tenthElement = result[9];
 // number | undefined
-const eleventhElement = result[9];
+const eleventhElement = result[10];
 ```
 
 ##### Type instantiation is excessively deep and possibly infinite
