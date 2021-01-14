@@ -66,6 +66,7 @@
     "weak-napi": "2.0.2"
   },
   "scripts": {
+    "pretest": "yarn build",
     "test": "yarn jest",
     "jest": "jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
     "build": "rollup --config",
