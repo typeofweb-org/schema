@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import prettier from 'rollup-plugin-prettier';
-import { terser } from "rollup-plugin-terser";
+import { terser } from 'rollup-plugin-terser';
 import filesize from 'rollup-plugin-filesize';
 
 import pkg from './package.json';
@@ -19,9 +19,9 @@ const rollupConfig = [
         entryFileNames: pkg.module,
         plugins: [
           prettier({
-            parser: 'typescript'
+            parser: 'typescript',
           }),
-        ]
+        ],
       },
       {
         name: '@typeofweb/schema',
@@ -30,9 +30,9 @@ const rollupConfig = [
         entryFileNames: pkg.main,
         plugins: [
           prettier({
-            parser: 'typescript'
+            parser: 'typescript',
           }),
-        ]
+        ],
       },
       {
         name: '@typeofweb/schema',
@@ -44,8 +44,8 @@ const rollupConfig = [
             compress: true,
             mangle: true,
             ecma: 2019,
-          })
-        ]
+          }),
+        ],
       },
     ],
     plugins: [
@@ -54,15 +54,15 @@ const rollupConfig = [
         include: 'node_modules/**',
       }),
       typescript({
-        tsconfig: "tsconfig.json",
+        tsconfig: 'tsconfig.json',
         declaration: true,
         declarationDir: 'dist/',
         rootDir: 'src/',
-        module: "ES2020",
+        module: 'ES2020',
         resolveJsonModule: false,
-        "include": ["src/**/*.ts"]
+        include: ['src/**/*.ts'],
       }),
-      filesize({})
+      filesize({}),
     ],
   },
 ];

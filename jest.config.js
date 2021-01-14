@@ -7,9 +7,7 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)sx?$': ['@swc-node/jest'],
   },
-  "testMatch": [
-    "**/?(*.)+(spec|test).[jt]s?(x)"
-  ],
+  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
   setupFiles: ['./jest-setup.ts'],
   setupFilesAfterEnv: ['./jest-setup-after-env.ts'],
 };
