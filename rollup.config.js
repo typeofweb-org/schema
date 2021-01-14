@@ -5,6 +5,7 @@ import typescript from '@rollup/plugin-typescript';
 import prettier from 'rollup-plugin-prettier';
 import { terser } from 'rollup-plugin-terser';
 import filesize from 'rollup-plugin-filesize';
+import license from 'rollup-plugin-license';
 
 import pkg from './package.json';
 
@@ -63,6 +64,15 @@ const rollupConfig = [
         include: ['src/**/*.ts'],
       }),
       filesize({}),
+      license({
+        banner: `
+<%= pkg.name %>@<%= pkg.version %>
+Copyright (c) <%= moment().format('YYYY') %> Type of Web - Michał Miszczyszyn
+
+This source code is licensed under the MIT license found in the
+LICENSE file in the root directory of this source tree.
+`.trim(),
+      }),
     ],
   },
 ];
