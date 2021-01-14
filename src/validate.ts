@@ -1,6 +1,7 @@
 import { ValidationError } from './errors';
 import { parse } from './parse';
 import type { AnySchema, TypeOf } from './types';
+import { fromEntries, isDate } from './utils';
 import {
   LITERAL_VALIDATOR,
   STRING_VALIDATOR,
@@ -65,10 +66,10 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
   }
 
   if (typeof schema.__validator === 'object') {
-    const validators = schema.__validator as Record<keyof any, AnySchema>;
     if (typeof value !== 'object') {
       throw new ValidationError();
     }
+    const validators = schema.__validator as Record<keyof any, AnySchema>;
 
     const valueEntries = Object.entries(value!);
     const validatorKeys = Object.keys(validators);
@@ -76,7 +77,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       throw new ValidationError();
     }
 
-    return Object.fromEntries(
+    return fromEntries(
       valueEntries.map(([key, val]) => {
         if (!validators[key]) {
           throw new ValidationError();
@@ -110,10 +111,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       }
       return parsedValue as TypeOf<S>;
     case DATE_VALIDATOR:
-      if (
-        Object.prototype.toString.call(parsedValue) !== '[object Date]' ||
-        Number.isNaN(Number(parsedValue))
-      ) {
+      if (!isDate(parsedValue) || Number.isNaN(Number(parsedValue))) {
         throw new ValidationError();
       }
       return parsedValue as TypeOf<S>;
