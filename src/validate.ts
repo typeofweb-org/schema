@@ -21,7 +21,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     if (schema.__modifiers.optional) {
       return value as TypeOf<S>;
     } else {
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }
   }
 
@@ -29,20 +29,20 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     if (schema.__modifiers.nullable) {
       return value as TypeOf<S>;
     } else {
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }
   }
 
   if (Array.isArray(schema.__validator)) {
     const validators = schema.__validator as readonly AnySchema[];
     if (!Array.isArray(value)) {
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }
     if (
       typeof schema.__modifiers.minLength === 'number' &&
       value.length < schema.__modifiers.minLength
     ) {
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }
     return value.map((val: unknown) => {
       const validationResult = validators.reduce(
@@ -61,26 +61,26 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       if (validationResult.isValid) {
         return validationResult.result;
       }
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }) as TypeOf<S>;
   }
 
   if (typeof schema.__validator === 'object') {
     if (typeof value !== 'object') {
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }
     const validators = schema.__validator as Record<keyof any, AnySchema>;
 
     const valueEntries = Object.entries(value!);
     const validatorKeys = Object.keys(validators);
     if (valueEntries.length !== validatorKeys.length) {
-      throw new ValidationError();
+      throw new ValidationError(schema, value);
     }
 
     return fromEntries(
       valueEntries.map(([key, val]) => {
         if (!validators[key]) {
-          throw new ValidationError();
+          throw new ValidationError(schema, value);
         }
         return [key, validate(validators[key]!)(val)];
       }),
@@ -91,28 +91,28 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
   switch (schema.__validator) {
     case STRING_VALIDATOR:
       if (typeof parsedValue !== 'string') {
-        throw new ValidationError();
+        throw new ValidationError(schema, value);
       }
       if (
         typeof schema.__modifiers.minLength === 'number' &&
         parsedValue.length < schema.__modifiers.minLength
       ) {
-        throw new ValidationError();
+        throw new ValidationError(schema, value);
       }
       return parsedValue as TypeOf<S>;
     case NUMBER_VALIDATOR:
       if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
-        throw new ValidationError();
+        throw new ValidationError(schema, value);
       }
       return parsedValue as TypeOf<S>;
     case BOOLEAN_VALIDATOR:
       if (typeof parsedValue !== 'boolean') {
-        throw new ValidationError();
+        throw new ValidationError(schema, value);
       }
       return parsedValue as TypeOf<S>;
     case DATE_VALIDATOR:
       if (!isDate(parsedValue) || Number.isNaN(Number(parsedValue))) {
-        throw new ValidationError();
+        throw new ValidationError(schema, value);
       }
       return parsedValue as TypeOf<S>;
     case LITERAL_VALIDATOR:
@@ -134,7 +134,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
         { isValid: false, result: undefined as unknown },
       );
       if (!validationResult.isValid) {
-        throw new ValidationError();
+        throw new ValidationError(schema, value);
       }
       return validationResult.result as TypeOf<S>;
   }

@@ -2,7 +2,8 @@ import type { TYPEOFWEB_SCHEMA, VALIDATORS } from './validators';
 
 export type TypeOf<S extends AnySchema> = TypeOfModifiers<S> | TypeOfSchema<S>;
 
-type Primitives = keyof any | boolean;
+export type Primitives = keyof any | boolean;
+export type Json = Primitives | { readonly [prop in string | number]: Json } | readonly Json[];
 export interface Schema<
   Type extends unknown,
   Modifiers extends DefaultModifiers,

@@ -14,7 +14,6 @@ import {
   optional,
   string,
   validate,
-  ValidationError,
 } from '../src';
 import { isISODateString } from '../src/parse';
 
@@ -28,7 +27,9 @@ describe('@typeofweb/schema unit tests', () => {
   });
 
   it('number validator should not coerce empty string to 0', () => {
-    expect(() => validate(number())('')).toThrowError(ValidationError);
+    expect(() => validate(number())('')).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type! Expected ≫number≪ but got ≫string≪!"`,
+    );
   });
 
   it("isISODateString should return false for '0'", () => {
@@ -36,11 +37,15 @@ describe('@typeofweb/schema unit tests', () => {
   });
 
   it('date validator should not accept invalid date', () => {
-    expect(() => validate(date())(new Date(' '))).toThrowError(ValidationError);
+    expect(() => validate(date())(new Date(' '))).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type! Expected ≫Date≪ but got ≫Invalid Date≪!"`,
+    );
   });
 
   it('date validator should not accept invalid ISODateString', () => {
-    expect(() => validate(date())('123456789123456789123456789')).toThrow(ValidationError);
+    expect(() =>
+      validate(date())('123456789123456789123456789'),
+    ).toThrowErrorMatchingInlineSnapshot(`"Invalid type! Expected ≫Date≪ but got ≫string≪!"`);
   });
 
   it('date validator should coerce ISOString to Date', () => {
@@ -54,11 +59,15 @@ describe('@typeofweb/schema unit tests', () => {
   });
 
   it("date validator should not coerce '0' to ISOString", () => {
-    expect(() => validate(date())('0')).toThrowError(ValidationError);
+    expect(() => validate(date())('0')).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type! Expected ≫Date≪ but got ≫string≪!"`,
+    );
   });
 
   it('date validator should not coerce invalid string', () => {
-    expect(() => validate(date())('abc')).toThrowError(ValidationError);
+    expect(() => validate(date())('abc')).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type! Expected ≫Date≪ but got ≫string≪!"`,
+    );
   });
 
   it('date validator should coerce ISODateString that starts with +/-', () => {
@@ -125,6 +134,95 @@ describe('@typeofweb/schema unit tests', () => {
       }),
     );
 
-    expect(() => validator({ '': [], ' ': [], '!': {}, '"': {} })).toThrowError(ValidationError);
+    expect(() => validator({ '': [], ' ': [], '!': {}, '"': {} }))
+      .toThrowErrorMatchingInlineSnapshot(`
+      "Invalid type! Expected {
+       \\"a\\": ≫number≪,
+       \\"b\\": ≫string≪,
+       \\"c\\": [
+        ≫string≪
+       ],
+       \\"d\\": {
+        \\"e\\": ≫string≪
+       }
+      } but got {
+       \\"\\": [],
+       \\" \\": [],
+       \\"!\\": {},
+       \\"\\\\\\"\\": {}
+      }!"
+    `);
+  });
+
+  it('should throw on when array was expected but not given', () => {
+    const validator = validate(array(string()));
+    expect(() => validator(42)).toThrowErrorMatchingInlineSnapshot(`
+      "Invalid type! Expected [
+       ≫string≪
+      ] but got ≫number≪!"
+    `);
+  });
+
+  it('should throw on invalid values in arrays', () => {
+    const validator = validate(array(object({ a: string() })));
+    expect(() => validator([123])).toThrowErrorMatchingInlineSnapshot(`
+      "Invalid type! Expected [
+       {
+        \\"a\\": ≫string≪
+       }
+      ] but got [
+       123
+      ]!"
+    `);
+  });
+
+  it('should throw when deeply nested object fails', () => {
+    const validator = validate(
+      object({
+        a: number(),
+        b: object({
+          c: string(),
+          d: object({
+            e: array(
+              object({
+                f: string(),
+              }),
+            ),
+          }),
+        }),
+      }),
+    );
+
+    expect(() =>
+      validator({
+        a: 1,
+        b: {
+          c: 'aaa',
+          d: {
+            e: [
+              {
+                f: 'bbb',
+              },
+              {
+                f: 123, // fails
+              },
+            ],
+          },
+        },
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(`
+      "Invalid type! Expected [
+       {
+        \\"f\\": ≫string≪
+       }
+      ] but got [
+       {
+        \\"f\\": \\"bbb\\"
+       },
+       {
+        \\"f\\": 123
+       }
+      ]!"
+    `);
   });
 });

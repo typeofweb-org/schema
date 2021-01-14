@@ -17,6 +17,7 @@ import {
   minLength,
   nonEmpty,
   λ,
+  pipe,
 } from '../src';
 import { isISODateString } from '../src/parse';
 
@@ -24,14 +25,19 @@ const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 
 const throws = <T extends readonly unknown[], Err extends Error>(
   predicate: (...args: T) => unknown,
-  ErrorClass?: { new (): Err },
+  ErrorClass?: { new (...args: readonly any[]): Err & { readonly message: string } },
+  message?: string,
 ) => (...args: T) => {
   try {
     predicate(...args);
     return false;
-  } catch (error) {
+  } catch (error: unknown) {
     if (ErrorClass) {
-      return error instanceof ErrorClass;
+      const isValid = error instanceof ErrorClass && (!message || error.message === message);
+      if (!isValid) {
+        console.log(error);
+      }
+      return isValid;
     }
     return true;
   }
@@ -308,13 +314,22 @@ describe('@typeofweb/schema', () => {
       ));
   });
 
-  describe('λ', () => {
-    it('should only accept arrays with at least one element OR nulls OR undefined', () =>
+  describe('λ and pipe', () => {
+    it('λ should work with schema factory', () =>
       Fc.assert(
         Fc.property(Fc.oneof(Fc.constant(null), Fc.constant(undefined), Fc.string()), (value) => {
           const assertion =
             typeof value === 'string' ? (value.length > 0 ? notThrows : throws) : notThrows;
           const validator = λ(string, nonEmpty, nullable, optional);
+          return assertion(validate(validator))(value);
+        }),
+      ));
+    it('pipe should work with schema', () =>
+      Fc.assert(
+        Fc.property(Fc.oneof(Fc.constant(null), Fc.constant(undefined), Fc.string()), (value) => {
+          const assertion =
+            typeof value === 'string' ? (value.length > 0 ? notThrows : throws) : notThrows;
+          const validator = pipe(string(), nonEmpty, nullable, optional);
           return assertion(validate(validator))(value);
         }),
       ));

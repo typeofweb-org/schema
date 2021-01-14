@@ -4,12 +4,17 @@ export const STRING_VALIDATOR = Symbol('string');
 export const NUMBER_VALIDATOR = Symbol('number');
 export const BOOLEAN_VALIDATOR = Symbol('boolean');
 export const DATE_VALIDATOR = Symbol('Date');
+export const SIMPLE_VALIDATORS = [
+  STRING_VALIDATOR,
+  NUMBER_VALIDATOR,
+  BOOLEAN_VALIDATOR,
+  DATE_VALIDATOR,
+] as const;
+
+export type SIMPLE_VALIDATOR = typeof SIMPLE_VALIDATORS[number];
 export type VALIDATORS =
   | typeof LITERAL_VALIDATOR
-  | typeof STRING_VALIDATOR
-  | typeof NUMBER_VALIDATOR
-  | typeof BOOLEAN_VALIDATOR
-  | typeof DATE_VALIDATOR
+  | SIMPLE_VALIDATOR
   | Record<keyof any, AnySchema>
   | readonly AnySchema[];
 
@@ -25,6 +30,7 @@ import type { AnySchema, TypeOf, Schema } from './types';
 export const isSchema = (val: any): val is AnySchema => {
   return (
     typeof val === 'object' &&
+    val !== null &&
     '__validator' in val &&
     '__modifiers' in val &&
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
