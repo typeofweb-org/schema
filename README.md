@@ -10,6 +10,10 @@
 [![npm](https://img.shields.io/npm/v/@typeofweb/schema.svg)](https://www.npmjs.com/package/@typeofweb/schema)
 [![npm bundle size (minified + gzip)](https://img.shields.io/bundlephobia/minzip/@typeofweb/schema.svg)](https://www.npmjs.com/package/@typeofweb/schema)
 
+## Introduction
+
+`@typeofweb/schema` is a lightweight and extensible library for data validation with full support for TypeScript!
+
 ## Table of contents
 
 - [Introduction](#introduction)
@@ -32,10 +36,7 @@
     - [nil](#nil)
     - [nonEmpty](#nonEmpty)
     - [minLength](#minLength)
-
-## Introduction
-
-`@typeofweb/schema` is a lightweight and extensible library for data validation with full support for TypeScript!
+- [Early benchmarks](#early-benchmarks)
 
 ## Contributors ✨
 
@@ -366,4 +367,27 @@ const whoopsieDaisyValidator = validate(minLength(100000)(array(number())))([]);
 
 // fallback to less-typesafe array: readonly number[]
 const better = validate(minLength<number>(100000)(array(number())))([]);
+```
+
+## Early benchmarks
+
+Early benchmarks show some really promising performance of `@typeofweb/schema` when compared to other industry-leading solutions:
+
+```
+Platform info:
+==============
+Darwin 20.2.0 x64
+Node.JS: 12.20.0
+V8: 7.8.279.23-node.45
+Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz × 8
+
+@typeofweb/schema@0.3.0            0%      (1,499,806 rps)   (avg: 666ns)
+yup@^0.32.8                   -97.71%         (34,293 rps)   (avg: 29μs)
+joi@^17.3.0                   -91.37%        (129,368 rps)   (avg: 7μs)
+parambulator@1.5.2            -98.48%         (22,782 rps)   (avg: 43μs)
+validator.js@2.0.4            -69.86%        (452,009 rps)   (avg: 2μs)
+validate.js@^0.13.1           -84.69%        (229,627 rps)   (avg: 4μs)
+validatorjs@^3.22.1           -88.91%        (166,325 rps)   (avg: 6μs)
+mschema@0.5.6                 -61.42%        (578,692 rps)   (avg: 1μs)
+-----------------------------------------------------------------------
 ```
