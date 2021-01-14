@@ -4,6 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import prettier from 'rollup-plugin-prettier';
 import { terser } from "rollup-plugin-terser";
+import filesize from 'rollup-plugin-filesize';
 
 import pkg from './package.json';
 
@@ -61,6 +62,7 @@ const rollupConfig = [
         resolveJsonModule: false,
         "include": ["src/**/*.ts"]
       }),
+      filesize({})
     ],
   },
 ];
