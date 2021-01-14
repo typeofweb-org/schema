@@ -340,7 +340,7 @@ The `minLength` modifier also changes the return validation type when used on ar
 ```ts
 const len10Validator = validate(minLength(10)(array(number())));
 // type of result is
-// readonly [string, string, string, string, string, string, string, string, string, string, ...string[]]
+// readonly [number, number, number, number, number, number, number, number, number, number, ...number[]]
 const result = validate(len10Validator)([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 ```
 
