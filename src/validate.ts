@@ -71,16 +71,18 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     }
 
     const valueEntries = Object.entries(value!);
-    const validatorEntries = Object.entries(validators);
-    if (valueEntries.length !== validatorEntries.length) {
+    const validatorKeys = Object.keys(validators);
+    if (valueEntries.length !== validatorKeys.length) {
       throw new ValidationError();
     }
 
-    valueEntries.sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
-    validatorEntries.sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
-
     return Object.fromEntries(
-      valueEntries.map(([key, val], index) => [key, validate(validatorEntries[index]![1])(val)]),
+      valueEntries.map(([key, val]) => {
+        if (!validators[key]) {
+          throw new ValidationError();
+        }
+        return [key, validate(validators[key]!)(val)];
+      }),
     ) as TypeOf<S>;
   }
 
