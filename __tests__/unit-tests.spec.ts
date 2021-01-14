@@ -130,7 +130,7 @@ describe('@typeofweb/schema unit tests', () => {
         a: number(),
         b: string(),
         c: array(string()),
-        d: object({ e: string() }),
+        d: object({ e: string(), f: oneOf([string(), false]) }),
       }),
     );
 
@@ -143,7 +143,8 @@ describe('@typeofweb/schema unit tests', () => {
         ≫string≪
        ],
        \\"d\\": {
-        \\"e\\": ≫string≪
+        \\"e\\": ≫string≪,
+        \\"f\\": ≫string≪ | false\\"
        }
       } but got {
        \\"\\": [],

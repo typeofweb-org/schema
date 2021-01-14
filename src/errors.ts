@@ -46,7 +46,7 @@ const schemaToJSON = (schema: AnySchema | Primitives | Record<string, Primitives
     return ValidatorToString[schema.__validator];
   }
   if (schema.__validator === LITERAL_VALIDATOR) {
-    return schema.__values.map(schemaToJSON);
+    return schema.__values.map((v) => (isSchema(v) ? schemaToJSON(v) : v)).join(' | ');
   }
   if (Array.isArray(schema.__validator)) {
     return schema.__validator.map(schemaToJSON);
