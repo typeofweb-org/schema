@@ -55,6 +55,7 @@
     "prettier": "2.2.1",
     "ramda": "0.27.1",
     "rollup": "2.36.1",
+    "rollup-plugin-filesize": "9.1.0",
     "rollup-plugin-prettier": "2.1.0",
     "rollup-plugin-terser": "7.0.2",
     "tsd": "https://github.com/typeofweb/tsd#pkg",
@@ -77,6 +78,9 @@
     "**/*.ts": [
       "yarn jest",
       "yarn eslint --fix",
+      "yarn prettier --write"
+    ],
+    "**/*.{md,js,json}": [
       "yarn prettier --write"
     ]
   }

@@ -1,3 +1,4 @@
+import { isDate } from './utils';
 import type { VALIDATORS, ValidatorToType } from './validators';
 import { NUMBER_VALIDATOR, DATE_VALIDATOR, STRING_VALIDATOR } from './validators';
 
@@ -28,8 +29,8 @@ export const parse = <V extends VALIDATORS>(validator: V) => (
       }
       break;
     case STRING_VALIDATOR:
-      if (Object.prototype.toString.call(value) === '[object Date]') {
-        const parsedISOString = (value as Date).toISOString();
+      if (isDate(value)) {
+        const parsedISOString = value.toISOString();
         return parsedISOString as V extends keyof ValidatorToType ? ValidatorToType[V] : unknown;
       }
       break;

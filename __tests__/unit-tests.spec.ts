@@ -93,4 +93,38 @@ describe('@typeofweb/schema unit tests', () => {
       });
     });
   });
+
+  it('should handle more complex case', () => {
+    const schema = object({
+      name: minLength(4)(string()),
+      email: string(),
+      firstName: nonEmpty(string()),
+      phone: nonEmpty(string()),
+      age: number(),
+    });
+    const validator = validate(schema);
+
+    const obj = {
+      name: 'John Doe',
+      email: 'john.doe@company.space',
+      firstName: 'John',
+      phone: '123-4567',
+      age: 33,
+    };
+
+    expect(() => validator(obj)).not.toThrow();
+  });
+
+  it('should throw on unknown keys', () => {
+    const validator = validate(
+      object({
+        a: number(),
+        b: string(),
+        c: array(string()),
+        d: object({ e: string() }),
+      }),
+    );
+
+    expect(() => validator({ '': [], ' ': [], '!': {}, '"': {} })).toThrowError(ValidationError);
+  });
 });
