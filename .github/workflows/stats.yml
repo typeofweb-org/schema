@@ -36,5 +36,7 @@ jobs:
             ${{ runner.os }}-yarn-
             ${{ runner.os }}-
 
+      - run: ls -al
+      - run: pwd
       - name: Measure
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
