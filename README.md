@@ -384,7 +384,7 @@ Platform info:
 
 | library                     | relative speed | operations per second | avg. operation time |
 |-----------------------------|---------------:|----------------------:|--------------------:|
-| **@typeofweb/schema@0.4.0** |         **0%** |   **(1,450,077 rps)** |    **(avg: 689ns)** |
+| **@typeofweb/schema@0.4.0** |         **0%** |   **(1,450,077 rps)** |  **(avg: 0.689μs)** |
 | joi@^17.3.0                 |        -91.63% |         (121,417 rps) |          (avg: 8μs) |
 | yup@^0.32.8                 |        -97.14% |          (41,512 rps) |         (avg: 24μs) |
 | validatorjs@^3.22.1         |        -88.75% |         (163,201 rps) |          (avg: 6μs) |
