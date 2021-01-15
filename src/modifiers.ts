@@ -10,7 +10,8 @@ export const optional = <S extends AnySchema>(schema: S) => {
   } as Schema<
     S['__type'],
     { readonly nullable: S['__modifiers']['nullable']; readonly optional: true },
-    S['__values'][number]
+    S['__values'][number],
+    S['__validator']
   >;
 };
 
@@ -24,7 +25,8 @@ export const nullable = <S extends AnySchema>(schema: S) => {
   } as Schema<
     S['__type'],
     { readonly nullable: true; readonly optional: S['__modifiers']['optional'] },
-    S['__values'][number]
+    S['__values'][number],
+    S['__validator']
   >;
 };
 
@@ -39,7 +41,8 @@ export const nil = <S extends AnySchema>(schema: S) => {
   } as Schema<
     S['__type'],
     { readonly nullable: true; readonly optional: true },
-    S['__values'][number]
+    S['__values'][number],
+    S['__validator']
   >;
 };
 
@@ -61,7 +64,8 @@ export const minLength = <L extends number>(length: L) => <
       readonly optional: S['__modifiers']['optional'];
       readonly minLength: L;
     },
-    S['__values'][number]
+    S['__values'][number],
+    S['__validator']
   >;
 };
 

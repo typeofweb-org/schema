@@ -6,3 +6,4 @@ afterAll(() => {
   process.removeListener('unhandledRejection', fail);
   process.removeListener('uncaughtException', fail);
 });
+export {};

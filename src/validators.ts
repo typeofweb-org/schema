@@ -1,30 +1,53 @@
+import type {
+  AnySchema,
+  TypeOf,
+  Schema,
+  ArraySchema,
+  LiteralSchema,
+  RecordSchema,
+  SimpleSchema,
+} from './types';
+
 export const TYPEOFWEB_SCHEMA = Symbol('@typeofweb/schema');
 export const LITERAL_VALIDATOR = Symbol('_literal');
 export const STRING_VALIDATOR = Symbol('string');
 export const NUMBER_VALIDATOR = Symbol('number');
 export const BOOLEAN_VALIDATOR = Symbol('boolean');
 export const DATE_VALIDATOR = Symbol('Date');
-export type VALIDATORS =
-  | typeof LITERAL_VALIDATOR
-  | typeof STRING_VALIDATOR
-  | typeof NUMBER_VALIDATOR
-  | typeof BOOLEAN_VALIDATOR
-  | typeof DATE_VALIDATOR
-  | Record<keyof any, AnySchema>
+export const SIMPLE_VALIDATORS = [
+  STRING_VALIDATOR,
+  NUMBER_VALIDATOR,
+  BOOLEAN_VALIDATOR,
+  DATE_VALIDATOR,
+] as const;
+
+export type LiteralValidator = typeof LITERAL_VALIDATOR;
+export type SimpleValidators = typeof SIMPLE_VALIDATORS[number];
+export type AllValidators =
+  | LiteralValidator
+  | SimpleValidators
+  | Record<string, AnySchema>
   | readonly AnySchema[];
 
-export interface ValidatorToType {
+export interface SimpleValidatorToType {
   readonly [STRING_VALIDATOR]: string;
   readonly [NUMBER_VALIDATOR]: number;
   readonly [DATE_VALIDATOR]: Date;
   readonly [BOOLEAN_VALIDATOR]: boolean;
 }
 
-import type { AnySchema, TypeOf, Schema } from './types';
+export const isSimpleSchema = (s: AnySchema): s is SimpleSchema =>
+  SIMPLE_VALIDATORS.includes(s.__validator);
+export const isLiteralSchema = (s: AnySchema): s is LiteralSchema =>
+  s.__validator === LITERAL_VALIDATOR;
+export const isArraySchema = (s: AnySchema): s is ArraySchema => Array.isArray(s.__validator);
+export const isRecordSchema = (s: AnySchema): s is RecordSchema =>
+  !Array.isArray(s.__validator) && typeof s.__validator === 'object';
 
 export const isSchema = (val: any): val is AnySchema => {
   return (
     typeof val === 'object' &&
+    val !== null &&
     '__validator' in val &&
     '__modifiers' in val &&
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -47,7 +70,12 @@ export const oneOf = <U extends readonly (keyof any | boolean | AnySchema)[]>(
     __values: values,
     __type: {} as unknown,
     __modifiers: { optional: false, nullable: false },
-  } as Schema<X, { readonly optional: false; readonly nullable: false }, U[number]>;
+  } as Schema<
+    X,
+    { readonly optional: false; readonly nullable: false },
+    U[number],
+    typeof LITERAL_VALIDATOR
+  >;
 };
 
 export const string = () => {
@@ -55,7 +83,12 @@ export const string = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: STRING_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
-  } as Schema<string, { readonly optional: false; readonly nullable: false }, never>;
+  } as Schema<
+    string,
+    { readonly optional: false; readonly nullable: false },
+    never,
+    typeof STRING_VALIDATOR
+  >;
 };
 
 export const number = () => {
@@ -63,7 +96,12 @@ export const number = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: NUMBER_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
-  } as Schema<number, { readonly optional: false; readonly nullable: false }, never>;
+  } as Schema<
+    number,
+    { readonly optional: false; readonly nullable: false },
+    never,
+    typeof NUMBER_VALIDATOR
+  >;
 };
 
 export const boolean = () => {
@@ -71,7 +109,12 @@ export const boolean = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: BOOLEAN_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
-  } as Schema<boolean, { readonly optional: false; readonly nullable: false }, never>;
+  } as Schema<
+    boolean,
+    { readonly optional: false; readonly nullable: false },
+    never,
+    typeof BOOLEAN_VALIDATOR
+  >;
 };
 
 export const date = () => {
@@ -79,7 +122,12 @@ export const date = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: DATE_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
-  } as Schema<Date, { readonly optional: false; readonly nullable: false }, never>;
+  } as Schema<
+    Date,
+    { readonly optional: false; readonly nullable: false },
+    never,
+    typeof DATE_VALIDATOR
+  >;
 };
 
 export const object = <U extends Record<string, AnySchema>>(obj: U) => {
@@ -94,7 +142,8 @@ export const object = <U extends Record<string, AnySchema>>(obj: U) => {
       readonly [K in keyof U]: TypeOf<U[K]>;
     },
     { readonly optional: false; readonly nullable: false },
-    never
+    never,
+    U
   >;
 };
 
@@ -108,6 +157,7 @@ export const array = <U extends readonly AnySchema[]>(...arr: readonly [...U]) =
   } as Schema<
     readonly TypeOf<U[number]>[],
     { readonly optional: false; readonly nullable: false },
-    never
+    never,
+    U
   >;
 };
