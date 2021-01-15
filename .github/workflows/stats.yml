@@ -40,3 +40,5 @@ jobs:
       - run: pwd
       - name: Measure
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
+        with:
+          path: ${{ GITHUB_WORKSPACE }}
