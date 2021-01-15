@@ -10,61 +10,89 @@ declare global {
   }
 }
 
-import type { AnySchema, Json, Primitives, SomeSchema } from './types';
-import { fromEntries, isDate } from './utils';
-import type { SIMPLE_VALIDATOR } from './validators';
+import type { AnySchema, SomeSchema } from './types';
+import type { SimpleValidators } from './validators';
 import {
+  isArraySchema,
+  isLiteralSchema,
+  isSimpleSchema,
   isSchema,
-  LITERAL_VALIDATOR,
   BOOLEAN_VALIDATOR,
   DATE_VALIDATOR,
   NUMBER_VALIDATOR,
   STRING_VALIDATOR,
-  SIMPLE_VALIDATORS,
 } from './validators';
 
-const ValidatorToString: Record<SIMPLE_VALIDATOR, string> = {
-  [STRING_VALIDATOR]: '≫string≪',
-  [NUMBER_VALIDATOR]: '≫number≪',
-  [BOOLEAN_VALIDATOR]: '≫boolean≪',
-  [DATE_VALIDATOR]: '≫Date≪',
+const ValidatorToString: Record<SimpleValidators, string> = {
+  [STRING_VALIDATOR]: 'string',
+  [NUMBER_VALIDATOR]: 'number',
+  [BOOLEAN_VALIDATOR]: 'boolean',
+  [DATE_VALIDATOR]: 'Date',
 };
 
-const schemaToJSON = (schema: AnySchema | Primitives | Record<string, Primitives>): Json => {
-  if (typeof schema !== 'object') {
-    return '≫' + typeof schema + '≪';
-  }
+const typeToPrint = (str: string) => '≫' + str + '≪';
+const objectToPrint = (str: string) => '{' + str + '}';
+const quote = (str: string) => (/\s/.test(str) ? `"${str}"` : str);
+const arrayToPrint = (arr: readonly string[]): string => {
+  const str = arr.join(' | ');
 
-  if (!isSchema(schema)) {
-    if (isDate(schema)) {
-      return isNaN(schema as any) ? '≫Invalid Date≪' : schema.toISOString();
-    }
-    return schema;
+  if (arr.length > 1) {
+    return typeToPrint(`(${str})[]`);
   }
-
-  if (SIMPLE_VALIDATORS.includes(schema.__validator)) {
-    return ValidatorToString[schema.__validator];
-  }
-  if (schema.__validator === LITERAL_VALIDATOR) {
-    return schema.__values.map((v) => (isSchema(v) ? schemaToJSON(v) : v)).join(' | ');
-  }
-  if (Array.isArray(schema.__validator)) {
-    return schema.__validator.map(schemaToJSON);
-  }
-  return fromEntries(
-    Object.entries(schema.__validator).map(([key, val]) => [key, schemaToJSON(val)]),
-  );
+  return typeToPrint(`${str}[]`);
 };
+const literalToPrint = (arr: readonly string[]): string => {
+  const str = arr.join(' | ');
+
+  if (arr.length > 1) {
+    return `(${str})`;
+  }
+  return str;
+};
+
+const simpleValidatorToString = (v: SimpleValidators, shouldWrap = true): string => {
+  const name = ValidatorToString[v];
+  return shouldWrap ? typeToPrint(name) : name;
+};
+
+export const schemaRecordToPrint = (record: Record<string, AnySchema>): string => {
+  const entries = Object.entries(record).map(([key, val]) => [key, schemaToString(val)] as const);
+  if (entries.length === 0) {
+    return objectToPrint('');
+  }
+  return objectToPrint(' ' + entries.map(([key, val]) => quote(key) + ': ' + val).join(', ') + ' ');
+};
+
+export const schemaToString = (schema: AnySchema): string => {
+  if (isSimpleSchema(schema)) {
+    return simpleValidatorToString(schema.__validator);
+  }
+
+  if (isLiteralSchema(schema)) {
+    return literalToPrint(
+      schema.__values.map((v) => (isSchema(v) ? schemaToString(v) : String(v))),
+    );
+  }
+
+  if (isArraySchema(schema)) {
+    return arrayToPrint(
+      schema.__validator.map((s) =>
+        isSchema(s) && isSimpleSchema(s)
+          ? simpleValidatorToString(s.__validator, false)
+          : schemaToString(s),
+      ),
+    );
+  }
+
+  return schemaRecordToPrint(schema.__validator);
+};
+
 export class ValidationError extends Error {
   public readonly details: ErrorDetails;
 
   constructor(schema: SomeSchema<any>, value: any) {
-    const expected = JSON.stringify(schemaToJSON(schema), null, 1)
-      .replace(/≪"/g, '≪')
-      .replace(/"≫/g, '≫');
-    const got = JSON.stringify(schemaToJSON(value), null, 1)
-      .replace(/≪"/g, '≪')
-      .replace(/"≫/g, '≫');
+    const expected = schemaToString(schema);
+    const got = JSON.stringify(value);
 
     const d: ErrorDetails = {
       kind: 'TYPE_MISMATCH',

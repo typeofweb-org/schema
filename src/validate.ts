@@ -69,7 +69,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     if (typeof value !== 'object') {
       throw new ValidationError(schema, value);
     }
-    const validators = schema.__validator as Record<keyof any, AnySchema>;
+    const validators = schema.__validator as Record<string, AnySchema>;
 
     const valueEntries = Object.entries(value!);
     const validatorKeys = Object.keys(validators);
