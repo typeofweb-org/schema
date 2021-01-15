@@ -376,18 +376,20 @@ Early benchmarks show some really promising performance of `@typeofweb/schema` w
 ```
 Platform info:
 ==============
-Darwin 20.2.0 x64
-Node.JS: 12.20.0
-V8: 7.8.279.23-node.45
-Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz × 8
-
-@typeofweb/schema@0.3.0            0%      (1,499,806 rps)   (avg: 666ns)
-yup@^0.32.8                   -97.71%         (34,293 rps)   (avg: 29μs)
-joi@^17.3.0                   -91.37%        (129,368 rps)   (avg: 7μs)
-parambulator@1.5.2            -98.48%         (22,782 rps)   (avg: 43μs)
-validator.js@2.0.4            -69.86%        (452,009 rps)   (avg: 2μs)
-validate.js@^0.13.1           -84.69%        (229,627 rps)   (avg: 4μs)
-validatorjs@^3.22.1           -88.91%        (166,325 rps)   (avg: 6μs)
-mschema@0.5.6                 -61.42%        (578,692 rps)   (avg: 1μs)
------------------------------------------------------------------------
+   Darwin 20.2.0 x64
+   Node.JS: 14.15.2
+   V8: 8.4.371.19-node.17
+   Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz × 8
 ```
+
+| library                     | relative speed | operations per second | avg. operation time |
+|-----------------------------|---------------:|----------------------:|--------------------:|
+| **@typeofweb/schema@0.4.0** |         **0%** |   **(1,450,077 rps)** |    **(avg: 689ns)** |
+| joi@^17.3.0                 |        -91.63% |         (121,417 rps) |          (avg: 8μs) |
+| yup@^0.32.8                 |        -97.14% |          (41,512 rps) |         (avg: 24μs) |
+| validatorjs@^3.22.1         |        -88.75% |         (163,201 rps) |          (avg: 6μs) |
+| mschema@0.5.6               |        -60.25% |         (576,465 rps) |          (avg: 1μs) |
+| validator.js@2.0.4          |        -66.96% |         (479,080 rps) |          (avg: 2μs) |
+| validate.js@^0.13.1         |        -83.29% |         (242,283 rps) |          (avg: 4μs) |
+| parambulator@1.5.2          |        -98.47% |          (22,189 rps) |         (avg: 45μs) |
+ 
