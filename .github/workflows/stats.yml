@@ -39,6 +39,6 @@ jobs:
       - run: ls -al
       - run: pwd
       - name: Measure
-        uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@26e1f5bc2d8046e4060a2a77171e59c5200187f8
+        uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
         with:
           path: ${{ github.workspace }}
