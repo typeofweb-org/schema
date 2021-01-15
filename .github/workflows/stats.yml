@@ -41,4 +41,4 @@ jobs:
       - name: Measure
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
         with:
-          path: ${{ GITHUB_WORKSPACE }}
+          path: ${{ env.GITHUB_WORKSPACE }}
