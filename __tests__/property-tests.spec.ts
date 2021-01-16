@@ -18,9 +18,9 @@ import {
   nonEmpty,
   λ,
   pipe,
+  unknown,
 } from '../src';
 import { isISODateString } from '../src/parse';
-import { any, unknown } from '../src/validators';
 
 const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 

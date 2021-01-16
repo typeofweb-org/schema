@@ -14,9 +14,9 @@ import {
   nil,
   minLength,
   nonEmpty,
+  unknown,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
-import { any, unknown } from '../src/validators';
 
 // Schema
 declare const str1: TypeOf<Schema<string, {}, never>>;
