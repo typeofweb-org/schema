@@ -1,5 +1,7 @@
 # @typeofweb/schema
 
+`@typeofweb/schema` is a lightweight and extensible library for data validation with full TypeScript support!
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
@@ -10,13 +12,8 @@
 [![npm](https://img.shields.io/npm/v/@typeofweb/schema.svg)](https://www.npmjs.com/package/@typeofweb/schema)
 [![npm bundle size (minified + gzip)](https://img.shields.io/bundlephobia/minzip/@typeofweb/schema.svg)](https://www.npmjs.com/package/@typeofweb/schema)
 
-## Introduction
-
-`@typeofweb/schema` is a lightweight and extensible library for data validation with full TypeScript support!
-
 ## Table of contents
 
-- [Introduction](#introduction)
 - [Contributors ✨](#contributors-)
 - [Installation](#installation)
 - [Example](#example)
