@@ -108,7 +108,7 @@ const nested7 = optional(
 );
 expectType<
   | {
-      readonly arr: readonly (string | number)[] | undefined;
+      readonly arr?: readonly (string | number)[];
     }
   | undefined
 >(validate(nested7)({}));
@@ -168,3 +168,20 @@ expectType<string>(nonEmptyStr1);
 
 const nonEmptyStr2 = validate(minLength(10)(string()))('');
 expectType<string>(nonEmptyStr2);
+
+const personSchema = object({
+  name: string(),
+  age: number(),
+  email: optional(string()),
+});
+
+expectType<{
+  readonly name: string;
+  readonly age: number;
+  readonly email?: string | undefined;
+}>(
+  validate(personSchema)({
+    name: 'Mark',
+    age: 29,
+  }),
+);

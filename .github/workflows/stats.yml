@@ -1,0 +1,31 @@
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+name: Generate Pull Request Bundle Stats
+
+jobs:
+  stats:
+    name: PR Stats
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v2
+        with:
+          path: pr-branch
+          ref: ${{github.head_ref}}
+
+      - name: Checkout base
+        uses: actions/checkout@v2
+        with:
+          path: base-branch
+          ref: ${{github.base_ref}}
+
+      - name: Compare sizes
+        uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
+        with:
+          pr_directory_name: pr-branch
+          base_directory_name: base-branch
+        env:
+          GITHUB_TOKEN: ${{secrets.TYPEOFWEB_BOT_GITHUB_TOKEN}}
+          COMPRESS_BUNDLES: true

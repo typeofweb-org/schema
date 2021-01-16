@@ -20,6 +20,19 @@ import { isISODateString } from '../src/parse';
 import { isArraySchema, isLiteralSchema, isRecordSchema, isSimpleSchema } from '../src/validators';
 
 describe('@typeofweb/schema unit tests', () => {
+  const simpleValidators: ReadonlyArray<() => SomeSchema<any>> = [boolean, date, number, string];
+  const objectValidator = () => object({});
+  const arrayValidator = () => array(string());
+  const literalValidator = () => oneOf(['a']);
+  const allValidators = [...simpleValidators, objectValidator, arrayValidator, literalValidator];
+  const modifiers: ReadonlyArray<(schema: SomeSchema<any>) => SomeSchema<any>> = [
+    minLength(123),
+    nil,
+    nonEmpty,
+    nullable,
+    optional,
+  ];
+
   describe('validation', () => {
     it('string validator should coerce Date to ISOString', () => {
       expect(validate(string())(new Date(0))).toBe('1970-01-01T00:00:00.000Z');
@@ -81,28 +94,61 @@ describe('@typeofweb/schema unit tests', () => {
       );
     });
 
+    it('should allow optional fields', () => {
+      const personSchema = object({
+        name: string(),
+        age: number(),
+        email: optional(string()),
+      });
+
+      expect(
+        validate(personSchema)({
+          name: 'Mark',
+          age: 29,
+        }),
+      ).toEqual({
+        name: 'Mark',
+        age: 29,
+      });
+
+      expect(
+        validate(personSchema)({
+          name: 'Mark',
+          age: 29,
+          email: undefined,
+        }),
+      ).toEqual({
+        name: 'Mark',
+        age: 29,
+      });
+
+      expect(
+        validate(personSchema)({
+          name: 'Mark',
+          age: 29,
+          email: 'email',
+        }),
+      ).toEqual({
+        name: 'Mark',
+        age: 29,
+        email: 'email',
+      });
+
+      expect(() =>
+        validate(personSchema)({
+          name: 'Mark',
+          age: 29,
+          email: 123123123,
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected (≫string≪ | undefined) but got 123123123!"`,
+      );
+    });
+
     it('should detect schemas', () => {
-      const validators: ReadonlyArray<() => SomeSchema<any>> = [
-        boolean,
-        date,
-        number,
-        string,
-        () => object({}),
-        () => array(string()),
-        () => oneOf(['a']),
-      ];
+      expect.assertions(allValidators.length * (modifiers.length + 1));
 
-      const modifiers: ReadonlyArray<(schema: SomeSchema<any>) => SomeSchema<any>> = [
-        minLength(123),
-        nil,
-        nonEmpty,
-        nullable,
-        optional,
-      ];
-
-      expect.assertions(validators.length * (modifiers.length + 1));
-
-      validators.forEach((v) => {
+      allValidators.forEach((v) => {
         expect(isSchema(v())).toBe(true);
         modifiers.forEach((m) => {
           expect(isSchema(m(v()))).toBe(true);
@@ -111,23 +157,6 @@ describe('@typeofweb/schema unit tests', () => {
     });
 
     it('should detect specific schemas', () => {
-      const simpleValidators: ReadonlyArray<() => SomeSchema<any>> = [
-        boolean,
-        date,
-        number,
-        string,
-      ];
-      const objectValidator = () => object({});
-      const arrayValidator = () => array(string());
-      const literalValidator = () => oneOf(['a']);
-
-      const allValidators = [
-        ...simpleValidators,
-        objectValidator,
-        arrayValidator,
-        literalValidator,
-      ];
-
       const testCases: readonly {
         readonly fn: (s: AnySchema) => boolean;
         readonly shouldDetect: ReadonlyArray<() => SomeSchema<any>>;
@@ -136,14 +165,6 @@ describe('@typeofweb/schema unit tests', () => {
         { fn: isLiteralSchema, shouldDetect: [literalValidator] },
         { fn: isArraySchema, shouldDetect: [arrayValidator] },
         { fn: isRecordSchema, shouldDetect: [objectValidator] },
-      ];
-
-      const modifiers: ReadonlyArray<(schema: SomeSchema<any>) => SomeSchema<any>> = [
-        minLength(123),
-        nil,
-        nonEmpty,
-        nullable,
-        optional,
       ];
 
       expect.assertions((modifiers.length + 1) * allValidators.length * testCases.length);
@@ -302,6 +323,57 @@ describe('@typeofweb/schema unit tests', () => {
         ),
       ).toEqual(
         '{ a: ≫string≪, b: ≫number≪, "no elo koleś": ≫boolean≪, c: { e: ≫(≫string[]≪ | { xxx: ≫number≪ })[]≪ } }',
+      );
+    });
+
+    it('should work for simple validators with modifiers', () => {
+      expect(schemaToString(optional(string()))).toEqual('(≫string≪ | undefined)');
+      expect(schemaToString(nullable(string()))).toEqual('(≫string≪ | null)');
+      expect(schemaToString(optional(number()))).toEqual('(≫number≪ | undefined)');
+      expect(schemaToString(nullable(number()))).toEqual('(≫number≪ | null)');
+      expect(schemaToString(optional(boolean()))).toEqual('(≫boolean≪ | undefined)');
+      expect(schemaToString(nullable(boolean()))).toEqual('(≫boolean≪ | null)');
+      expect(schemaToString(optional(date()))).toEqual('(≫Date≪ | undefined)');
+      expect(schemaToString(nullable(date()))).toEqual('(≫Date≪ | null)');
+    });
+
+    it('should work for oneOf with modifiers', () => {
+      expect(schemaToString(optional(oneOf([1])))).toEqual('(1 | undefined)');
+      expect(schemaToString(nullable(oneOf([string()])))).toEqual('(≫string≪ | null)');
+      expect(schemaToString(nullable(oneOf([1, 2, 3])))).toEqual('(1 | 2 | 3 | null)');
+      expect(schemaToString(oneOf([1, 2, optional(string()), 3, boolean()]))).toEqual(
+        '(1 | 2 | (≫string≪ | undefined) | 3 | ≫boolean≪)',
+      );
+    });
+
+    it('should work for arrays with modifiers', () => {
+      expect(schemaToString(array(number()))).toEqual('≫number[]≪');
+      expect(schemaToString(array(string()))).toEqual('≫string[]≪');
+      expect(schemaToString(array(string(), boolean()))).toEqual('≫(string | boolean)[]≪');
+    });
+
+    it('should work for objects with modifiers', () => {
+      expect(schemaToString(optional(object({})))).toEqual('({} | undefined)');
+      expect(schemaToString(nullable(object({ a: string() })))).toEqual('({ a: ≫string≪ } | null)');
+      expect(
+        schemaToString(nil(object({ a: string(), b: number(), 'no elo koleś': boolean() }))),
+      ).toEqual('({ a: ≫string≪, b: ≫number≪, "no elo koleś": ≫boolean≪ } | undefined | null)');
+    });
+
+    it('should work for deeply nested objects with modifiers', () => {
+      expect(
+        schemaToString(
+          object({
+            a: optional(string()),
+            b: number(),
+            'no elo koleś': boolean(),
+            c: object({
+              e: nullable(array(oneOf([optional(array(string())), object({ xxx: number() })]))),
+            }),
+          }),
+        ),
+      ).toEqual(
+        '{ a: (≫string≪ | undefined), b: ≫number≪, "no elo koleś": ≫boolean≪, c: { e: (≫((≫string[]≪ | undefined) | { xxx: ≫number≪ })[]≪ | null) } }',
       );
     });
   });

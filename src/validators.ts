@@ -44,6 +44,11 @@ export const isArraySchema = (s: AnySchema): s is ArraySchema => Array.isArray(s
 export const isRecordSchema = (s: AnySchema): s is RecordSchema =>
   !Array.isArray(s.__validator) && typeof s.__validator === 'object';
 
+export const isOptionalSchema = (
+  s: AnySchema,
+): s is AnySchema & { readonly __modifiers: { readonly optional: true } } =>
+  !!s.__modifiers.optional;
+
 export const isSchema = (val: any): val is AnySchema => {
   return (
     typeof val === 'object' &&

@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-import type { AnySchema, SomeSchema } from './types';
+import type { AnySchema, SimpleSchema, SomeSchema } from './types';
 import type { SimpleValidators } from './validators';
 import {
   isArraySchema,
@@ -23,7 +23,7 @@ import {
   STRING_VALIDATOR,
 } from './validators';
 
-const ValidatorToString: Record<SimpleValidators, string> = {
+const validatorToString: Record<SimpleValidators, string> = {
   [STRING_VALIDATOR]: 'string',
   [NUMBER_VALIDATOR]: 'number',
   [BOOLEAN_VALIDATOR]: 'boolean',
@@ -50,9 +50,16 @@ const literalToPrint = (arr: readonly string[]): string => {
   return str;
 };
 
-const simpleValidatorToString = (v: SimpleValidators, shouldWrap = true): string => {
-  const name = ValidatorToString[v];
-  return shouldWrap ? typeToPrint(name) : name;
+const getModifiers = (v: AnySchema): readonly string[] => {
+  const modifiers = [v.__modifiers.optional && 'undefined', v.__modifiers.nullable && 'null'];
+  return modifiers.filter((m): m is string => Boolean(m));
+};
+
+const simpleSchemaToPrint = (v: SimpleSchema, shouldWrap = true): string => {
+  const name = validatorToString[v.__validator];
+  const modifiers = getModifiers(v);
+  const values = [shouldWrap ? typeToPrint(name) : name, ...modifiers];
+  return literalToPrint(values);
 };
 
 export const schemaRecordToPrint = (record: Record<string, AnySchema>): string => {
@@ -65,26 +72,30 @@ export const schemaRecordToPrint = (record: Record<string, AnySchema>): string =
 
 export const schemaToString = (schema: AnySchema): string => {
   if (isSimpleSchema(schema)) {
-    return simpleValidatorToString(schema.__validator);
+    return simpleSchemaToPrint(schema);
   }
 
+  const modifiers = getModifiers(schema);
+
   if (isLiteralSchema(schema)) {
-    return literalToPrint(
-      schema.__values.map((v) => (isSchema(v) ? schemaToString(v) : String(v))),
-    );
+    return literalToPrint([
+      ...schema.__values.map((v) => (isSchema(v) ? schemaToString(v) : String(v))),
+      ...modifiers,
+    ]);
   }
 
   if (isArraySchema(schema)) {
-    return arrayToPrint(
-      schema.__validator.map((s) =>
-        isSchema(s) && isSimpleSchema(s)
-          ? simpleValidatorToString(s.__validator, false)
-          : schemaToString(s),
+    return literalToPrint([
+      arrayToPrint(
+        schema.__validator.map((s) =>
+          isSchema(s) && isSimpleSchema(s) ? simpleSchemaToPrint(s, false) : schemaToString(s),
+        ),
       ),
-    );
+      ...modifiers,
+    ]);
   }
 
-  return schemaRecordToPrint(schema.__validator);
+  return literalToPrint([schemaRecordToPrint(schema.__validator), ...modifiers]);
 };
 
 export class ValidationError extends Error {
