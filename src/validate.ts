@@ -9,6 +9,7 @@ import {
   BOOLEAN_VALIDATOR,
   DATE_VALIDATOR,
   isSchema,
+  isOptionalSchema,
 } from './validators';
 
 const assertUnreachable = (val: never): never => {
@@ -72,8 +73,16 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     const validators = schema.__validator as Record<string, AnySchema>;
 
     const valueEntries = Object.entries(value!);
-    const validatorKeys = Object.keys(validators);
-    if (valueEntries.length !== validatorKeys.length) {
+
+    const validatorValues = Object.values(validators);
+    const allValidatorKeysCount = validatorValues.length;
+    const requiredValidatorKeysCount =
+      allValidatorKeysCount - validatorValues.filter(isOptionalSchema).length;
+
+    if (
+      valueEntries.length > allValidatorKeysCount ||
+      valueEntries.length < requiredValidatorKeysCount
+    ) {
       throw new ValidationError(schema, value);
     }
 

@@ -74,8 +74,28 @@ type TypeOfSchema<S extends SomeSchema<any>> = TypeOfValues<S> extends infer Res
 type TypeOfValue<Value> = Value extends SomeSchema<infer R> ? R : Value;
 
 type TypeOfValues<S extends SomeSchema<any>> = S['__values'][number] extends never
-  ? S['__type']
+  ? UndefinedToOptional<S['__type']>
   : TypeOfValue<S['__values'][number]>;
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 type IfIsArray<S extends SomeSchema<any>, Y, N = never> = If<S['__type'], readonly unknown[], Y, N>;
+
+type Pretty<X extends object> = {
+  readonly [K in keyof X]: X[K];
+};
+
+type KeysOfType<T extends object, SelectedType> = {
+  readonly [key in keyof T]: SelectedType extends T[key] ? key : never;
+}[keyof T];
+
+type PlainObject = { readonly [name: string]: any };
+type Optional<T extends object> = Partial<Pick<T, KeysOfType<T, undefined>>>;
+type Required<T extends object> = Omit<T, KeysOfType<T, undefined>>;
+
+type UndefinedToOptional<T> = T extends PlainObject
+  ? {} extends T
+    ? {}
+    : T extends Date | readonly unknown[]
+    ? T
+    : Pretty<Required<T> & Optional<T>>
+  : T;

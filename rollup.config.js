@@ -9,6 +9,8 @@ import license from 'rollup-plugin-license';
 
 import pkg from './package.json';
 
+const shouldCompress = process.env.COMPRESS_BUNDLES ? true : false;
+
 const rollupConfig = [
   {
     input: 'src/index.ts',
@@ -19,9 +21,15 @@ const rollupConfig = [
         dir: './',
         entryFileNames: pkg.module,
         plugins: [
-          prettier({
-            parser: 'typescript',
-          }),
+          shouldCompress
+            ? terser({
+                compress: true,
+                mangle: true,
+                ecma: 2019,
+              })
+            : prettier({
+                parser: 'typescript',
+              }),
         ],
       },
       {
@@ -30,9 +38,15 @@ const rollupConfig = [
         dir: './',
         entryFileNames: pkg.main,
         plugins: [
-          prettier({
-            parser: 'typescript',
-          }),
+          shouldCompress
+            ? terser({
+                compress: true,
+                mangle: true,
+                ecma: 2019,
+              })
+            : prettier({
+                parser: 'typescript',
+              }),
         ],
       },
       {
