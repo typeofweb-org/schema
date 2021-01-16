@@ -14,11 +14,13 @@ export const STRING_VALIDATOR = Symbol('string');
 export const NUMBER_VALIDATOR = Symbol('number');
 export const BOOLEAN_VALIDATOR = Symbol('boolean');
 export const DATE_VALIDATOR = Symbol('Date');
+export const UNKNOWN_VALIDATOR = Symbol('_unknown');
 export const SIMPLE_VALIDATORS = [
   STRING_VALIDATOR,
   NUMBER_VALIDATOR,
   BOOLEAN_VALIDATOR,
   DATE_VALIDATOR,
+  UNKNOWN_VALIDATOR,
 ] as const;
 
 export type LiteralValidator = typeof LITERAL_VALIDATOR;
@@ -34,6 +36,7 @@ export interface SimpleValidatorToType {
   readonly [NUMBER_VALIDATOR]: number;
   readonly [DATE_VALIDATOR]: Date;
   readonly [BOOLEAN_VALIDATOR]: boolean;
+  readonly [UNKNOWN_VALIDATOR]: unknown;
 }
 
 export const isSimpleSchema = (s: AnySchema): s is SimpleSchema =>
@@ -89,7 +92,7 @@ export const string = () => {
     __validator: STRING_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
   } as Schema<
-    string,
+    SimpleValidatorToType[typeof STRING_VALIDATOR],
     { readonly optional: false; readonly nullable: false },
     never,
     typeof STRING_VALIDATOR
@@ -102,7 +105,7 @@ export const number = () => {
     __validator: NUMBER_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
   } as Schema<
-    number,
+    SimpleValidatorToType[typeof NUMBER_VALIDATOR],
     { readonly optional: false; readonly nullable: false },
     never,
     typeof NUMBER_VALIDATOR
@@ -115,7 +118,7 @@ export const boolean = () => {
     __validator: BOOLEAN_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
   } as Schema<
-    boolean,
+    SimpleValidatorToType[typeof BOOLEAN_VALIDATOR],
     { readonly optional: false; readonly nullable: false },
     never,
     typeof BOOLEAN_VALIDATOR
@@ -128,7 +131,7 @@ export const date = () => {
     __validator: DATE_VALIDATOR,
     __modifiers: { optional: false, nullable: false },
   } as Schema<
-    Date,
+    SimpleValidatorToType[typeof DATE_VALIDATOR],
     { readonly optional: false; readonly nullable: false },
     never,
     typeof DATE_VALIDATOR
@@ -164,5 +167,18 @@ export const array = <U extends readonly AnySchema[]>(...arr: readonly [...U]) =
     { readonly optional: false; readonly nullable: false },
     never,
     U
+  >;
+};
+
+export const unknown = () => {
+  return {
+    [TYPEOFWEB_SCHEMA]: true,
+    __validator: UNKNOWN_VALIDATOR,
+    __modifiers: { optional: true, nullable: true },
+  } as Schema<
+    SimpleValidatorToType[typeof UNKNOWN_VALIDATOR],
+    { readonly optional: true; readonly nullable: true },
+    never,
+    typeof UNKNOWN_VALIDATOR
   >;
 };

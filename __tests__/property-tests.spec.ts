@@ -20,6 +20,7 @@ import {
   pipe,
 } from '../src';
 import { isISODateString } from '../src/parse';
+import { any, unknown } from '../src/validators';
 
 const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 
@@ -207,6 +208,11 @@ describe('@typeofweb/schema', () => {
           ),
         ),
       ));
+  });
+
+  describe('any', () => {
+    it('should pass anything', () =>
+      Fc.assert(Fc.property(Fc.anything(), notThrows(validate(unknown())))));
   });
 
   describe('nullable', () => {

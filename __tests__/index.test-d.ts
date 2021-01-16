@@ -16,6 +16,7 @@ import {
   nonEmpty,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
+import { any, unknown } from '../src/validators';
 
 // Schema
 declare const str1: TypeOf<Schema<string, {}, never>>;
@@ -184,4 +185,16 @@ expectType<{
     name: 'Mark',
     age: 29,
   }),
+);
+
+expectType<unknown>(validate(unknown())('dsdas'));
+
+expectType<{ readonly a: number; readonly b: string; readonly c?: unknown }>(
+  validate(
+    object({
+      a: number(),
+      b: string(),
+      c: unknown(),
+    }),
+  )('dsdas'),
 );

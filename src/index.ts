@@ -1,5 +1,15 @@
 export { minLength, nil, nonEmpty, nullable, optional } from './modifiers';
-export { oneOf, string, number, boolean, date, array, object, isSchema } from './validators';
+export {
+  unknown,
+  oneOf,
+  string,
+  number,
+  boolean,
+  date,
+  array,
+  object,
+  isSchema,
+} from './validators';
 export { validate } from './validate';
 export { ValidationError } from './errors';
 export { λ, pipe } from './utils';

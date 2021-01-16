@@ -1,5 +1,6 @@
 import type { AnySchema, SomeSchema } from '../src';
 import {
+  unknown,
   array,
   boolean,
   date,
@@ -209,6 +210,20 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() => validator(obj)).not.toThrow();
     });
 
+    it('unknown() should allow missing keys in objecy', () => {
+      const schema = object({
+        name: minLength(4)(string()),
+        email: unknown(),
+      });
+      const validator = validate(schema);
+
+      const obj = {
+        name: 'John Doe',
+      };
+
+      expect(() => validator(obj)).not.toThrow();
+    });
+
     it('should throw on unknown keys', () => {
       const validator = validate(
         object({
@@ -286,6 +301,7 @@ describe('@typeofweb/schema unit tests', () => {
       expect(schemaToString(number())).toEqual('≫number≪');
       expect(schemaToString(boolean())).toEqual('≫boolean≪');
       expect(schemaToString(date())).toEqual('≫Date≪');
+      expect(schemaToString(unknown())).toEqual('≫unknown≪');
     });
 
     it('should work for oneOf', () => {

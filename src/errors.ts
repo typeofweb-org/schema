@@ -13,12 +13,13 @@ declare global {
 import type { AnySchema, SimpleSchema, SomeSchema } from './types';
 import type { SimpleValidators } from './validators';
 import {
-  isArraySchema,
-  isLiteralSchema,
-  isSimpleSchema,
-  isSchema,
+  UNKNOWN_VALIDATOR,
   BOOLEAN_VALIDATOR,
   DATE_VALIDATOR,
+  isArraySchema,
+  isLiteralSchema,
+  isSchema,
+  isSimpleSchema,
   NUMBER_VALIDATOR,
   STRING_VALIDATOR,
 } from './validators';
@@ -28,6 +29,7 @@ const validatorToString: Record<SimpleValidators, string> = {
   [NUMBER_VALIDATOR]: 'number',
   [BOOLEAN_VALIDATOR]: 'boolean',
   [DATE_VALIDATOR]: 'Date',
+  [UNKNOWN_VALIDATOR]: 'unknown',
 };
 
 const typeToPrint = (str: string) => '≫' + str + '≪';
@@ -57,7 +59,7 @@ const getModifiers = (v: AnySchema): readonly string[] => {
 
 const simpleSchemaToPrint = (v: SimpleSchema, shouldWrap = true): string => {
   const name = validatorToString[v.__validator];
-  const modifiers = getModifiers(v);
+  const modifiers = v.__validator === UNKNOWN_VALIDATOR ? [] : getModifiers(v);
   const values = [shouldWrap ? typeToPrint(name) : name, ...modifiers];
   return literalToPrint(values);
 };
