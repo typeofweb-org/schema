@@ -18,6 +18,7 @@ import {
   nonEmpty,
   λ,
   pipe,
+  unknown,
 } from '../src';
 import { isISODateString } from '../src/parse';
 
@@ -207,6 +208,11 @@ describe('@typeofweb/schema', () => {
           ),
         ),
       ));
+  });
+
+  describe('any', () => {
+    it('should pass anything', () =>
+      Fc.assert(Fc.property(Fc.anything(), notThrows(validate(unknown())))));
   });
 
   describe('nullable', () => {

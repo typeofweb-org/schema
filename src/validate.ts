@@ -10,6 +10,7 @@ import {
   DATE_VALIDATOR,
   isSchema,
   isOptionalSchema,
+  UNKNOWN_VALIDATOR,
 } from './validators';
 
 const assertUnreachable = (val: never): never => {
@@ -18,6 +19,10 @@ const assertUnreachable = (val: never): never => {
 };
 
 export const validate = <S extends AnySchema>(schema: S) => (value: unknown): TypeOf<S> => {
+  if (schema.__validator === UNKNOWN_VALIDATOR) {
+    return value as TypeOf<S>;
+  }
+
   if (value === undefined) {
     if (schema.__modifiers.optional) {
       return value as TypeOf<S>;

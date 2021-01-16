@@ -30,6 +30,7 @@
   - [date](#date)
   - [object](#object)
   - [array](#array)
+  - [unknown](#unknown)
   - [Modifiers](#modifiers)
     - [nullable](#nullable)
     - [optional](#optional)
@@ -242,6 +243,10 @@ const primitiveValidator = validate(array(string(), number(), boolean()));
 primitiveValidator([false, 'string', 123, 42, ':)']);
 ```
 
+### unknown
+
+Creates a schema that matches anything and everything including undefined, null or no value at all.
+
 ### Modifiers
 
 Modifiers are used to customize schemas and change their validation behaviour.
@@ -405,7 +410,7 @@ Platform info:
 ```
 
 | library                     | relative speed | operations per second | avg. operation time |
-|-----------------------------|---------------:|----------------------:|--------------------:|
+| --------------------------- | -------------: | --------------------: | ------------------: |
 | **@typeofweb/schema@0.4.0** |         **0%** |   **(1,450,077 rps)** |  **(avg: 0.689μs)** |
 | joi@^17.3.0                 |        -91.63% |         (121,417 rps) |          (avg: 8μs) |
 | yup@^0.32.8                 |        -97.14% |          (41,512 rps) |         (avg: 24μs) |
@@ -414,4 +419,3 @@ Platform info:
 | validator.js@2.0.4          |        -66.96% |         (479,080 rps) |          (avg: 2μs) |
 | validate.js@^0.13.1         |        -83.29% |         (242,283 rps) |          (avg: 4μs) |
 | parambulator@1.5.2          |        -98.47% |          (22,189 rps) |         (avg: 45μs) |
-

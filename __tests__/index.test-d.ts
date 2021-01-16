@@ -14,6 +14,7 @@ import {
   nil,
   minLength,
   nonEmpty,
+  unknown,
 } from '../src';
 import type { TypeOf, Schema } from '../src';
 
@@ -184,4 +185,16 @@ expectType<{
     name: 'Mark',
     age: 29,
   }),
+);
+
+expectType<unknown>(validate(unknown())('dsdas'));
+
+expectType<{ readonly a: number; readonly b: string; readonly c?: unknown }>(
+  validate(
+    object({
+      a: number(),
+      b: string(),
+      c: unknown(),
+    }),
+  )('dsdas'),
 );
