@@ -12,7 +12,7 @@
 
 ## Introduction
 
-`@typeofweb/schema` is a lightweight and extensible library for data validation with full support for TypeScript!
+`@typeofweb/schema` is a lightweight and extensible library for data validation with full TypeScript support!
 
 ## Table of contents
 
@@ -73,6 +73,8 @@ or install the package with yarn:
 ## Example
 
 ```ts
+import { number, object, optional, string, validate } from '@typeofweb/schema';
+
 const personSchema = object({
   name: string(),
   age: number(),
@@ -148,8 +150,8 @@ Creates a schema that matches strings.
 const stringSchema = string();
 const stringValidator = validate(stringSchema);
 
-// Return 'Micheal'
-const micheal = stringValidator('Micheal');
+// Returns 'Michael'
+const michael = stringValidator('Michael');
 ```
 
 ### number
@@ -230,9 +232,12 @@ const musicGenresValidator = validate(musicGenresSchema);
 
 // Returns ['classical', 'lofi', 'pop']
 const musicGenres = musicGenresValidator(['classical', 'lofi', 'pop']);
+```
 
+```ts
 const primitiveValidator = validate(array(string(), number(), boolean()));
-primitiveValidator([false, 'string', 123, 42, ':)']); // OK
+// Returns [false, 'string', 123, 42, ':)']
+primitiveValidator([false, 'string', 123, 42, ':)']);
 ```
 
 ### Modifiers
@@ -250,7 +255,7 @@ const nullableRoleValidator = validate(nullableRoleSchema);
 // Returns 'User', the output type is null | 'User' | 'Admin'
 const role = nullableRoleValidator('User');
 
-// It's also fine
+// Returns null
 nullableRoleValidator(null);
 
 // Throws ValidationError
@@ -269,7 +274,7 @@ const optionalRoleValidator = validate(optionalRoleSchema);
 // Returns 'User', the output type is undefined | 'User' | 'Admin'
 const role = optionalRoleValidator('User');
 
-// It's also fine
+// Both return undefined
 optionalRoleValidator();
 optionalRoleValidator(undefined);
 
@@ -288,9 +293,10 @@ const nilRoleValidator = validate(nilRoleSchema);
 // Returns 'User', the output type is undefined | null | 'User' | 'Admin'
 const role = nilRoleValidator('User');
 
-// It's also fine
+// Both return undefined
 nilRoleValidator();
 nilRoleValidator(undefined);
+// Returns null
 nilRoleValidator(null);
 ```
 
@@ -301,7 +307,7 @@ The `nonEmpty` modifier can be applied to `string` or `array` schemas in order t
 ```ts
 const nonEmptyArrayValidator = validate(nonEmpty(array(string())));
 
-// OK
+// Returns ['a', 'b', 'c']
 const ok = nonEmptyArrayValidator(['a', 'b', 'c']);
 
 // Throws ValidationError
@@ -328,7 +334,7 @@ The `minLength` modifier is used to contraint length of `string` or `array` valu
 ```ts
 const atLeastTwoCharsValidator = validate(minLength(2)(string()));
 
-// OK
+// Returns 'ok'
 const ok = atLeastTwoCharsValidator('ok');
 
 // Throws ValidationError
@@ -392,4 +398,4 @@ Platform info:
 | validator.js@2.0.4          |        -66.96% |         (479,080 rps) |          (avg: 2μs) |
 | validate.js@^0.13.1         |        -83.29% |         (242,283 rps) |          (avg: 4μs) |
 | parambulator@1.5.2          |        -98.47% |          (22,189 rps) |         (avg: 45μs) |
- 
+
