@@ -17,6 +17,7 @@ const assertUnreachable = (val: never): never => {
   /* istanbul ignore next */
   throw new Error(val);
 };
+console.log('test');
 
 export const validate = <S extends AnySchema>(schema: S) => (value: unknown): TypeOf<S> => {
   if (schema.__validator === UNKNOWN_VALIDATOR) {
@@ -40,7 +41,6 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
   }
 
   if (Array.isArray(schema.__validator)) {
-    const validators = schema.__validator as readonly AnySchema[];
     if (!Array.isArray(value)) {
       throw new ValidationError(schema, value);
     }
@@ -50,6 +50,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
     ) {
       throw new ValidationError(schema, value);
     }
+    const validators = schema.__validator as readonly AnySchema[];
     return value.map((val: unknown) => {
       const validationResult = validators.reduce(
         (acc, validator) => {
