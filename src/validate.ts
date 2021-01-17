@@ -1,7 +1,7 @@
 import { ValidationError } from './errors';
 import { parse } from './parse';
 import type { AnySchema, TypeOf } from './types';
-import { fromEntries, isDate } from './utils';
+import { isDate } from './utils';
 import {
   LITERAL_VALIDATOR,
   STRING_VALIDATOR,
@@ -81,8 +81,10 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
 
     const validatorValues = Object.values(validators);
     const allValidatorKeysCount = validatorValues.length;
-    const requiredValidatorKeysCount =
-      allValidatorKeysCount - validatorValues.filter(isOptionalSchema).length;
+    const requiredValidatorKeysCount = validatorValues.reduce(
+      (acc, schema) => acc + (isOptionalSchema(schema) ? 0 : 1),
+      0,
+    );
 
     if (
       valueEntries.length > allValidatorKeysCount ||
@@ -91,14 +93,16 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       throw new ValidationError(schema, value);
     }
 
-    return fromEntries(
-      valueEntries.map(([key, val]) => {
-        if (!validators[key]) {
-          throw new ValidationError(schema, value);
-        }
-        return [key, validate(validators[key]!)(val)];
-      }),
-    ) as TypeOf<S>;
+    type Item = TypeOf<S>[keyof TypeOf<S>];
+    const obj = valueEntries.reduce((acc, [key, val]) => {
+      if (!validators[key]) {
+        throw new ValidationError(schema, value);
+      }
+      acc[key] = validate(validators[key]!)(val) as Item;
+      return acc;
+    }, {} as Record<string, Item>);
+
+    return obj as TypeOf<S>;
   }
 
   const parsedValue = parse(schema.__validator)(value);

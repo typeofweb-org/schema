@@ -142,8 +142,8 @@ export const object = <U extends Record<string, AnySchema>>(obj: U) => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: obj,
-    __type: {} as unknown,
     __modifiers: { optional: false, nullable: false },
+    __type: {} as unknown,
     __values: {} as unknown,
   } as Schema<
     {
@@ -159,8 +159,8 @@ export const array = <U extends readonly AnySchema[]>(...arr: readonly [...U]) =
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: arr,
-    __type: {} as unknown,
     __modifiers: { optional: false, nullable: false },
+    __type: {} as unknown,
     __values: {} as unknown,
   } as Schema<
     readonly TypeOf<U[number]>[],
