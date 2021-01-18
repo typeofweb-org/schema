@@ -8,7 +8,7 @@ import styles from './styles.module.css';
 
 const features = [
   {
-    title: 'Focus on speed',
+    title: 'Focused on speed',
     imageUrl: 'img/fast.svg',
     description: (
       <>
