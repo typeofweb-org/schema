@@ -18,7 +18,10 @@ const assertUnreachable = (val: never): never => {
   throw new Error(val);
 };
 
-export const validate = <S extends AnySchema>(schema: S) => (value: unknown): TypeOf<S> => {
+export const validate = <S extends AnySchema>(schema: S) => (value: unknown) =>
+  __validate<S>(schema, value);
+
+const __validate = <S extends AnySchema>(schema: S, value: unknown): TypeOf<S> => {
   if (schema.__validator === UNKNOWN_VALIDATOR) {
     return value as TypeOf<S>;
   }
@@ -57,7 +60,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
             return acc;
           }
           try {
-            const result: unknown = validate(validator)(val);
+            const result: unknown = __validate(validator, val);
             return { isValid: true, result };
           } catch {}
           return { isValid: false, result: undefined };
@@ -98,7 +101,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
       if (!validators[key]) {
         throw new ValidationError(schema, value);
       }
-      acc[key] = validate(validators[key]!)(val) as Item;
+      acc[key] = __validate(validators[key]!, val) as Item;
       return acc;
     }, {} as Record<string, Item>);
 
@@ -141,7 +144,7 @@ export const validate = <S extends AnySchema>(schema: S) => (value: unknown): Ty
           }
           if (isSchema(valueOrValidator)) {
             try {
-              const result: unknown = validate(valueOrValidator)(value);
+              const result: unknown = __validate(valueOrValidator, value);
               return { isValid: true, result };
             } catch {}
             return { isValid: false, result: undefined };
