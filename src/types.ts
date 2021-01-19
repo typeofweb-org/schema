@@ -50,7 +50,9 @@ type TypeOfSchema<S extends SomeSchema<any>> = S extends SomeSchema<infer R> ? R
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 
-export type Pretty<X> = X extends object | readonly unknown[]
+export type Pretty<X> = X extends Date
+  ? X
+  : X extends object | readonly unknown[]
   ? {
       readonly [K in keyof X]: X[K];
     }
