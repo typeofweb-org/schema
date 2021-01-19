@@ -7,6 +7,37 @@ title: validate
 
 ## Parsing behaviour of `validate`
 
+`@typeofweb/schema` comes with a default set of sane coercion rules, meaning some of the most common scenarioes are covered out of the box!
+
+### Example
+
+```ts
+import Qs from 'qs';
+
+const queryString = `dateFrom=2020-10-15&dateTo=2020-10-15&resultsPerPage=10`;
+
+const parsedQuery = Qs.parse(`dateFrom=2020-10-15&dateTo=2020-10-15&resultsPerPage=10`);
+
+const queryValidator = validate(
+  object({
+    dateFrom: date(),
+    dateTo: date(),
+    resultsPerPage: number(),
+  }),
+);
+
+const queryObject = queryValidator(parsedQuery);
+// {
+//   dateFrom: new Date('2020-10-15T00:00:00.000Z'), // date instance
+//   dateTo: new Date('2020-10-15T00:00:00.000Z'), // date instance
+//   resultsPerPage: 10 // number
+// }
+```
+
+### Numeric strings are converted to numbers
+
+Sometimes, numbers are passed as strings i.e. in query strings. We found out this kind of scenario is very common and thus we automatically convert numeric strings to numbers.
+
 ```ts
 const numberSchema = number();
 const numberValidator = validate(numberSchema);
@@ -16,6 +47,8 @@ const luckyNumber = '2';
 const dayOfTheWeek = numberValidator(luckyNumber);
 ```
 
+### Dates get stringified
+
 ```ts
 const stringSchema = string();
 const stringValidator = validate(stringSchema);
@@ -24,6 +57,10 @@ const aprilFoolsDay = new Date('April 1, 2021 00:00:00');
 // Returns "2021-03-31T22:00:00.000Z" & type of ISOString is `string`
 const ISOString = stringValidator(aprilFoolsDay);
 ```
+
+### Date strings are converted to `Date` instances
+
+JSON format doesn't support Date instances and usually strings in ISO 8601 format are used instead. We thought it makes sense to automatically convert them to proper `Date` instances.
 
 ```ts
 const dateSchema = date();

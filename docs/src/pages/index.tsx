@@ -12,7 +12,7 @@ const features = [
     imageUrl: 'img/fast.svg',
     description: (
       <>
-        @typeofweb/schema has significant performance compared to other validators. We want to
+        @typeofweb/schema is significantly faster compared to most other validators. We want to
         provide fast and reliable packages for people to use.
       </>
     ),
@@ -20,15 +20,14 @@ const features = [
   {
     title: 'Lightweight',
     imageUrl: 'img/winners.svg',
-    description: <>@typeofweb/schema is one of the most lightweight packages available.</>,
+    description: <>@typeofweb/schema is one of the most lightweight packages available. It's side-effect free and supports tree shaking. Bundle only what you need!</>,
   },
   {
     title: 'Based on functional programming',
     imageUrl: 'img/functional.svg',
     description: (
       <>
-        We believe that functional programming is one of the best paradigms, that's why we decided
-        this package will be created in functional style.
+        We believe that functional programming is one of the most efficient paradigms. @typeofweb/schema exposes sweet functional API without confusing theoretical concepts to learn.
       </>
     ),
   },
@@ -59,7 +58,7 @@ function Home() {
     >
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
+          <h1 className="hero__title">@typeofweb<wbr/>/schema</h1>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link

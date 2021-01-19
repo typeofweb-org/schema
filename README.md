@@ -10,12 +10,12 @@
 
 [![codecov](https://codecov.io/gh/typeofweb/schema/branch/main/graph/badge.svg?token=6DNCIHEEUO)](https://codecov.io/gh/typeofweb/schema)
 [![npm](https://img.shields.io/npm/v/@typeofweb/schema.svg)](https://www.npmjs.com/package/@typeofweb/schema)
-[![npm bundle size (minified + gzip)](https://img.shields.io/bundlephobia/minzip/@typeofweb/schema.svg)](https://www.npmjs.com/package/@typeofweb/schema)
+[![npm bundle size (minified + gzip)](https://img.shields.io/bundlephobia/minzip/@typeofweb/schema.svg)](https://bundlephobia.com/result?p=@typeofweb/schema)
 
 ## Table of contents
 
 - [Contributors ✨](#contributors-)
-- [Installation](#installation)
+- [Setup](#setup)
 - [Example](#example)
 - [API](#api)
   - [validate](#validate)
@@ -60,7 +60,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
-## Installation
+## Setup
 
 Install the package with npm:
 

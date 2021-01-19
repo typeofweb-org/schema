@@ -1,12 +1,12 @@
 module.exports = {
   sidebar: [
     {
-      'Getting started': ['installation', 'basic-example'],
+      'Getting started': ['introduction', 'setup'],
       'API Reference': [
         'validate',
         {
           Validators: [
-            'validators/oneof',
+            'validators/oneOf',
             'validators/string',
             'validators/number',
             'validators/boolean',
@@ -19,10 +19,10 @@ module.exports = {
             'modifiers/nullable',
             'modifiers/optional',
             'modifiers/nil',
-            'modifiers/nonempty',
-            'modifiers/minlength',
+            'modifiers/nonEmpty',
+            'modifiers/minLength',
           ],
-          Utilities: ['utilities/pipe'],
+          Utilities: ['utilities/pipe', 'utilities/typeOf'],
         },
       ],
     },

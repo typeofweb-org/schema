@@ -1,5 +1,5 @@
 ---
-id: minlength
+id: minLength
 title: minLength
 ---
 
