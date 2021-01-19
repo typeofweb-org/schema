@@ -2,19 +2,27 @@ import type {
   AnySchema,
   TypeOf,
   Schema,
-  ArraySchema,
-  LiteralSchema,
-  RecordSchema,
-  SimpleSchema,
+  UndefinedToOptional,
+  SomeSchema,
+  DefaultModifiers,
 } from './types';
 
 export const TYPEOFWEB_SCHEMA = Symbol('@typeofweb/schema');
-export const LITERAL_VALIDATOR = Symbol('_literal');
+export const ONE_OF_VALIDATOR = Symbol('_literal');
+export type ONE_OF_VALIDATOR = typeof ONE_OF_VALIDATOR;
+export const TUPLE_VALIDATOR = Symbol('_tuple');
+export type TUPLE_VALIDATOR = typeof TUPLE_VALIDATOR;
 export const STRING_VALIDATOR = Symbol('string');
+export type STRING_VALIDATOR = typeof STRING_VALIDATOR;
 export const NUMBER_VALIDATOR = Symbol('number');
+export type NUMBER_VALIDATOR = typeof NUMBER_VALIDATOR;
 export const BOOLEAN_VALIDATOR = Symbol('boolean');
+export type BOOLEAN_VALIDATOR = typeof BOOLEAN_VALIDATOR;
 export const DATE_VALIDATOR = Symbol('Date');
+export type DATE_VALIDATOR = typeof DATE_VALIDATOR;
 export const UNKNOWN_VALIDATOR = Symbol('_unknown');
+export type UNKNOWN_VALIDATOR = typeof UNKNOWN_VALIDATOR;
+
 export const SIMPLE_VALIDATORS = [
   STRING_VALIDATOR,
   NUMBER_VALIDATOR,
@@ -23,13 +31,13 @@ export const SIMPLE_VALIDATORS = [
   UNKNOWN_VALIDATOR,
 ] as const;
 
-export type LiteralValidator = typeof LITERAL_VALIDATOR;
-export type SimpleValidators = typeof SIMPLE_VALIDATORS[number];
+export type SIMPLE_VALIDATORS = typeof SIMPLE_VALIDATORS[number];
 export type AllValidators =
-  | LiteralValidator
-  | SimpleValidators
-  | Record<string, AnySchema>
-  | readonly AnySchema[];
+  | ONE_OF_VALIDATOR
+  | SIMPLE_VALIDATORS
+  | TUPLE_VALIDATOR
+  | Record<string, SomeSchema<any>>
+  | readonly SomeSchema<any>[];
 
 export interface SimpleValidatorToType {
   readonly [STRING_VALIDATOR]: string;
@@ -41,10 +49,11 @@ export interface SimpleValidatorToType {
 
 export const isSimpleSchema = (s: AnySchema): s is SimpleSchema =>
   SIMPLE_VALIDATORS.includes(s.__validator);
-export const isLiteralSchema = (s: AnySchema): s is LiteralSchema =>
-  s.__validator === LITERAL_VALIDATOR;
+export const isLiteralSchema = (s: AnySchema): s is OneOfSchema =>
+  s.__validator === ONE_OF_VALIDATOR;
+export const isTupleSchema = (s: AnySchema): s is TupleSchema => s.__validator === TUPLE_VALIDATOR;
 export const isArraySchema = (s: AnySchema): s is ArraySchema => Array.isArray(s.__validator);
-export const isRecordSchema = (s: AnySchema): s is RecordSchema =>
+export const isRecordSchema = (s: AnySchema): s is ObjectSchema =>
   !Array.isArray(s.__validator) && typeof s.__validator === 'object';
 
 export const isOptionalSchema = (
@@ -63,122 +72,150 @@ export const isSchema = (val: any): val is AnySchema => {
   );
 };
 
+const InitialModifiers: DefaultModifiers = {
+  optional: false,
+  nullable: false,
+  minLength: undefined,
+};
+
 // `U extends (keyof any)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly
 // thanks to this, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)
-export const oneOf = <U extends readonly (keyof any | boolean | AnySchema)[]>(
+export type OneOfSchema = ReturnType<typeof oneOf>;
+export const oneOf = <U extends readonly (keyof any | boolean | SomeSchema<any>)[]>(
   values: readonly [...U],
 ) => {
   type X = {
-    readonly [Index in keyof U]: U[Index] extends AnySchema ? TypeOf<U[Index]> : U[Index];
+    readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }[number];
 
   return {
     [TYPEOFWEB_SCHEMA]: true,
-    __validator: LITERAL_VALIDATOR,
+    __validator: ONE_OF_VALIDATOR,
     __values: values,
     __type: {} as unknown,
-    __modifiers: { optional: false, nullable: false },
-  } as Schema<
-    X,
-    { readonly optional: false; readonly nullable: false },
-    U[number],
-    typeof LITERAL_VALIDATOR
-  >;
+    __modifiers: InitialModifiers,
+  } as Schema<X, typeof InitialModifiers, U, ONE_OF_VALIDATOR>;
 };
 
+export type StringSchema = ReturnType<typeof string>;
 export const string = () => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: STRING_VALIDATOR,
-    __modifiers: { optional: false, nullable: false },
+    __modifiers: InitialModifiers,
   } as Schema<
-    SimpleValidatorToType[typeof STRING_VALIDATOR],
-    { readonly optional: false; readonly nullable: false },
+    SimpleValidatorToType[STRING_VALIDATOR],
+    typeof InitialModifiers,
     never,
-    typeof STRING_VALIDATOR
+    STRING_VALIDATOR
   >;
 };
 
+export type NumberSchema = ReturnType<typeof number>;
 export const number = () => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: NUMBER_VALIDATOR,
-    __modifiers: { optional: false, nullable: false },
+    __modifiers: InitialModifiers,
   } as Schema<
-    SimpleValidatorToType[typeof NUMBER_VALIDATOR],
-    { readonly optional: false; readonly nullable: false },
+    SimpleValidatorToType[NUMBER_VALIDATOR],
+    typeof InitialModifiers,
     never,
-    typeof NUMBER_VALIDATOR
+    NUMBER_VALIDATOR
   >;
 };
 
+export type BooleanSchema = ReturnType<typeof boolean>;
 export const boolean = () => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: BOOLEAN_VALIDATOR,
-    __modifiers: { optional: false, nullable: false },
+    __modifiers: InitialModifiers,
   } as Schema<
-    SimpleValidatorToType[typeof BOOLEAN_VALIDATOR],
-    { readonly optional: false; readonly nullable: false },
+    SimpleValidatorToType[BOOLEAN_VALIDATOR],
+    typeof InitialModifiers,
     never,
-    typeof BOOLEAN_VALIDATOR
+    BOOLEAN_VALIDATOR
   >;
 };
 
+export type DateSchema = ReturnType<typeof date>;
 export const date = () => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: DATE_VALIDATOR,
-    __modifiers: { optional: false, nullable: false },
+    __modifiers: InitialModifiers,
   } as Schema<
-    SimpleValidatorToType[typeof DATE_VALIDATOR],
-    { readonly optional: false; readonly nullable: false },
+    SimpleValidatorToType[DATE_VALIDATOR],
+    typeof InitialModifiers,
     never,
-    typeof DATE_VALIDATOR
+    DATE_VALIDATOR
   >;
 };
 
-export const object = <U extends Record<string, AnySchema>>(obj: U) => {
+export type ObjectSchema = ReturnType<typeof object>;
+export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: obj,
-    __modifiers: { optional: false, nullable: false },
+    __modifiers: InitialModifiers,
     __type: {} as unknown,
     __values: {} as unknown,
   } as Schema<
-    {
-      readonly [K in keyof U]: TypeOf<U[K]>;
-    },
-    { readonly optional: false; readonly nullable: false },
+    UndefinedToOptional<
+      {
+        readonly [K in keyof U]: TypeOf<U[K]>;
+      }
+    >,
+    typeof InitialModifiers,
     never,
     U
   >;
 };
 
-export const array = <U extends readonly AnySchema[]>(...arr: readonly [...U]) => {
+export type ArraySchema = ReturnType<typeof array>;
+export const array = <U extends readonly SomeSchema<unknown>[]>(...arr: readonly [...U]) => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: arr,
-    __modifiers: { optional: false, nullable: false },
+    __modifiers: InitialModifiers,
     __type: {} as unknown,
     __values: {} as unknown,
-  } as Schema<
-    readonly TypeOf<U[number]>[],
-    { readonly optional: false; readonly nullable: false },
-    never,
-    U
-  >;
+  } as Schema<readonly TypeOf<U[number]>[], typeof InitialModifiers, never, U>;
 };
 
+export type UnknownSchema = ReturnType<typeof unknown>;
 export const unknown = () => {
   return {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: UNKNOWN_VALIDATOR,
-    __modifiers: { optional: true, nullable: true },
+    __modifiers: { optional: true, nullable: true, minLength: undefined },
   } as Schema<
-    SimpleValidatorToType[typeof UNKNOWN_VALIDATOR],
-    { readonly optional: true; readonly nullable: true },
+    SimpleValidatorToType[UNKNOWN_VALIDATOR],
+    { readonly optional: true; readonly nullable: true; readonly minLength: undefined },
     never,
-    typeof UNKNOWN_VALIDATOR
+    UNKNOWN_VALIDATOR
   >;
 };
+
+export type TupleSchema = ReturnType<typeof tuple>;
+export const tuple = <U extends readonly (keyof any | boolean | SomeSchema<any>)[]>(
+  values: readonly [...U],
+) => {
+  return {
+    [TYPEOFWEB_SCHEMA]: true,
+    __validator: TUPLE_VALIDATOR,
+    __values: values,
+    __type: {} as unknown,
+    __modifiers: InitialModifiers,
+  } as Schema<
+    {
+      readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
+    },
+    typeof InitialModifiers,
+    U,
+    TUPLE_VALIDATOR
+  >;
+};
+
+export type SimpleSchema = StringSchema | NumberSchema | BooleanSchema | DateSchema | UnknownSchema;

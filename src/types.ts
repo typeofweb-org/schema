@@ -1,9 +1,11 @@
 import type {
-  SimpleValidatorToType,
   TYPEOFWEB_SCHEMA,
   AllValidators,
-  SimpleValidators,
-  LiteralValidator,
+  ArraySchema,
+  TupleSchema,
+  SimpleSchema,
+  OneOfSchema,
+  ObjectSchema,
 } from './validators';
 
 export type TypeOf<S extends SomeSchema<any>> = TypeOfModifiers<S> | TypeOfSchema<S>;
@@ -19,41 +21,22 @@ export interface Schema<
   readonly [TYPEOFWEB_SCHEMA]: true;
   readonly __type: Type;
   readonly __validator: Validator;
-  readonly __values: readonly Values[];
+  readonly __values: Values;
   readonly __modifiers: Modifiers;
 }
 
-export type SimpleSchema = Schema<
-  SimpleValidatorToType[SimpleValidators],
-  DefaultModifiers,
-  DefaultValues,
-  SimpleValidators
->;
-export type LiteralSchema = Schema<unknown, DefaultModifiers, DefaultValues, LiteralValidator>;
-export type ArraySchema = Schema<
-  readonly unknown[],
-  DefaultModifiers,
-  DefaultValues,
-  readonly AnySchema[]
->;
-export type RecordSchema = Schema<
-  Record<string, unknown>,
-  DefaultModifiers,
-  DefaultValues,
-  Record<string, AnySchema>
->;
 export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
-export type AnySchema = SimpleSchema | LiteralSchema | ArraySchema | RecordSchema;
+export type AnySchema = SimpleSchema | OneOfSchema | TupleSchema | ArraySchema | ObjectSchema;
 
-type DefaultModifiers<MinLength extends number = number> = {
-  readonly optional?: boolean;
-  readonly nullable?: boolean;
+export type DefaultModifiers<MinLength extends number = number> = {
+  readonly optional: boolean;
+  readonly nullable: boolean;
   readonly minLength?: MinLength;
 };
 
-type DefaultValues = SomeSchema<any> | Primitives;
+type DefaultValues = SomeSchema<any> | Primitives | readonly (SomeSchema<any> | Primitives)[];
 
-type TupleOf<
+export type TupleOf<
   T,
   Length extends number,
   Acc extends readonly unknown[] = readonly []
@@ -63,24 +46,11 @@ type TypeOfModifiers<S extends SomeSchema<any>> =
   | If<S['__modifiers'], { readonly optional: true }, undefined>
   | If<S['__modifiers'], { readonly nullable: true }, null>;
 
-type TypeOfSchema<S extends SomeSchema<any>> = TypeOfValues<S> extends infer Result
-  ? S['__modifiers'] extends { readonly minLength: infer L }
-    ? L extends number
-      ? IfIsArray<S, readonly [...TupleOf<TypeOfValues<S>[number], L>, ...TypeOfValues<S>], Result>
-      : never
-    : Result
-  : never;
-
-type TypeOfValue<Value> = Value extends SomeSchema<infer R> ? R : Value;
-
-type TypeOfValues<S extends SomeSchema<any>> = S['__values'][number] extends never
-  ? UndefinedToOptional<S['__type']>
-  : TypeOfValue<S['__values'][number]>;
+type TypeOfSchema<S extends SomeSchema<any>> = S extends SomeSchema<infer R> ? R : never;
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
-type IfIsArray<S extends SomeSchema<any>, Y, N = never> = If<S['__type'], readonly unknown[], Y, N>;
 
-type Pretty<X extends object> = {
+export type Pretty<X extends object> = {
   readonly [K in keyof X]: X[K];
 };
 
@@ -92,7 +62,7 @@ type PlainObject = { readonly [name: string]: any };
 type Optional<T extends object> = Partial<Pick<T, KeysOfType<T, undefined>>>;
 type Required<T extends object> = Omit<T, KeysOfType<T, undefined>>;
 
-type UndefinedToOptional<T> = T extends PlainObject
+export type UndefinedToOptional<T> = T extends PlainObject
   ? {} extends T
     ? {}
     : T extends Date | readonly unknown[]

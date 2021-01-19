@@ -9,6 +9,7 @@ export {
   array,
   object,
   isSchema,
+  tuple,
 } from './validators';
 export { validate } from './validate';
 export { ValidationError } from './errors';
