@@ -1,6 +1,5 @@
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request_target
 
 name: Generate Pull Request Bundle Stats
 
@@ -13,7 +12,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: pr-branch
-          ref: ${{github.head_ref}}
 
       - name: Checkout base
         uses: actions/checkout@v2
