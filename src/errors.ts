@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-import type { AnySchema } from './types';
+import type { AnySchema, SomeSchema } from './types';
 import type { SimpleSchema, SIMPLE_VALIDATORS } from './validators';
 import {
   isTupleSchema,
@@ -54,7 +54,7 @@ const unionToPrint = (arr: readonly string[]): string => {
   return str;
 };
 
-const getModifiers = (v: AnySchema): readonly string[] => {
+const getModifiers = (v: SomeSchema<any>): readonly string[] => {
   const modifiers = [v.__modifiers.optional && 'undefined', v.__modifiers.nullable && 'null'];
   return modifiers.filter((m): m is string => Boolean(m));
 };
@@ -74,7 +74,7 @@ export const schemaRecordToPrint = (record: Record<string, AnySchema>): string =
   return objectToPrint(' ' + entries.map(([key, val]) => quote(key) + ': ' + val).join(', ') + ' ');
 };
 
-export const schemaToString = (schema: AnySchema): string => {
+export const schemaToString = (schema: SomeSchema<any>): string => {
   if (isSimpleSchema(schema)) {
     return simpleSchemaToPrint(schema);
   }

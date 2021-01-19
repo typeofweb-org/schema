@@ -47,17 +47,18 @@ export interface SimpleValidatorToType {
   readonly [UNKNOWN_VALIDATOR]: unknown;
 }
 
-export const isSimpleSchema = (s: AnySchema): s is SimpleSchema =>
+export const isSimpleSchema = (s: SomeSchema<any>): s is SimpleSchema =>
   SIMPLE_VALIDATORS.includes(s.__validator);
-export const isLiteralSchema = (s: AnySchema): s is OneOfSchema =>
+export const isLiteralSchema = (s: SomeSchema<any>): s is OneOfSchema =>
   s.__validator === ONE_OF_VALIDATOR;
-export const isTupleSchema = (s: AnySchema): s is TupleSchema => s.__validator === TUPLE_VALIDATOR;
-export const isArraySchema = (s: AnySchema): s is ArraySchema => Array.isArray(s.__validator);
-export const isRecordSchema = (s: AnySchema): s is ObjectSchema =>
+export const isTupleSchema = (s: SomeSchema<any>): s is TupleSchema =>
+  s.__validator === TUPLE_VALIDATOR;
+export const isArraySchema = (s: SomeSchema<any>): s is ArraySchema => Array.isArray(s.__validator);
+export const isRecordSchema = (s: SomeSchema<any>): s is ObjectSchema =>
   !Array.isArray(s.__validator) && typeof s.__validator === 'object';
 
 export const isOptionalSchema = (
-  s: AnySchema,
+  s: SomeSchema<any>,
 ): s is AnySchema & { readonly __modifiers: { readonly optional: true } } =>
   !!s.__modifiers.optional;
 
