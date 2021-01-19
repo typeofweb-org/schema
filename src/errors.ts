@@ -10,9 +10,10 @@ declare global {
   }
 }
 
-import type { AnySchema, SimpleSchema, SomeSchema } from './types';
-import type { SimpleValidators } from './validators';
+import type { AnySchema, SomeSchema } from './types';
+import type { SimpleSchema, SIMPLE_VALIDATORS } from './validators';
 import {
+  isTupleSchema,
   UNKNOWN_VALIDATOR,
   BOOLEAN_VALIDATOR,
   DATE_VALIDATOR,
@@ -24,7 +25,7 @@ import {
   STRING_VALIDATOR,
 } from './validators';
 
-const validatorToString: Record<SimpleValidators, string> = {
+const validatorToString: Record<SIMPLE_VALIDATORS, string> = {
   [STRING_VALIDATOR]: 'string',
   [NUMBER_VALIDATOR]: 'number',
   [BOOLEAN_VALIDATOR]: 'boolean',
@@ -35,6 +36,7 @@ const validatorToString: Record<SimpleValidators, string> = {
 const typeToPrint = (str: string) => '≫' + str + '≪';
 const objectToPrint = (str: string) => '{' + str + '}';
 const quote = (str: string) => (/\s/.test(str) ? `"${str}"` : str);
+const tupleToPrint = (arr: readonly string[]) => '[' + arr.join(', ') + ']';
 const arrayToPrint = (arr: readonly string[]): string => {
   const str = arr.join(' | ');
 
@@ -43,7 +45,7 @@ const arrayToPrint = (arr: readonly string[]): string => {
   }
   return typeToPrint(`${str}[]`);
 };
-const literalToPrint = (arr: readonly string[]): string => {
+const unionToPrint = (arr: readonly string[]): string => {
   const str = arr.join(' | ');
 
   if (arr.length > 1) {
@@ -52,7 +54,7 @@ const literalToPrint = (arr: readonly string[]): string => {
   return str;
 };
 
-const getModifiers = (v: AnySchema): readonly string[] => {
+const getModifiers = (v: SomeSchema<any>): readonly string[] => {
   const modifiers = [v.__modifiers.optional && 'undefined', v.__modifiers.nullable && 'null'];
   return modifiers.filter((m): m is string => Boolean(m));
 };
@@ -61,7 +63,7 @@ const simpleSchemaToPrint = (v: SimpleSchema, shouldWrap = true): string => {
   const name = validatorToString[v.__validator];
   const modifiers = v.__validator === UNKNOWN_VALIDATOR ? [] : getModifiers(v);
   const values = [shouldWrap ? typeToPrint(name) : name, ...modifiers];
-  return literalToPrint(values);
+  return unionToPrint(values);
 };
 
 export const schemaRecordToPrint = (record: Record<string, AnySchema>): string => {
@@ -72,7 +74,7 @@ export const schemaRecordToPrint = (record: Record<string, AnySchema>): string =
   return objectToPrint(' ' + entries.map(([key, val]) => quote(key) + ': ' + val).join(', ') + ' ');
 };
 
-export const schemaToString = (schema: AnySchema): string => {
+export const schemaToString = (schema: SomeSchema<any>): string => {
   if (isSimpleSchema(schema)) {
     return simpleSchemaToPrint(schema);
   }
@@ -80,24 +82,46 @@ export const schemaToString = (schema: AnySchema): string => {
   const modifiers = getModifiers(schema);
 
   if (isLiteralSchema(schema)) {
-    return literalToPrint([
-      ...schema.__values.map((v) => (isSchema(v) ? schemaToString(v) : String(v))),
+    return unionToPrint([
+      ...(schema.__values as readonly (keyof any | boolean | AnySchema)[]).map((v) =>
+        isSchema(v) ? schemaToString(v) : JSON.stringify(v),
+      ),
       ...modifiers,
     ]);
   }
 
   if (isArraySchema(schema)) {
-    return literalToPrint([
+    return unionToPrint([
       arrayToPrint(
         schema.__validator.map((s) =>
-          isSchema(s) && isSimpleSchema(s) ? simpleSchemaToPrint(s, false) : schemaToString(s),
+          isSchema(s) && isSimpleSchema(s)
+            ? simpleSchemaToPrint(s, false)
+            : schemaToString(s as AnySchema),
         ),
       ),
       ...modifiers,
     ]);
   }
 
-  return literalToPrint([schemaRecordToPrint(schema.__validator), ...modifiers]);
+  if (isTupleSchema(schema)) {
+    return unionToPrint([
+      tupleToPrint(
+        schema.__values.map((s) =>
+          isSchema(s)
+            ? isSimpleSchema(s)
+              ? simpleSchemaToPrint(s)
+              : schemaToString(s)
+            : JSON.stringify(s),
+        ),
+      ),
+      ...modifiers,
+    ]);
+  }
+
+  return unionToPrint([
+    schemaRecordToPrint(schema.__validator as Record<string, AnySchema>),
+    ...modifiers,
+  ]);
 };
 
 export class ValidationError extends Error {

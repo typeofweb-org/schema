@@ -19,6 +19,7 @@ import {
   λ,
   pipe,
   unknown,
+  tuple,
 } from '../src';
 import { isISODateString } from '../src/parse';
 
@@ -215,6 +216,24 @@ describe('@typeofweb/schema', () => {
       Fc.assert(Fc.property(Fc.anything(), notThrows(validate(unknown())))));
   });
 
+  describe('tuple', () => {
+    it('should validate tuples', () =>
+      Fc.assert(
+        Fc.property(Fc.string(), Fc.integer(), (...args) =>
+          notThrows(validate(tuple([string(), number()])))(args),
+        ),
+      ));
+
+    it('should not allow other values', () =>
+      Fc.assert(
+        Fc.property(
+          Fc.anything().filter(complement(is(String))),
+          Fc.anything().filter(complement(anyPass([is(Number), isCoercibleToNum]))),
+          (...args) => throws(validate(tuple([string(), number()])))(args),
+        ),
+      ));
+  });
+
   describe('nullable', () => {
     it('should allow null', () =>
       Fc.assert(
@@ -330,6 +349,7 @@ describe('@typeofweb/schema', () => {
           return assertion(validate(validator))(value);
         }),
       ));
+
     it('pipe should work with schema', () =>
       Fc.assert(
         Fc.property(Fc.oneof(Fc.constant(null), Fc.constant(undefined), Fc.string()), (value) => {

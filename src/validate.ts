@@ -1,9 +1,11 @@
 import { ValidationError } from './errors';
 import { parse } from './parse';
-import type { AnySchema, TypeOf } from './types';
+import type { SomeSchema } from './types';
 import { isDate } from './utils';
+import type { OneOfSchema, TupleSchema } from './validators';
 import {
-  LITERAL_VALIDATOR,
+  ONE_OF_VALIDATOR,
+  TUPLE_VALIDATOR,
   STRING_VALIDATOR,
   NUMBER_VALIDATOR,
   BOOLEAN_VALIDATOR,
@@ -13,15 +15,17 @@ import {
   UNKNOWN_VALIDATOR,
 } from './validators';
 
+import type { AnySchema, TypeOf } from '.';
+
 const assertUnreachable = (val: never): never => {
   /* istanbul ignore next */
   throw new Error(val);
 };
 
-export const validate = <S extends AnySchema>(schema: S) => (value: unknown) =>
+export const validate = <S extends SomeSchema<any>>(schema: S) => (value: unknown) =>
   __validate<S>(schema, value);
 
-const __validate = <S extends AnySchema>(schema: S, value: unknown): TypeOf<S> => {
+const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeOf<S> => {
   if (schema.__validator === UNKNOWN_VALIDATOR) {
     return value as TypeOf<S>;
   }
@@ -43,7 +47,6 @@ const __validate = <S extends AnySchema>(schema: S, value: unknown): TypeOf<S> =
   }
 
   if (Array.isArray(schema.__validator)) {
-    const validators = schema.__validator as readonly AnySchema[];
     if (!Array.isArray(value)) {
       throw new ValidationError(schema, value);
     }
@@ -53,6 +56,7 @@ const __validate = <S extends AnySchema>(schema: S, value: unknown): TypeOf<S> =
     ) {
       throw new ValidationError(schema, value);
     }
+    const validators = schema.__validator as readonly AnySchema[];
     return value.map((val: unknown) => {
       const validationResult = validators.reduce(
         (acc, validator) => {
@@ -136,28 +140,61 @@ const __validate = <S extends AnySchema>(schema: S, value: unknown): TypeOf<S> =
         throw new ValidationError(schema, value);
       }
       return parsedValue as TypeOf<S>;
-    case LITERAL_VALIDATOR:
-      const validationResult = schema.__values.reduce(
+    case ONE_OF_VALIDATOR:
+      const s = schema as OneOfSchema;
+      const validationResult = s.__values.reduce<{
+        readonly isValid: boolean;
+        readonly result: unknown;
+      }>(
         (acc, valueOrValidator) => {
           if (acc.isValid) {
             return acc;
           }
           if (isSchema(valueOrValidator)) {
             try {
-              const result: unknown = __validate(valueOrValidator, value);
+              const result = __validate(valueOrValidator, value);
               return { isValid: true, result };
             } catch {}
             return { isValid: false, result: undefined };
           } else {
-            return { isValid: value === valueOrValidator, result: valueOrValidator };
+            const isValid = value === valueOrValidator;
+            return { isValid, result: isValid ? valueOrValidator : undefined };
           }
         },
-        { isValid: false, result: undefined as unknown },
+        { isValid: false, result: undefined },
       );
       if (!validationResult.isValid) {
-        throw new ValidationError(schema, value);
+        throw new ValidationError(s, value);
       }
       return validationResult.result as TypeOf<S>;
+
+    case TUPLE_VALIDATOR: {
+      const s = schema as TupleSchema;
+      if (!Array.isArray(value) || value.length !== s.__values.length) {
+        throw new ValidationError(s, value);
+      }
+      const validationResult = s.__values.reduce(
+        (acc, valueOrValidator, index) => {
+          if (!acc.isValid) {
+            return acc;
+          }
+          if (isSchema(valueOrValidator)) {
+            try {
+              const result: unknown = __validate(valueOrValidator, value[index]);
+              return { isValid: true, result };
+            } catch {}
+            return { isValid: false, result: undefined };
+          } else {
+            return { isValid: value[index] === valueOrValidator, result: valueOrValidator };
+          }
+        },
+        { isValid: true, result: undefined as unknown },
+      );
+      if (!validationResult.isValid) {
+        throw new ValidationError(s, value);
+      }
+      return validationResult.result as TypeOf<S>;
+    }
   }
 
   /* istanbul ignore next */

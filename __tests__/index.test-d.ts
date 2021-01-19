@@ -16,36 +16,45 @@ import {
   nonEmpty,
   unknown,
 } from '../src';
-import type { TypeOf, Schema } from '../src';
+import type { TypeOf, SomeSchema } from '../src';
+import type {
+  StringSchema,
+  NumberSchema,
+  BooleanSchema,
+  DateSchema,
+  UnknownSchema,
+  OneOfSchema,
+  TupleSchema,
+  ArraySchema,
+  ObjectSchema,
+} from '../src/validators';
 
-// Schema
-declare const str1: TypeOf<Schema<string, {}, never>>;
-expectType<string>(str1);
+declare const string1: TypeOf<StringSchema>;
+expectType<string>(string1);
 
-declare const str2: TypeOf<Schema<string, { readonly optional: true }, never>>;
-expectType<string | undefined>(str2);
+declare const number1: TypeOf<NumberSchema>;
+expectType<number>(number1);
 
-declare const str3: TypeOf<Schema<string, { readonly optional: true }, 'a'>>;
-expectType<'a' | undefined>(str3);
+declare const boolean1: TypeOf<BooleanSchema>;
+expectType<boolean>(boolean1);
 
-declare const str4: TypeOf<Schema<string, {}, 'a'>>;
-expectType<'a'>(str4);
+declare const date1: TypeOf<DateSchema>;
+expectType<Date>(date1);
 
-declare const str5: TypeOf<Schema<string, { readonly nullable: true }, never>>;
-expectType<string | null>(str5);
+declare const unknown1: TypeOf<UnknownSchema>;
+expectType<unknown>(unknown1);
 
-declare const str6: TypeOf<Schema<string, { readonly nullable: true }, 'a'>>;
-expectType<'a' | null>(str6);
+declare const literal1: TypeOf<OneOfSchema>;
+expectType<string | number | boolean | symbol | SomeSchema<any>>(literal1);
 
-declare const str7: TypeOf<
-  Schema<string, { readonly optional: true; readonly nullable: true }, 'a'>
->;
-expectType<'a' | null | undefined>(str7);
+declare const tuple1: TypeOf<TupleSchema>;
+expectType<readonly (string | number | boolean | symbol | SomeSchema<any>)[]>(tuple1);
 
-declare const str8: TypeOf<
-  Schema<string, { readonly optional: true; readonly nullable: true }, never>
->;
-expectType<string | null | undefined>(str8);
+declare const array1: TypeOf<ArraySchema>;
+expectType<readonly unknown[]>(array1);
+
+declare const record1: TypeOf<ObjectSchema>;
+expectType<{}>(record1);
 
 // validators
 const validator1 = string();

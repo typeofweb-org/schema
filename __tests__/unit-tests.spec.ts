@@ -18,21 +18,23 @@ import {
 } from '../src';
 import { schemaToString } from '../src/errors';
 import { isISODateString } from '../src/parse';
-import { isArraySchema, isLiteralSchema, isRecordSchema, isSimpleSchema } from '../src/validators';
+import {
+  isArraySchema,
+  isLiteralSchema,
+  isRecordSchema,
+  isSimpleSchema,
+  tuple,
+} from '../src/validators';
 
 describe('@typeofweb/schema unit tests', () => {
-  const simpleValidators: ReadonlyArray<() => SomeSchema<any>> = [boolean, date, number, string];
+  const simpleValidators: ReadonlyArray<() => AnySchema> = [boolean, date, number, string];
   const objectValidator = () => object({});
   const arrayValidator = () => array(string());
   const literalValidator = () => oneOf(['a']);
   const allValidators = [...simpleValidators, objectValidator, arrayValidator, literalValidator];
-  const modifiers: ReadonlyArray<(schema: SomeSchema<any>) => SomeSchema<any>> = [
-    minLength(123),
-    nil,
-    nonEmpty,
-    nullable,
-    optional,
-  ];
+  const modifiers: ReadonlyArray<
+    { bivarianceHack(schema: SomeSchema<any>): SomeSchema<any> }['bivarianceHack']
+  > = [minLength(35), nil, nonEmpty, nullable, optional];
 
   describe('validation', () => {
     it('string validator should coerce Date to ISOString', () => {
@@ -159,7 +161,7 @@ describe('@typeofweb/schema unit tests', () => {
 
     it('should detect specific schemas', () => {
       const testCases: readonly {
-        readonly fn: (s: AnySchema) => boolean;
+        readonly fn: (s: SomeSchema<any>) => boolean;
         readonly shouldDetect: ReadonlyArray<() => SomeSchema<any>>;
       }[] = [
         { fn: isSimpleSchema, shouldDetect: simpleValidators },
@@ -224,7 +226,38 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() => validator(obj)).not.toThrow();
     });
 
-    it('should throw on unknown keys', () => {
+    it('tuple should validate given items in given order', () => {
+      const schema = object({
+        a: tuple([]),
+        b: tuple([1, 2, 3]),
+        c: tuple([number(), string()]),
+        d: nullable(tuple([string()])),
+      });
+      const validator = validate(schema);
+
+      const obj = {
+        a: [],
+        b: [1, 2, 3],
+        c: [241231, 'aaaa'],
+        d: null,
+      };
+
+      expect(() => validator(obj)).not.toThrow();
+    });
+
+    it('tuple should throw on invalid values', () => {
+      const validator1 = validate(tuple([]));
+      const validator2 = validate(tuple([1, 2, 3]));
+      const validator3 = validate(tuple([number(), string()]));
+      const validator4 = validate(tuple([1, 2, 3, number(), string()]));
+
+      expect(() => validator1([1, 2, 3])).toThrow();
+      expect(() => validator2([1, 3, 2])).toThrow();
+      expect(() => validator3('hello')).toThrow();
+      expect(() => validator4([1, 2, 3, 42, null])).toThrow();
+    });
+
+    it('object should throw on unknown keys', () => {
       const validator = validate(
         object({
           a: number(),
@@ -308,6 +341,8 @@ describe('@typeofweb/schema unit tests', () => {
       expect(schemaToString(oneOf([1]))).toEqual('1');
       expect(schemaToString(oneOf([string()]))).toEqual('≫string≪');
       expect(schemaToString(oneOf([1, 2, 3]))).toEqual('(1 | 2 | 3)');
+      expect(schemaToString(oneOf(['a', 'b', 'c']))).toEqual('("a" | "b" | "c")');
+      expect(schemaToString(oneOf(['a', 'b', 12, 'c']))).toEqual('("a" | "b" | 12 | "c")');
       expect(schemaToString(oneOf([1, 2, string(), 3, boolean()]))).toEqual(
         '(1 | 2 | ≫string≪ | 3 | ≫boolean≪)',
       );
@@ -325,6 +360,17 @@ describe('@typeofweb/schema unit tests', () => {
       expect(
         schemaToString(object({ a: string(), b: number(), 'no elo koleś': boolean() })),
       ).toEqual('{ a: ≫string≪, b: ≫number≪, "no elo koleś": ≫boolean≪ }');
+    });
+
+    it('should work for tuples', () => {
+      expect(schemaToString(tuple(['a', string(), number()]))).toEqual('["a", ≫string≪, ≫number≪]');
+      expect(schemaToString(tuple(['a']))).toEqual('["a"]');
+      expect(schemaToString(tuple([number(), oneOf(['s', 'm', 'h'])]))).toEqual(
+        '[≫number≪, ("s" | "m" | "h")]',
+      );
+      expect(schemaToString(tuple([number(), tuple([string(), oneOf(['s', 'm', 'h'])])]))).toEqual(
+        '[≫number≪, [≫string≪, ("s" | "m" | "h")]]',
+      );
     });
 
     it('should work for deeply nested objects', () => {

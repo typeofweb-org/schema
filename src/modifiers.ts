@@ -1,6 +1,6 @@
-import type { AnySchema, Schema, SomeSchema } from './types';
+import type { Schema, SomeSchema, TupleOf } from './types';
 
-export const optional = <S extends AnySchema>(schema: S) => {
+export const optional = <S extends SomeSchema<any>>(schema: S) => {
   return {
     ...schema,
     __modifiers: {
@@ -9,13 +9,17 @@ export const optional = <S extends AnySchema>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    { readonly nullable: S['__modifiers']['nullable']; readonly optional: true },
-    S['__values'][number],
+    {
+      readonly nullable: S['__modifiers']['nullable'];
+      readonly optional: true;
+      readonly minLength: S['__modifiers']['minLength'];
+    },
+    S['__values'],
     S['__validator']
   >;
 };
 
-export const nullable = <S extends AnySchema>(schema: S) => {
+export const nullable = <S extends SomeSchema<any>>(schema: S) => {
   return {
     ...schema,
     __modifiers: {
@@ -24,13 +28,17 @@ export const nullable = <S extends AnySchema>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    { readonly nullable: true; readonly optional: S['__modifiers']['optional'] },
-    S['__values'][number],
+    {
+      readonly nullable: true;
+      readonly optional: S['__modifiers']['optional'];
+      readonly minLength: S['__modifiers']['minLength'];
+    },
+    S['__values'],
     S['__validator']
   >;
 };
 
-export const nil = <S extends AnySchema>(schema: S) => {
+export const nil = <S extends SomeSchema<any>>(schema: S) => {
   return {
     ...schema,
     __modifiers: {
@@ -40,8 +48,12 @@ export const nil = <S extends AnySchema>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    { readonly nullable: true; readonly optional: true },
-    S['__values'][number],
+    {
+      readonly nullable: true;
+      readonly optional: true;
+      readonly minLength: S['__modifiers']['minLength'];
+    },
+    S['__values'],
     S['__validator']
   >;
 };
@@ -58,13 +70,15 @@ export const minLength = <L extends number>(length: L) => <
       minLength: length,
     },
   } as unknown) as Schema<
-    S['__type'],
+    S['__type'] extends readonly unknown[]
+      ? readonly [...TupleOf<S['__type'][number], L>, ...S['__type']]
+      : S['__type'],
     {
       readonly nullable: S['__modifiers']['nullable'];
       readonly optional: S['__modifiers']['optional'];
       readonly minLength: L;
     },
-    S['__values'][number],
+    S['__values'],
     S['__validator']
   >;
 };
