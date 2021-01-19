@@ -1,6 +1,6 @@
-import type { Schema, SomeSchema, AnySchema, TupleOf } from './types';
+import type { Schema, SomeSchema, TupleOf } from './types';
 
-export const optional = <S extends AnySchema>(schema: S) => {
+export const optional = <S extends SomeSchema<any>>(schema: S) => {
   return {
     ...schema,
     __modifiers: {
@@ -19,7 +19,7 @@ export const optional = <S extends AnySchema>(schema: S) => {
   >;
 };
 
-export const nullable = <S extends AnySchema>(schema: S) => {
+export const nullable = <S extends SomeSchema<any>>(schema: S) => {
   return {
     ...schema,
     __modifiers: {
@@ -38,7 +38,7 @@ export const nullable = <S extends AnySchema>(schema: S) => {
   >;
 };
 
-export const nil = <S extends AnySchema>(schema: S) => {
+export const nil = <S extends SomeSchema<any>>(schema: S) => {
   return {
     ...schema,
     __modifiers: {

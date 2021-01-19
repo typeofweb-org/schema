@@ -1,5 +1,6 @@
 import { ValidationError } from './errors';
 import { parse } from './parse';
+import type { SomeSchema } from './types';
 import { isDate } from './utils';
 import type { OneOfSchema, TupleSchema } from './validators';
 import {
@@ -21,10 +22,10 @@ const assertUnreachable = (val: never): never => {
   throw new Error(val);
 };
 
-export const validate = <S extends AnySchema>(schema: S) => (value: unknown) =>
+export const validate = <S extends SomeSchema<any>>(schema: S) => (value: unknown) =>
   __validate<S>(schema, value);
 
-const __validate = <S extends AnySchema>(schema: S, value: unknown): TypeOf<S> => {
+const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeOf<S> => {
   if (schema.__validator === UNKNOWN_VALIDATOR) {
     return value as TypeOf<S>;
   }

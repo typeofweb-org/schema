@@ -127,7 +127,7 @@ export const schemaToString = (schema: SomeSchema<any>): string => {
 export class ValidationError extends Error {
   public readonly details: ErrorDetails;
 
-  constructor(schema: AnySchema, value: any) {
+  constructor(schema: SomeSchema<any>, value: any) {
     const expected = schemaToString(schema);
     const got = JSON.stringify(value);
 

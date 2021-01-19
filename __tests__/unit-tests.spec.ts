@@ -245,7 +245,19 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() => validator(obj)).not.toThrow();
     });
 
-    it('should throw on unknown keys', () => {
+    it('tuple should throw on invalid values', () => {
+      const validator1 = validate(tuple([]));
+      const validator2 = validate(tuple([1, 2, 3]));
+      const validator3 = validate(tuple([number(), string()]));
+      const validator4 = validate(tuple([1, 2, 3, number(), string()]));
+
+      expect(() => validator1([1, 2, 3])).toThrow();
+      expect(() => validator2([1, 3, 2])).toThrow();
+      expect(() => validator3('hello')).toThrow();
+      expect(() => validator4([1, 2, 3, 42, null])).toThrow();
+    });
+
+    it('object should throw on unknown keys', () => {
       const validator = validate(
         object({
           a: number(),
