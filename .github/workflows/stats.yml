@@ -1,6 +1,5 @@
 on:
-  pull_request:
-    types: [opened, synchronize]
+  pull_request_target
 
 name: Generate Pull Request Bundle Stats
 
