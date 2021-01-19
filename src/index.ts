@@ -16,6 +16,16 @@ export { ValidationError } from './errors';
 export { λ, pipe } from './utils';
 export type { AnySchema, Schema, SomeSchema, TypeOf } from './types';
 export type {
-  AllValidators as VALIDATORS,
-  SimpleValidatorToType as ValidatorToType,
+  AllValidators,
+  SimpleValidatorToType,
+  OneOfSchema,
+  StringSchema,
+  NumberSchema,
+  BooleanSchema,
+  DateSchema,
+  ObjectSchema,
+  ArraySchema,
+  UnknownSchema,
+  TupleSchema,
+  SimpleSchema,
 } from './validators';
