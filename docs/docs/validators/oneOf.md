@@ -1,5 +1,5 @@
 ---
-id: oneof
+id: oneOf
 title: oneOf
 ---
 

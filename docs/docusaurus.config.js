@@ -5,7 +5,7 @@ module.exports = {
   url: 'https://www.npmjs.com/package/@typeofweb/schema',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.png',
   organizationName: 'Type of Web',
   projectName: '@typeofweb/schema',
@@ -20,7 +20,7 @@ module.exports = {
         {
           to: 'docs/',
           activeBasePath: 'docs',
-          label: 'Docs',
+          label: 'Documentation',
           position: 'left',
         },
         {
@@ -42,7 +42,7 @@ module.exports = {
             },
             {
               label: 'Validators',
-              to: 'docs/validators/oneof',
+              to: 'docs/validators/oneOf',
             },
             {
               label: 'Modifiers',
@@ -81,7 +81,11 @@ module.exports = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Type Of Web`,
+      copyright: `Copyright © ${new Date().getFullYear()} Type of Web`,
+    },
+    prism: {
+      theme: require('prism-react-renderer/themes/github'),
+      darkTheme: require('prism-react-renderer/themes/vsDark'),
     },
   },
   presets: [
@@ -90,7 +94,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/typeofweb/schema/edit/main/schema/',
+          editUrl: 'https://github.com/typeofweb/schema/edit/main/docs/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

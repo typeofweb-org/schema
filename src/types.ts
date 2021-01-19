@@ -8,7 +8,7 @@ import type {
   ObjectSchema,
 } from './validators';
 
-export type TypeOf<S extends SomeSchema<any>> = TypeOfModifiers<S> | TypeOfSchema<S>;
+export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfModifiers<S> | TypeOfSchema<S>>;
 
 export type Primitives = keyof any | boolean;
 export type Json = Primitives | { readonly [prop in string | number]: Json } | readonly Json[];
@@ -50,9 +50,11 @@ type TypeOfSchema<S extends SomeSchema<any>> = S extends SomeSchema<infer R> ? R
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 
-export type Pretty<X extends object> = {
-  readonly [K in keyof X]: X[K];
-};
+export type Pretty<X> = X extends object | readonly unknown[]
+  ? {
+      readonly [K in keyof X]: X[K];
+    }
+  : X;
 
 type KeysOfType<T extends object, SelectedType> = {
   readonly [key in keyof T]: SelectedType extends T[key] ? key : never;
@@ -67,5 +69,5 @@ export type UndefinedToOptional<T> = T extends PlainObject
     ? {}
     : T extends Date | readonly unknown[]
     ? T
-    : Pretty<Required<T> & Optional<T>>
+    : Required<T> & Optional<T>
   : T;
