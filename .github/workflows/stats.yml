@@ -11,13 +11,16 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v2
         with:
-          path: pr-branch
+          path: pr-branch      
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - name: Checkout base
         uses: actions/checkout@v2
         with:
           path: base-branch
           ref: ${{github.base_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - name: Compare sizes
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
