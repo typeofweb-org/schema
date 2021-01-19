@@ -50,7 +50,7 @@ module.exports = {
             },
             {
               label: 'Utilities',
-              to: 'docs/modifiers/utilities/pipe',
+              to: 'docs/utilities/pipe',
             },
           ],
         },
