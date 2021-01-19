@@ -32,13 +32,9 @@ describe('@typeofweb/schema unit tests', () => {
   const arrayValidator = () => array(string());
   const literalValidator = () => oneOf(['a']);
   const allValidators = [...simpleValidators, objectValidator, arrayValidator, literalValidator];
-  const modifiers: ReadonlyArray<(schema: AnySchema) => AnySchema> = [
-    minLength(35),
-    nil,
-    nonEmpty,
-    nullable,
-    optional,
-  ];
+  const modifiers: ReadonlyArray<
+    { bivarianceHack(schema: SomeSchema<any>): SomeSchema<any> }['bivarianceHack']
+  > = [minLength(35), nil, nonEmpty, nullable, optional];
 
   describe('validation', () => {
     it('string validator should coerce Date to ISOString', () => {
@@ -165,8 +161,8 @@ describe('@typeofweb/schema unit tests', () => {
 
     it('should detect specific schemas', () => {
       const testCases: readonly {
-        readonly fn: (s: AnySchema) => boolean;
-        readonly shouldDetect: ReadonlyArray<() => AnySchema>;
+        readonly fn: (s: SomeSchema<any>) => boolean;
+        readonly shouldDetect: ReadonlyArray<() => SomeSchema<any>>;
       }[] = [
         { fn: isSimpleSchema, shouldDetect: simpleValidators },
         { fn: isLiteralSchema, shouldDetect: [literalValidator] },
