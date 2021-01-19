@@ -408,11 +408,13 @@ Platform info:
 
 | library                     | relative speed | operations per second | avg. operation time |
 | --------------------------- | -------------: | --------------------: | ------------------: |
-| **@typeofweb/schema@0.4.0** |         **0%** |   **(1,450,077 rps)** |  **(avg: 0.689μs)** |
-| joi@^17.3.0                 |        -91.63% |         (121,417 rps) |          (avg: 8μs) |
-| yup@^0.32.8                 |        -97.14% |          (41,512 rps) |         (avg: 24μs) |
-| validatorjs@^3.22.1         |        -88.75% |         (163,201 rps) |          (avg: 6μs) |
-| mschema@0.5.6               |        -60.25% |         (576,465 rps) |          (avg: 1μs) |
-| validator.js@2.0.4          |        -66.96% |         (479,080 rps) |          (avg: 2μs) |
-| validate.js@^0.13.1         |        -83.29% |         (242,283 rps) |          (avg: 4μs) |
-| parambulator@1.5.2          |        -98.47% |          (22,189 rps) |         (avg: 45μs) |
+| **@typeofweb/schema@0.4.2** |         **0%** |   **(1,691,616 rps)** |  **(avg: 0.591μs)** |
+| mschema@0.5.6               |        -65.44% |         (584,672 rps) |          (avg: 1μs) |
+| validator.js@2.0.4          |        -71.04% |         (489,821 rps) |          (avg: 2μs) |
+| validate.js@0.13.1          |        -85.39% |         (247,122 rps) |          (avg: 4μs) |
+| validatorjs@3.22.1          |        -90.01% |         (169,048 rps) |          (avg: 5μs) |
+| joi@17.3.0                  |        -92.74% |         (122,755 rps) |          (avg: 8μs) |
+| superstruct@0.13.3          |        -96.16% |          (64,908 rps) |         (avg: 15μs) |
+| yup@0.32.8                  |        -96.40% |          (60,843 rps) |         (avg: 16μs) |
+| jsonschema@1.4.0            |        -97.75% |          (38,016 rps) |         (avg: 26μs) |
+| parambulator@1.5.2          |        -98.63% |          (23,210 rps) |         (avg: 43μs) |
