@@ -16,7 +16,7 @@ import Qs from 'qs';
 
 const queryString = `dateFrom=2020-10-15&dateTo=2020-10-15&resultsPerPage=10`;
 
-const parsedQuery = Qs.parse(`dateFrom=2020-10-15&dateTo=2020-10-15&resultsPerPage=10`);
+const parsedQuery = Qs.parse(queryString);
 
 const queryValidator = validate(
   object({
