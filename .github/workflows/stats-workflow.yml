@@ -1,0 +1,26 @@
+name: Comment on the pull request
+
+on:
+  workflow_run:
+    workflows: ['Generate Pull Request Bundle Stats']
+    types:
+      - completed
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    if: >
+      ${{ github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - run: echo $EVENT_OBJ
+        env:
+          EVENT_OBJ: ${{ toJson(github.event) }}
+      - name: Compare sizes
+        uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
+        with:
+          pr_number: ${{github.event.pull_request.number}}
+        env:
+          GITHUB_TOKEN: ${{secrets.TYPEOFWEB_BOT_GITHUB_TOKEN}}
+          COMPRESS_BUNDLES: true
