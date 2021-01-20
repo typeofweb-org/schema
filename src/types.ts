@@ -25,12 +25,8 @@ export interface Schema<
   readonly __modifiers: Modifiers;
 }
 
-export type SomeSchema<T, M extends DefaultModifiers = DefaultModifiers> = Schema<
-  T,
-  M,
-  DefaultValues,
-  AllValidators
->;
+export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
+
 export type AnySchema = SimpleSchema | OneOfSchema | TupleSchema | ArraySchema | ObjectSchema;
 
 export type DefaultModifiers = {
@@ -39,16 +35,7 @@ export type DefaultModifiers = {
   readonly minLength: number | undefined;
 };
 
-export type GetModifiers<
-  S extends SomeSchema<any>,
-  K extends keyof DefaultModifiers,
-  V extends DefaultModifiers[K]
-> = Omit<S['__modifiers'], K> &
-  {
-    readonly [Key in K]: V;
-  };
-
-export type GetModifiers2<M extends DefaultModifiers, V extends Partial<DefaultModifiers>> = Pretty<
+export type GetModifiers<M extends DefaultModifiers, V extends Partial<DefaultModifiers>> = Pretty<
   {
     readonly [K in keyof DefaultModifiers]: K extends keyof V ? V[K] : M[K];
   }
