@@ -84,28 +84,28 @@ const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeO
     }
     const validators = schema.__validator as Record<string, AnySchema>;
 
-    const valueEntries = Object.entries(value!);
+    const valueKeys = Object.keys(value!);
 
-    const validatorValues = Object.values(validators);
-    const allValidatorKeysCount = validatorValues.length;
-    const requiredValidatorKeysCount = validatorValues.reduce(
-      (acc, schema) => acc + (isOptionalSchema(schema) ? 0 : 1),
+    const validatorEntries = Object.entries(validators);
+    const allValidatorKeysCount = validatorEntries.length;
+    const requiredValidatorKeysCount = validatorEntries.reduce(
+      (acc, [_, schema]) => acc + (isOptionalSchema(schema) ? 0 : 1),
       0,
     );
 
-    if (
-      valueEntries.length > allValidatorKeysCount ||
-      valueEntries.length < requiredValidatorKeysCount
-    ) {
+    if (valueKeys.length > allValidatorKeysCount || valueKeys.length < requiredValidatorKeysCount) {
       throw new ValidationError(schema, value);
     }
 
     type Item = TypeOf<S>[keyof TypeOf<S>];
-    const obj = valueEntries.reduce((acc, [key, val]) => {
-      if (!validators[key]) {
+
+    const obj = validatorEntries.reduce((acc, [key, validator]) => {
+      const valueForValidator: unknown = value?.[key as keyof typeof value];
+      try {
+        acc[key] = __validate(validator, valueForValidator) as Item;
+      } catch (_) {
         throw new ValidationError(schema, value);
       }
-      acc[key] = __validate(validators[key]!, val) as Item;
       return acc;
     }, {} as Record<string, Item>);
 

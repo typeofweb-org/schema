@@ -144,7 +144,17 @@ describe('@typeofweb/schema unit tests', () => {
           email: 123123123,
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected (≫string≪ | undefined) but got 123123123!"`,
+        `"Invalid type! Expected { name: ≫string≪, age: ≫number≪, email: (≫string≪ | undefined) } but got {\\"name\\":\\"Mark\\",\\"age\\":29,\\"email\\":123123123}!"`,
+      );
+    });
+
+    it('should not allow optional fields be passed instead of required', () => {
+      const user = object({
+        name: string(),
+        age: optional(number()),
+      });
+      expect(() => validate(user)({ age: 23 })).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected { name: ≫string≪, age: (≫number≪ | undefined) } but got {\\"age\\":23}!"`,
       );
     });
 
@@ -323,7 +333,7 @@ describe('@typeofweb/schema unit tests', () => {
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫{ f: ≫string≪ }[]≪ but got [{\\"f\\":\\"bbb\\"},{\\"f\\":123}]!"`,
+        `"Invalid type! Expected { a: ≫number≪, b: { c: ≫string≪, d: { e: ≫{ f: ≫string≪ }[]≪ } } } but got {\\"a\\":1,\\"b\\":{\\"c\\":\\"aaa\\",\\"d\\":{\\"e\\":[{\\"f\\":\\"bbb\\"},{\\"f\\":123}]}}}!"`,
       );
     });
   });
