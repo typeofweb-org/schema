@@ -16,7 +16,7 @@ import {
   string,
   validate,
 } from '../src';
-import { schemaToString, ValidationError } from '../src/errors';
+import { schemaToString } from '../src/errors';
 import { isISODateString } from '../src/parse';
 import {
   isArraySchema,
@@ -144,7 +144,7 @@ describe('@typeofweb/schema unit tests', () => {
           email: 123123123,
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected (≫string≪ | undefined) but got 123123123!"`,
+        `"Invalid type! Expected { name: ≫string≪, age: ≫number≪, email: (≫string≪ | undefined) } but got {\\"name\\":\\"Mark\\",\\"age\\":29,\\"email\\":123123123}!"`,
       );
     });
 
@@ -153,7 +153,9 @@ describe('@typeofweb/schema unit tests', () => {
         name: string(),
         age: optional(number()),
       });
-      expect(() => validate(user)({ age: 23 })).toThrowError(ValidationError);
+      expect(() => validate(user)({ age: 23 })).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected { name: ≫string≪, age: (≫number≪ | undefined) } but got {\\"age\\":23}!"`,
+      );
     });
 
     it('should detect schemas', () => {
@@ -277,7 +279,9 @@ describe('@typeofweb/schema unit tests', () => {
 
       expect(() =>
         validator({ '': [], ' ': [], '!': {}, '"': {} }),
-      ).toThrowErrorMatchingInlineSnapshot(`"Invalid type! Expected ≫number≪ but got undefined!"`);
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected { a: ≫number≪, b: ≫string≪, c: ≫string[]≪, d: { e: ≫string≪, f: (≫string≪ | false) } } but got {\\"\\":[],\\" \\":[],\\"!\\":{},\\"\\\\\\"\\":{}}!"`,
+      );
     });
 
     it('should throw on when array was expected but not given', () => {
@@ -329,7 +333,7 @@ describe('@typeofweb/schema unit tests', () => {
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫{ f: ≫string≪ }[]≪ but got [{\\"f\\":\\"bbb\\"},{\\"f\\":123}]!"`,
+        `"Invalid type! Expected { a: ≫number≪, b: { c: ≫string≪, d: { e: ≫{ f: ≫string≪ }[]≪ } } } but got {\\"a\\":1,\\"b\\":{\\"c\\":\\"aaa\\",\\"d\\":{\\"e\\":[{\\"f\\":\\"bbb\\"},{\\"f\\":123}]}}}!"`,
       );
     });
   });
