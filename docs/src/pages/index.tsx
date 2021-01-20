@@ -20,14 +20,21 @@ const features = [
   {
     title: 'Lightweight',
     imageUrl: 'img/winners.svg',
-    description: <>@typeofweb/schema is one of the most lightweight packages available. It's side-effect free and supports tree shaking. Bundle only what you need!</>,
+    description: (
+      <>
+        @typeofweb/schema is one of the most lightweight packages available. It's side-effect free
+        and supports tree shaking. Bundle only what you need!
+      </>
+    ),
   },
   {
     title: 'Based on functional programming',
     imageUrl: 'img/functional.svg',
     description: (
       <>
-        We believe that functional programming is one of the most efficient paradigms. @typeofweb/schema exposes sweet functional API without confusing theoretical concepts to learn.
+        We believe that functional programming is one of the most efficient paradigms.
+        @typeofweb/schema exposes sweet functional API without confusing theoretical concepts to
+        learn.
       </>
     ),
   },
@@ -52,13 +59,14 @@ function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
   return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
-    >
+    <Layout title={`${siteConfig.title} validation library`} description={siteConfig.tagline}>
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
-          <h1 className="hero__title">@typeofweb<wbr/>/schema</h1>
+          <h1 className="hero__title">
+            @typeofweb
+            <wbr />
+            /schema
+          </h1>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
           <div className={styles.buttons}>
             <Link
