@@ -93,6 +93,8 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/typeofweb/schema/edit/main/docs/',
         },
