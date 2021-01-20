@@ -1,7 +1,6 @@
-on:
-  pull_request
-
 name: Generate Pull Request Bundle Stats
+
+on: pull_request
 
 jobs:
   stats:
@@ -11,7 +10,7 @@ jobs:
       - name: Checkout PR
         uses: actions/checkout@v2
         with:
-          path: pr-branch      
+          path: pr-branch
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
@@ -28,5 +27,4 @@ jobs:
           pr_directory_name: pr-branch
           base_directory_name: base-branch
         env:
-          GITHUB_TOKEN: ${{secrets.TYPEOFWEB_BOT_GITHUB_TOKEN}}
           COMPRESS_BUNDLES: true
