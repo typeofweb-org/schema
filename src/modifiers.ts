@@ -1,4 +1,4 @@
-import type { Schema, SomeSchema, TupleOf } from './types';
+import type { GetModifiers2, Schema, SomeSchema, TupleOf } from './types';
 
 export const optional = <S extends SomeSchema<any>>(schema: S) => {
   return {
@@ -9,11 +9,7 @@ export const optional = <S extends SomeSchema<any>>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    {
-      readonly nullable: S['__modifiers']['nullable'];
-      readonly optional: true;
-      readonly minLength: S['__modifiers']['minLength'];
-    },
+    GetModifiers2<S['__modifiers'], { readonly optional: true }>,
     S['__values'],
     S['__validator']
   >;
@@ -28,11 +24,7 @@ export const nullable = <S extends SomeSchema<any>>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    {
-      readonly nullable: true;
-      readonly optional: S['__modifiers']['optional'];
-      readonly minLength: S['__modifiers']['minLength'];
-    },
+    GetModifiers2<S['__modifiers'], { readonly nullable: true }>,
     S['__values'],
     S['__validator']
   >;
@@ -48,11 +40,13 @@ export const nil = <S extends SomeSchema<any>>(schema: S) => {
     },
   } as Schema<
     S['__type'],
-    {
-      readonly nullable: true;
-      readonly optional: true;
-      readonly minLength: S['__modifiers']['minLength'];
-    },
+    GetModifiers2<
+      S['__modifiers'],
+      {
+        readonly nullable: true;
+        readonly optional: true;
+      }
+    >,
     S['__values'],
     S['__validator']
   >;
@@ -73,11 +67,12 @@ export const minLength = <L extends number>(length: L) => <
     S['__type'] extends readonly unknown[]
       ? readonly [...TupleOf<S['__type'][number], L>, ...S['__type']]
       : S['__type'],
-    {
-      readonly nullable: S['__modifiers']['nullable'];
-      readonly optional: S['__modifiers']['optional'];
-      readonly minLength: L;
-    },
+    GetModifiers2<
+      S['__modifiers'],
+      {
+        readonly minLength: L;
+      }
+    >,
     S['__values'],
     S['__validator']
   >;
