@@ -35,7 +35,10 @@ export type DefaultModifiers = {
   readonly minLength: number | undefined;
 };
 
-export type GetModifiers<M extends DefaultModifiers, V extends Partial<DefaultModifiers>> = Pretty<
+export type MergeModifiers<
+  M extends DefaultModifiers,
+  V extends Partial<DefaultModifiers>
+> = Pretty<
   {
     readonly [K in keyof DefaultModifiers]: K extends keyof V ? V[K] : M[K];
   }
