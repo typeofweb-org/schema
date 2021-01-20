@@ -45,10 +45,10 @@ declare const unknown1: TypeOf<UnknownSchema>;
 expectType<unknown>(unknown1);
 
 declare const literal1: TypeOf<OneOfSchema>;
-expectType<string | number | boolean | symbol | SomeSchema<any>>(literal1);
+expectType<string | number | boolean | SomeSchema<any>>(literal1);
 
 declare const tuple1: TypeOf<TupleSchema>;
-expectType<readonly (string | number | boolean | symbol | SomeSchema<any>)[]>(tuple1);
+expectType<readonly (string | number | boolean | SomeSchema<any>)[]>(tuple1);
 
 declare const array1: TypeOf<ArraySchema>;
 expectType<readonly unknown[]>(array1);
