@@ -105,14 +105,6 @@ const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeO
       return acc;
     }, {} as Record<string, Item>);
 
-    // const obj = valueEntries.reduce((acc, [key, val]) => {
-    //   if (!validators[key]) {
-    //     throw new ValidationError(schema, value);
-    //   }
-    //   acc[key] = __validate(validators[key]!, val) as Item;
-    //   return acc;
-    // }, {} as Record<string, Item>);
-
     return obj as TypeOf<S>;
   }
 
