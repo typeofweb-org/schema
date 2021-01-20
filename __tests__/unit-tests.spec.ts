@@ -16,7 +16,7 @@ import {
   string,
   validate,
 } from '../src';
-import { schemaToString } from '../src/errors';
+import { schemaToString, ValidationError } from '../src/errors';
 import { isISODateString } from '../src/parse';
 import {
   isArraySchema,
@@ -148,6 +148,14 @@ describe('@typeofweb/schema unit tests', () => {
       );
     });
 
+    it('should not allow optional fields be passed instead of required', () => {
+      const user = object({
+        name: string(),
+        age: optional(number()),
+      });
+      expect(() => validate(user)({ age: 23 })).toThrowError(ValidationError);
+    });
+
     it('should detect schemas', () => {
       expect.assertions(allValidators.length * (modifiers.length + 1));
 
@@ -269,9 +277,7 @@ describe('@typeofweb/schema unit tests', () => {
 
       expect(() =>
         validator({ '': [], ' ': [], '!': {}, '"': {} }),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected { a: ≫number≪, b: ≫string≪, c: ≫string[]≪, d: { e: ≫string≪, f: (≫string≪ | false) } } but got {\\"\\":[],\\" \\":[],\\"!\\":{},\\"\\\\\\"\\":{}}!"`,
-      );
+      ).toThrowErrorMatchingInlineSnapshot(`"Invalid type! Expected ≫number≪ but got undefined!"`);
     });
 
     it('should throw on when array was expected but not given', () => {
