@@ -26,13 +26,23 @@ export interface Schema<
 }
 
 export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
+
 export type AnySchema = SimpleSchema | OneOfSchema | TupleSchema | ArraySchema | ObjectSchema;
 
-export type DefaultModifiers<MinLength extends number = number> = {
-  readonly optional: boolean;
-  readonly nullable: boolean;
-  readonly minLength?: MinLength;
+export type DefaultModifiers = {
+  readonly optional: boolean | undefined;
+  readonly nullable: boolean | undefined;
+  readonly minLength: number | undefined;
 };
+
+export type MergeModifiers<
+  M extends DefaultModifiers,
+  V extends Partial<DefaultModifiers>
+> = Pretty<
+  {
+    readonly [K in keyof DefaultModifiers]: K extends keyof V ? V[K] : M[K];
+  }
+>;
 
 type DefaultValues = SomeSchema<any> | Primitives | readonly (SomeSchema<any> | Primitives)[];
 
