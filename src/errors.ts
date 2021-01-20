@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-import type { AnySchema, SomeSchema } from './types';
+import type { AnySchema, Primitives, SomeSchema } from './types';
 import type { SimpleSchema, SIMPLE_VALIDATORS } from './validators';
 import {
   isTupleSchema,
@@ -83,7 +83,7 @@ export const schemaToString = (schema: SomeSchema<any>): string => {
 
   if (isLiteralSchema(schema)) {
     return unionToPrint([
-      ...(schema.__values as readonly (keyof any | boolean | AnySchema)[]).map((v) =>
+      ...(schema.__values as readonly (Primitives | AnySchema)[]).map((v) =>
         isSchema(v) ? schemaToString(v) : JSON.stringify(v),
       ),
       ...modifiers,

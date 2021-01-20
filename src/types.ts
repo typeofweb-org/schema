@@ -10,7 +10,7 @@ import type {
 
 export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfModifiers<S> | TypeOfSchema<S>>;
 
-export type Primitives = keyof any | boolean;
+export type Primitives = string | number | boolean;
 export type Json = Primitives | { readonly [prop in string | number]: Json } | readonly Json[];
 export interface Schema<
   Type extends unknown,

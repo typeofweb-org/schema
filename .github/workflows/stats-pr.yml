@@ -19,7 +19,6 @@ jobs:
         with:
           path: base-branch
           ref: ${{github.base_ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - name: Compare sizes
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
@@ -28,3 +27,14 @@ jobs:
           base_directory_name: base-branch
         env:
           COMPRESS_BUNDLES: true
+
+      # START https://securitylab.github.com/research/github-actions-preventing-pwn-requests
+      - name: Save PR number
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }} > ./pr/NR
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pr
+          path: pr/
+      # END https://securitylab.github.com/research/github-actions-preventing-pwn-requests

@@ -5,6 +5,7 @@ import type {
   UndefinedToOptional,
   SomeSchema,
   DefaultModifiers,
+  Primitives,
 } from './types';
 
 export const TYPEOFWEB_SCHEMA = Symbol('@typeofweb/schema');
@@ -79,10 +80,10 @@ const InitialModifiers: DefaultModifiers = {
   minLength: undefined,
 };
 
-// `U extends (keyof any)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly
+// `U extends (Primitives)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly
 // thanks to this, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)
 export type OneOfSchema = ReturnType<typeof oneOf>;
-export const oneOf = <U extends readonly (keyof any | boolean | SomeSchema<any>)[]>(
+export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
 ) => {
   type X = {
@@ -200,7 +201,7 @@ export const unknown = () => {
 };
 
 export type TupleSchema = ReturnType<typeof tuple>;
-export const tuple = <U extends readonly (keyof any | boolean | SomeSchema<any>)[]>(
+export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
 ) => {
   return {
