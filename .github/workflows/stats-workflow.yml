@@ -17,7 +17,7 @@ jobs:
       - name: Compare sizes
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
         with:
-          pr_number: ${{github.event.pull_requests[0].number}}
+          pr_number: ${{github.event.workflow_run.pull_requests[0].number}}
         env:
           GITHUB_TOKEN: ${{secrets.TYPEOFWEB_BOT_GITHUB_TOKEN}}
           COMPRESS_BUNDLES: true
