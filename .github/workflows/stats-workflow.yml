@@ -18,6 +18,7 @@ jobs:
         uses: typeofweb/typeofweb-bundlephobia-pr-stats-action@pkg
         with:
           pr_number: ${{github.event.workflow_run.pull_requests[0].number}}
+          workflow_run_id: ${{github.event.workflow_run.id}}
         env:
           GITHUB_TOKEN: ${{secrets.TYPEOFWEB_BOT_GITHUB_TOKEN}}
           COMPRESS_BUNDLES: true
