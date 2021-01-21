@@ -25,7 +25,7 @@ const assertUnreachable = (val: never): never => {
 export const validate = <S extends SomeSchema<any>>(schema: S) => (value: unknown) =>
   __validate<S>(schema, value);
 
-const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeOf<S> => {
+export const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeOf<S> => {
   if (schema.__validator === UNKNOWN_VALIDATOR) {
     return value as TypeOf<S>;
   }
@@ -44,6 +44,14 @@ const __validate = <S extends SomeSchema<any>>(schema: S, value: unknown): TypeO
     } else {
       throw new ValidationError(schema, value);
     }
+  }
+
+  if (schema['__validate']) {
+    const result = schema.__validate(schema, value);
+    if (result._t === 'left') {
+      throw result.value;
+    }
+    return result.value;
   }
 
   if (Array.isArray(schema.__validator)) {

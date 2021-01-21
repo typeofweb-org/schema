@@ -74,7 +74,7 @@ export const isSchema = (val: any): val is AnySchema => {
   );
 };
 
-const InitialModifiers: DefaultModifiers = {
+export const InitialModifiers: DefaultModifiers = {
   optional: false,
   nullable: false,
   minLength: undefined,

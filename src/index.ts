@@ -29,3 +29,8 @@ export type {
   TupleSchema,
   SimpleSchema,
 } from './validators';
+
+export { oneOf as v2OneOf } from './validators/oneOf';
+export { number as v2Number } from './validators/number';
+export { string as v2String } from './validators/string';
+export { object as v2Object } from './validators/object';

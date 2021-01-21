@@ -25,6 +25,10 @@ import {
   isSimpleSchema,
   tuple,
 } from '../src/validators';
+import { number as v2Number } from '../src/validators/number';
+import { object as v2Object } from '../src/validators/object';
+import { oneOf as v2OneOf } from '../src/validators/oneOf';
+import { string as v2String } from '../src/validators/string';
 
 describe('@typeofweb/schema unit tests', () => {
   const simpleValidators: ReadonlyArray<() => AnySchema> = [boolean, date, number, string];
@@ -447,6 +451,18 @@ describe('@typeofweb/schema unit tests', () => {
       ).toEqual(
         '{ a: (≫string≪ | undefined), b: ≫number≪, "no elo koleś": ≫boolean≪, c: { e: (≫((≫string[]≪ | undefined) | { xxx: ≫number≪ })[]≪ | null) } }',
       );
+    });
+  });
+
+  describe.only('v2', () => {
+    it('should throw', () => {
+      expect(() => validate(v2OneOf(['a', 'b', 'c']))('aaa')).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected (\\"a\\" | \\"b\\" | \\"c\\") but got \\"aaa\\"!"`,
+      );
+    });
+
+    it('should work', () => {
+      expect(validate(v2OneOf(['a', 'b', 'c']))('b')).toBe('b');
     });
   });
 });

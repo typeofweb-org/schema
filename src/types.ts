@@ -1,3 +1,4 @@
+import type { ValidationError } from './errors';
 import type {
   TYPEOFWEB_SCHEMA,
   AllValidators,
@@ -23,7 +24,12 @@ export interface Schema<
   readonly __validator: Validator;
   readonly __values: Values;
   readonly __modifiers: Modifiers;
+  readonly __validate?: (schema: SomeSchema<any>, val: unknown) => Either<Type>;
 }
+
+export type Either<R, L = ValidationError> =
+  | { readonly _t: 'left'; readonly value: L }
+  | { readonly _t: 'right'; readonly value: R };
 
 export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
 
