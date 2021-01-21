@@ -1,13 +1,15 @@
 import type { ValidationError } from './errors';
-import type {
-  TYPEOFWEB_SCHEMA,
-  AllValidators,
-  ArraySchema,
-  TupleSchema,
-  SimpleSchema,
-  OneOfSchema,
-  ObjectSchema,
-} from './validators';
+import type { AllValidators } from './validationHelpers';
+import type { TYPEOFWEB_SCHEMA } from './validators/__schema';
+import type { ArraySchema } from './validators/array';
+import type { BooleanSchema } from './validators/boolean';
+import type { DateSchema } from './validators/date';
+import type { NumberSchema } from './validators/number';
+import type { ObjectSchema } from './validators/object';
+import type { OneOfSchema } from './validators/oneOf';
+import type { StringSchema } from './validators/string';
+import type { TupleSchema } from './validators/tuple';
+import type { UnknownSchema } from './validators/unknown';
 
 export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfModifiers<S> | TypeOfSchema<S>>;
 
@@ -24,16 +26,14 @@ export interface Schema<
   readonly __validator: Validator;
   readonly __values: Values;
   readonly __modifiers: Modifiers;
+  readonly __parse?: (val: unknown) => Type;
   readonly __validate?: (schema: SomeSchema<any>, val: unknown) => Either<Type>;
+  toString(shouldWrap?: boolean): string;
 }
 
 export type Either<R, L = ValidationError> =
   | { readonly _t: 'left'; readonly value: L }
   | { readonly _t: 'right'; readonly value: R };
-
-export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
-
-export type AnySchema = SimpleSchema | OneOfSchema | TupleSchema | ArraySchema | ObjectSchema;
 
 export type DefaultModifiers = {
   readonly optional: boolean | undefined;
@@ -49,6 +49,10 @@ export type MergeModifiers<
     readonly [K in keyof DefaultModifiers]: K extends keyof V ? V[K] : M[K];
   }
 >;
+
+export type SimpleSchema = StringSchema | NumberSchema | BooleanSchema | DateSchema | UnknownSchema;
+export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
+export type AnySchema = SimpleSchema | OneOfSchema | ArraySchema | TupleSchema | ObjectSchema;
 
 type DefaultValues = SomeSchema<any> | Primitives | readonly (SomeSchema<any> | Primitives)[];
 

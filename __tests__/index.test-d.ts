@@ -16,18 +16,19 @@ import {
   nonEmpty,
   unknown,
 } from '../src';
-import type { TypeOf, SomeSchema } from '../src';
 import type {
-  StringSchema,
-  NumberSchema,
+  TypeOf,
+  SomeSchema,
+  ArraySchema,
   BooleanSchema,
   DateSchema,
-  UnknownSchema,
-  OneOfSchema,
-  TupleSchema,
-  ArraySchema,
+  NumberSchema,
   ObjectSchema,
-} from '../src/validators';
+  OneOfSchema,
+  StringSchema,
+  TupleSchema,
+  UnknownSchema,
+} from '../src';
 
 declare const string1: TypeOf<StringSchema>;
 expectType<string>(string1);

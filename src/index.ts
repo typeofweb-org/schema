@@ -1,36 +1,26 @@
 export { minLength, nil, nonEmpty, nullable, optional } from './modifiers';
-export {
-  unknown,
-  oneOf,
-  string,
-  number,
-  boolean,
-  date,
-  array,
-  object,
-  isSchema,
-  tuple,
-} from './validators';
-export { validate } from './validate';
+export { isSchema } from './validators/__schema';
 export { ValidationError } from './errors';
 export { λ, pipe } from './utils';
 export type { AnySchema, Schema, SomeSchema, TypeOf } from './types';
-export type {
-  AllValidators,
-  SimpleValidatorToType,
-  OneOfSchema,
-  StringSchema,
-  NumberSchema,
-  BooleanSchema,
-  DateSchema,
-  ObjectSchema,
-  ArraySchema,
-  UnknownSchema,
-  TupleSchema,
-  SimpleSchema,
-} from './validators';
+export type { AllValidators, SimpleValidatorToType } from './validationHelpers';
 
-export { oneOf as v2OneOf } from './validators/oneOf';
-export { number as v2Number } from './validators/number';
-export { string as v2String } from './validators/string';
-export { object as v2Object } from './validators/object';
+export { array } from './validators/array';
+export type { ArraySchema } from './validators/array';
+export { boolean } from './validators/boolean';
+export type { BooleanSchema } from './validators/boolean';
+export { date } from './validators/date';
+export type { DateSchema } from './validators/date';
+export { number } from './validators/number';
+export type { NumberSchema } from './validators/number';
+export { object } from './validators/object';
+export type { ObjectSchema } from './validators/object';
+export { oneOf } from './validators/oneOf';
+export type { OneOfSchema } from './validators/oneOf';
+export { string } from './validators/string';
+export type { StringSchema } from './validators/string';
+export { tuple } from './validators/tuple';
+export type { TupleSchema } from './validators/tuple';
+export { unknown } from './validators/unknown';
+export type { UnknownSchema } from './validators/unknown';
+export { validate } from './validators/__validate';

@@ -23,12 +23,7 @@ import {
   isLiteralSchema,
   isRecordSchema,
   isSimpleSchema,
-  tuple,
-} from '../src/validators';
-import { number as v2Number } from '../src/validators/number';
-import { object as v2Object } from '../src/validators/object';
-import { oneOf as v2OneOf } from '../src/validators/oneOf';
-import { string as v2String } from '../src/validators/string';
+} from '../src/validationHelpers';
 
 describe('@typeofweb/schema unit tests', () => {
   const simpleValidators: ReadonlyArray<() => AnySchema> = [boolean, date, number, string];

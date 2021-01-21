@@ -1,4 +1,4 @@
-import type { AnySchema } from './types';
+import type { SomeSchema } from './types';
 
 export const isDate = (d: unknown): d is Date =>
   Object.prototype.toString.call(d) === '[object Date]';
@@ -17,7 +17,7 @@ export function pipe<S1, S2, S3, S4>(schema: SchemaArg<S1>, mod1: Modifier<S1, S
 export function pipe<S1, S2, S3, S4, S5>(schema: SchemaArg<S1>, mod1: Modifier<S1, S2>, mod2: Modifier<S2, S3>, mod3: Modifier<S3, S4>, mod4: Modifier<S4, S5>): S5;
 // prettier-ignore
 export function pipe<S1, S2, S3, S4, S5, S6>(schema: SchemaArg<S1>, mod1: Modifier<S1, S2>, mod2: Modifier<S2, S3>, mod3: Modifier<S3, S4>, mod4: Modifier<S4, S5>, mod5: Modifier<S5, S6>): S6;
-export function pipe<T extends AnySchema>(
+export function pipe<T extends SomeSchema<any>>(
   schema: SchemaArg<T>,
   ...rest: readonly ((...args: readonly any[]) => any)[]
 ) {
