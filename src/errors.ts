@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-this-expression */
 
 import type { SomeSchema } from './types';
+import { schemaToString } from './validators/__stringify';
 
 export class ValidationError extends Error {
   public readonly details: ErrorDetails;

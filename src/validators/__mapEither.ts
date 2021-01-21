@@ -22,7 +22,7 @@ export const __mapEither = <
   >;
 
   for (const i in iterable) {
-    const result = fn(iterable[i], i, iterable);
+    const result = fn(iterable[i], i as any, iterable);
 
     if (result._t === 'left') {
       if (acc._t === 'left') {

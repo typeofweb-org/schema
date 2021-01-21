@@ -15,3 +15,13 @@ export const getModifiers = (v: SomeSchema<any>): readonly string[] => {
   const modifiers = [v.__modifiers.optional && 'undefined', v.__modifiers.nullable && 'null'];
   return modifiers.filter((m): m is string => Boolean(m));
 };
+
+declare global {
+  interface Array<T> {
+    includes(searchElement: unknown, fromIndex?: number): searchElement is T;
+  }
+
+  interface ReadonlyArray<T> {
+    includes(searchElement: unknown, fromIndex?: number): searchElement is T;
+  }
+}

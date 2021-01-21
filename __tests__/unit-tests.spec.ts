@@ -1,5 +1,6 @@
 import type { AnySchema, SomeSchema } from '../src';
 import {
+  tuple,
   unknown,
   array,
   boolean,
@@ -16,14 +17,12 @@ import {
   string,
   validate,
 } from '../src';
-import { schemaToString } from '../src/errors';
 import { isISODateString } from '../src/parse';
-import {
-  isArraySchema,
-  isLiteralSchema,
-  isRecordSchema,
-  isSimpleSchema,
-} from '../src/validationHelpers';
+import { isSimpleSchema } from '../src/validators/__simpleValidators';
+import { schemaToString } from '../src/validators/__stringify';
+import { isArraySchema } from '../src/validators/array';
+import { isRecordSchema } from '../src/validators/object';
+import { isLiteralSchema } from '../src/validators/oneOf';
 
 describe('@typeofweb/schema unit tests', () => {
   const simpleValidators: ReadonlyArray<() => AnySchema> = [boolean, date, number, string];
@@ -446,18 +445,6 @@ describe('@typeofweb/schema unit tests', () => {
       ).toEqual(
         '{ a: (≫string≪ | undefined), b: ≫number≪, "no elo koleś": ≫boolean≪, c: { e: (≫((≫string[]≪ | undefined) | { xxx: ≫number≪ })[]≪ | null) } }',
       );
-    });
-  });
-
-  describe.only('v2', () => {
-    it('should throw', () => {
-      expect(() => validate(v2OneOf(['a', 'b', 'c']))('aaa')).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected (\\"a\\" | \\"b\\" | \\"c\\") but got \\"aaa\\"!"`,
-      );
-    });
-
-    it('should work', () => {
-      expect(validate(v2OneOf(['a', 'b', 'c']))('b')).toBe('b');
     });
   });
 });

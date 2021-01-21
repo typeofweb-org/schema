@@ -1,6 +1,8 @@
 import { isDate } from './utils';
 import type { AllValidators, SimpleValidatorToType } from './validationHelpers';
-import { NUMBER_VALIDATOR, DATE_VALIDATOR, STRING_VALIDATOR } from './validationHelpers';
+import { DATE_VALIDATOR } from './validators/date';
+import { NUMBER_VALIDATOR } from './validators/number';
+import { STRING_VALIDATOR } from './validators/string';
 
 const simplifiedISODateStringRegex = /^[+-]?\d{4}/;
 export const isISODateString = (value: unknown) =>

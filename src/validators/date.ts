@@ -15,8 +15,8 @@ export const date = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: DATE_VALIDATOR,
     __modifiers: InitialModifiers,
-    toString(shouldWrap) {
-      return shouldWrap ? typeToPrint('Date') : 'Date';
+    toString(plain) {
+      return plain ? 'Date' : typeToPrint('Date');
     },
     __validate(schema, value) {
       if (!isDate(value) || Number.isNaN(Number(value))) {

@@ -3,7 +3,7 @@ import { ValidationError } from '../errors';
 import type { Schema } from '../types';
 
 import { TYPEOFWEB_SCHEMA, InitialModifiers } from './__schema';
-import { typeToPrint, getModifiers, unionToPrint } from './__stringifyHelpers';
+import { typeToPrint } from './__stringifyHelpers';
 import { __validate } from './__validate';
 
 export type STRING_VALIDATOR = typeof STRING_VALIDATOR;
@@ -14,8 +14,8 @@ export const string = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: STRING_VALIDATOR,
     __modifiers: InitialModifiers,
-    toString(shouldWrap) {
-      return shouldWrap ? typeToPrint('string') : 'string';
+    toString(plain) {
+      return plain ? 'string' : typeToPrint('string');
     },
     __validate(_schema, value) {
       if (typeof value !== 'string') {

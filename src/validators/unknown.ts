@@ -12,8 +12,8 @@ export const unknown = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: UNKNOWN_VALIDATOR,
     __modifiers: InitialModifiers,
-    toString(shouldWrap) {
-      return shouldWrap ? typeToPrint('unknown') : 'unknown';
+    toString(plain) {
+      return plain ? 'unknown' : typeToPrint('unknown');
     },
     __validate(_schema, value) {
       return { _t: 'right', value };

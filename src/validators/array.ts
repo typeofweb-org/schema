@@ -18,7 +18,7 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...arr: readonly
     __values: {} as unknown,
     toString() {
       const str = this.__validator
-        .map((s) => (isSchema(s) && isSimpleSchema(s) ? s.toString(false) : schemaToString(s)))
+        .map((s) => (isSchema(s) && isSimpleSchema(s) ? s.toString(true) : schemaToString(s)))
         .join(' | ');
 
       return str.length > 1 ? typeToPrint(`(${str})[]`) : typeToPrint(`${str}[]`);

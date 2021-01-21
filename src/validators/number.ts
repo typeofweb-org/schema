@@ -13,8 +13,8 @@ export const number = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: NUMBER_VALIDATOR,
     __modifiers: InitialModifiers,
-    toString(shouldWrap) {
-      return shouldWrap ? typeToPrint('number') : 'number';
+    toString(plain) {
+      return plain ? 'number' : typeToPrint('number');
     },
     __validate(_schema, value) {
       if (typeof value !== 'number' || Number.isNaN(value)) {

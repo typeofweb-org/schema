@@ -13,8 +13,8 @@ export const boolean = () => {
     [TYPEOFWEB_SCHEMA]: true,
     __validator: BOOLEAN_VALIDATOR,
     __modifiers: InitialModifiers,
-    toString(shouldWrap) {
-      return shouldWrap ? typeToPrint('boolean') : 'boolean';
+    toString(plain) {
+      return plain ? 'boolean' : typeToPrint('boolean');
     },
     __validate(schema, value) {
       if (typeof value !== 'boolean') {

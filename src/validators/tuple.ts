@@ -4,6 +4,7 @@ import type { SomeSchema, TypeOf, Schema, Primitives, Either } from '../types';
 
 import { __mapEither } from './__mapEither';
 import { TYPEOFWEB_SCHEMA, InitialModifiers, isSchema } from './__schema';
+import { schemaToString } from './__stringify';
 import { __validate } from './__validate';
 
 export type TUPLE_VALIDATOR = typeof TUPLE_VALIDATOR;
@@ -25,7 +26,7 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
     toString() {
       return (
         '[' +
-        this.__values.map((s) => (isSchema(s) ? s.toString() : JSON.stringify(s))).join(', ') +
+        this.__values.map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s))).join(', ') +
         ']'
       );
     },

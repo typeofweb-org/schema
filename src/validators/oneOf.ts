@@ -3,7 +3,6 @@ import { ValidationError } from '../errors';
 import type { Either, Primitives, Schema, SomeSchema, TypeOf } from '../types';
 
 import { InitialModifiers, isSchema, TYPEOFWEB_SCHEMA } from './__schema';
-import { isSimpleSchema } from './__simpleValidators';
 import { schemaToString } from './__stringify';
 import { __validate } from './__validate';
 
@@ -30,7 +29,9 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
     __type: {} as unknown,
     __modifiers: InitialModifiers,
     toString() {
-      return this.__values.map((s) => (isSchema(s) ? s.toString() : JSON.stringify(s))).join(' | ');
+      return this.__values
+        .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
+        .join(' | ');
     },
     __validate(_schema, value) {
       return this.__values.reduce<Either<TypeOfResult>>(
