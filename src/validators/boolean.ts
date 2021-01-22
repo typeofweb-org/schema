@@ -2,19 +2,14 @@
 import { ValidationError } from '../errors';
 import type { Schema } from '../types';
 
-import { TYPEOFWEB_SCHEMA, InitialModifiers } from './__schema';
+import { initialModifiers } from './__schema';
 import { typeToPrint } from './__stringifyHelpers';
 
-export type BOOLEAN_VALIDATOR = typeof BOOLEAN_VALIDATOR;
-export type BooleanSchema = ReturnType<typeof boolean>;
-export const BOOLEAN_VALIDATOR = Symbol('boolean');
 export const boolean = () => {
   return {
-    [TYPEOFWEB_SCHEMA]: true,
-    __validator: BOOLEAN_VALIDATOR,
-    __modifiers: InitialModifiers,
-    toString(plain) {
-      return plain ? 'boolean' : typeToPrint('boolean');
+    __modifiers: initialModifiers,
+    toString() {
+      return typeToPrint('boolean');
     },
     __validate(schema, value) {
       if (typeof value !== 'boolean') {
@@ -22,5 +17,5 @@ export const boolean = () => {
       }
       return { _t: 'right', value };
     },
-  } as Schema<boolean, typeof InitialModifiers, never, BOOLEAN_VALIDATOR>;
+  } as Schema<boolean, typeof initialModifiers, never>;
 };

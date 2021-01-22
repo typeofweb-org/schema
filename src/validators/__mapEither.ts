@@ -1,13 +1,10 @@
 /* eslint-disable functional/no-loop-statement */
 import type { ValidationError } from '../errors';
-import type { Either } from '../types';
-
-/* eslint-disable-next-line functional/prefer-readonly-type */
-type Iterable<T> = Record<string, T> | T[];
+import type { Container, Either } from '../types';
 
 export const __mapEither = <
-  Input extends Readonly<Iterable<unknown>>,
-  Output extends Readonly<Iterable<unknown>>
+  Input extends Readonly<Container<unknown>>,
+  Output extends Readonly<Container<unknown>>
 >(
   fn: (
     value: Input[keyof Input],
@@ -18,7 +15,7 @@ export const __mapEither = <
 ) => {
   let acc = { _t: 'right', value: Array.isArray(iterable) ? [] : {} } as Either<
     Output,
-    Iterable<ValidationError>
+    Container<ValidationError>
   >;
 
   for (const i in iterable) {

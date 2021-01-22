@@ -21,7 +21,7 @@ import {
   unknown,
   tuple,
 } from '../src';
-import { isISODateString } from '../src/parse';
+import { isISODateString } from '../src/utils';
 
 const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 

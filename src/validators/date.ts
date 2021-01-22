@@ -1,22 +1,23 @@
 /* eslint-disable functional/no-this-expression */
 import { ValidationError } from '../errors';
 import type { Schema } from '../types';
-import { isDate } from '../utils';
+import { isDate, isISODateString } from '../utils';
 
-import { TYPEOFWEB_SCHEMA, InitialModifiers } from './__schema';
+import { initialModifiers } from './__schema';
 import { typeToPrint } from './__stringifyHelpers';
 import { __validate } from './__validate';
 
-export type DATE_VALIDATOR = typeof DATE_VALIDATOR;
-export type DateSchema = ReturnType<typeof date>;
-export const DATE_VALIDATOR = Symbol('Date');
 export const date = () => {
   return {
-    [TYPEOFWEB_SCHEMA]: true,
-    __validator: DATE_VALIDATOR,
-    __modifiers: InitialModifiers,
-    toString(plain) {
-      return plain ? 'Date' : typeToPrint('Date');
+    __modifiers: initialModifiers,
+    toString() {
+      return typeToPrint('Date');
+    },
+    __parse(value) {
+      if (typeof value === 'string' && isISODateString(value)) {
+        return new Date(value);
+      }
+      return value;
     },
     __validate(schema, value) {
       if (!isDate(value) || Number.isNaN(Number(value))) {
@@ -24,5 +25,5 @@ export const date = () => {
       }
       return { _t: 'right', value };
     },
-  } as Schema<Date, typeof InitialModifiers, never, DATE_VALIDATOR>;
+  } as Schema<Date, typeof initialModifiers, never>;
 };

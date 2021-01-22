@@ -2,17 +2,20 @@ import type { SomeSchema, TypeOf } from '..';
 import { ValidationError } from '../errors';
 import type { Either } from '../types';
 
-export const validate = <S extends SomeSchema<any>>(schema: S) => (value: unknown) =>
-  __validate<S>(schema, value);
+export const validate = <S extends SomeSchema<any>>(schema: S) => (value: unknown) => {
+  const result = __validate<S>(schema, value);
+  if (result._t === 'right') {
+    return result.value;
+  } else {
+    // throw result.value;
+    throw new ValidationError(schema, value);
+  }
+};
 
 export const __validate = <S extends SomeSchema<any>>(
   schema: S,
   value: unknown,
 ): Either<TypeOf<S>> => {
-  if (!schema.__validate) {
-    throw new Error(`Not implemented: V2 ${schema.__validator.toString()}`);
-  }
-
   // @todo rethink modifiers
   if (schema.__modifiers.nullable && value === null) {
     return { _t: 'right', value: value as TypeOf<S> };

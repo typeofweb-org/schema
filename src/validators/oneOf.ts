@@ -2,19 +2,12 @@
 import { ValidationError } from '../errors';
 import type { Either, Primitives, Schema, SomeSchema, TypeOf } from '../types';
 
-import { InitialModifiers, isSchema, TYPEOFWEB_SCHEMA } from './__schema';
+import { initialModifiers, isSchema } from './__schema';
 import { schemaToString } from './__stringify';
 import { __validate } from './__validate';
 
-export const isLiteralSchema = (s: SomeSchema<any>): s is OneOfSchema =>
-  s.__validator === ONE_OF_VALIDATOR;
-
-export type ONE_OF_VALIDATOR = typeof ONE_OF_VALIDATOR;
-export type OneOfSchema = ReturnType<typeof oneOf>;
-
 // `U extends (Primitives)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly
 // thanks to schema, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)
-export const ONE_OF_VALIDATOR = Symbol('_literal');
 export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
 ) => {
@@ -23,15 +16,15 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   }[number];
 
   return {
-    [TYPEOFWEB_SCHEMA]: true,
-    __validator: ONE_OF_VALIDATOR,
     __values: values,
     __type: {} as unknown,
-    __modifiers: InitialModifiers,
+    __modifiers: initialModifiers,
     toString() {
-      return this.__values
+      const str = this.__values
         .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
         .join(' | ');
+
+      return this.__values.length > 1 ? `(${str})` : str;
     },
     __validate(_schema, value) {
       return this.__values.reduce<Either<TypeOfResult>>(
@@ -51,5 +44,5 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
         { _t: 'left' } as Either<TypeOfResult>,
       );
     },
-  } as Schema<TypeOfResult, typeof InitialModifiers, U, ONE_OF_VALIDATOR>;
+  } as Schema<TypeOfResult, typeof initialModifiers, U>;
 };

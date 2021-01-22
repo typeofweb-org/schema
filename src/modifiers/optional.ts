@@ -10,8 +10,7 @@ export const optional = <S extends SomeSchema<any>>(schema: S) => {
   } as Schema<
     S['__type'],
     MergeModifiers<S['__modifiers'], { readonly optional: true }>,
-    S['__values'],
-    S['__validator']
+    S['__values']
   >;
 };
 

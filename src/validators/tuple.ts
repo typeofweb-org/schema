@@ -3,13 +3,10 @@ import { ValidationError } from '../errors';
 import type { SomeSchema, TypeOf, Schema, Primitives, Either } from '../types';
 
 import { __mapEither } from './__mapEither';
-import { TYPEOFWEB_SCHEMA, InitialModifiers, isSchema } from './__schema';
+import { initialModifiers, isSchema } from './__schema';
 import { schemaToString } from './__stringify';
 import { __validate } from './__validate';
 
-export type TUPLE_VALIDATOR = typeof TUPLE_VALIDATOR;
-export type TupleSchema = ReturnType<typeof tuple>;
-export const TUPLE_VALIDATOR = Symbol('_tuple');
 export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
 ) => {
@@ -18,11 +15,9 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   };
 
   return {
-    [TYPEOFWEB_SCHEMA]: true,
-    __validator: TUPLE_VALIDATOR,
     __values: values,
-    __type: {} as unknown,
-    __modifiers: InitialModifiers,
+    __type: {} as TypeOfResult,
+    __modifiers: initialModifiers,
     toString() {
       return (
         '[' +
@@ -51,11 +46,8 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
             >;
           }
         },
-        this.__values as readonly (Primitives | SomeSchema<any>)[],
+        this.__values,
       );
     },
-  } as Schema<TypeOfResult, typeof InitialModifiers, U, TUPLE_VALIDATOR>;
+  } as Schema<TypeOfResult, typeof initialModifiers, U>;
 };
-
-export const isTupleSchema = (s: SomeSchema<any>): s is TupleSchema =>
-  s.__validator === TUPLE_VALIDATOR;

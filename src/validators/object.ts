@@ -4,12 +4,11 @@ import { isOptionalSchema } from '../modifiers/optional';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
 
 import { __mapEither } from './__mapEither';
-import { TYPEOFWEB_SCHEMA, InitialModifiers } from './__schema';
+import { initialModifiers } from './__schema';
 import { schemaToString } from './__stringify';
 import { objectToPrint, quote } from './__stringifyHelpers';
 import { __validate } from './__validate';
 
-export type ObjectSchema = ReturnType<typeof object>;
 export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
   type TypeOfResult = UndefinedToOptional<
     {
@@ -18,13 +17,11 @@ export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
   >;
 
   return {
-    [TYPEOFWEB_SCHEMA]: true,
-    __validator: obj,
-    __modifiers: InitialModifiers,
-    __type: {} as never,
-    __values: {} as never,
+    __modifiers: initialModifiers,
+    __type: {} as TypeOfResult,
+    __values: obj,
     toString() {
-      const entries = Object.entries(this.__validator).map(
+      const entries = Object.entries(this.__values).map(
         ([key, val]) => [key, schemaToString(val)] as const,
       );
       if (entries.length === 0) {
@@ -38,7 +35,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
       if (typeof value !== 'object' || value === null) {
         return { _t: 'left', value: new ValidationError(this, value) };
       }
-      const validators = this.__validator as Record<string, SomeSchema<any>>;
+      const validators = this.__values as Record<string, SomeSchema<any>>;
 
       const valueKeys = Object.keys(value);
 
@@ -64,8 +61,5 @@ export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
         >;
       }, validators);
     },
-  } as Schema<TypeOfResult, typeof InitialModifiers, never, U>;
+  } as Schema<TypeOfResult, typeof initialModifiers, U>;
 };
-
-export const isRecordSchema = (s: SomeSchema<any>): s is ObjectSchema =>
-  !Array.isArray(s.__validator) && typeof s.__validator === 'object';

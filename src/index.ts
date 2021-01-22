@@ -1,26 +1,21 @@
-export { minLength, nil, nonEmpty, nullable, optional } from './modifiers';
 export { isSchema } from './validators/__schema';
 export { ValidationError } from './errors';
 export { λ, pipe } from './utils';
-export type { AnySchema, Schema, SomeSchema, TypeOf } from './types';
-export type { AllValidators, SimpleValidatorToType } from './validationHelpers';
+export type { Schema, SomeSchema, TypeOf } from './types';
 
 export { array } from './validators/array';
-export type { ArraySchema } from './validators/array';
 export { boolean } from './validators/boolean';
-export type { BooleanSchema } from './validators/boolean';
 export { date } from './validators/date';
-export type { DateSchema } from './validators/date';
 export { number } from './validators/number';
-export type { NumberSchema } from './validators/number';
 export { object } from './validators/object';
-export type { ObjectSchema } from './validators/object';
 export { oneOf } from './validators/oneOf';
-export type { OneOfSchema } from './validators/oneOf';
 export { string } from './validators/string';
-export type { StringSchema } from './validators/string';
 export { tuple } from './validators/tuple';
-export type { TupleSchema } from './validators/tuple';
 export { unknown } from './validators/unknown';
-export type { UnknownSchema } from './validators/unknown';
 export { validate } from './validators/__validate';
+
+export { minLength } from './modifiers/minLength';
+export { nil } from './modifiers/nil';
+export { nonEmpty } from './modifiers/nonEmpty';
+export { nullable } from './modifiers/nullable';
+export { optional } from './modifiers/optional';

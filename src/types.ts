@@ -1,15 +1,4 @@
 import type { ValidationError } from './errors';
-import type { AllValidators } from './validationHelpers';
-import type { TYPEOFWEB_SCHEMA } from './validators/__schema';
-import type { ArraySchema } from './validators/array';
-import type { BooleanSchema } from './validators/boolean';
-import type { DateSchema } from './validators/date';
-import type { NumberSchema } from './validators/number';
-import type { ObjectSchema } from './validators/object';
-import type { OneOfSchema } from './validators/oneOf';
-import type { StringSchema } from './validators/string';
-import type { TupleSchema } from './validators/tuple';
-import type { UnknownSchema } from './validators/unknown';
 
 export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfModifiers<S> | TypeOfSchema<S>>;
 
@@ -18,17 +7,14 @@ export type Json = Primitives | { readonly [prop in string | number]: Json } | r
 export interface Schema<
   Type extends unknown,
   Modifiers extends DefaultModifiers,
-  Values extends DefaultValues,
-  Validator extends AllValidators = AllValidators
+  Values extends DefaultValues
 > {
-  readonly [TYPEOFWEB_SCHEMA]: true;
   readonly __type: Type;
-  readonly __validator: Validator;
   readonly __values: Values;
   readonly __modifiers: Modifiers;
   readonly __parse?: (val: unknown) => Type;
-  readonly __validate?: (schema: SomeSchema<any>, val: unknown) => Either<Type>;
-  toString(shouldWrap?: boolean): string;
+  readonly __validate: (schema: SomeSchema<any>, val: unknown) => Either<Type>;
+  toString(): string;
 }
 
 export type Either<R, L = ValidationError> =
@@ -50,11 +36,11 @@ export type MergeModifiers<
   }
 >;
 
-export type SimpleSchema = StringSchema | NumberSchema | BooleanSchema | DateSchema | UnknownSchema;
-export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
-export type AnySchema = SimpleSchema | OneOfSchema | ArraySchema | TupleSchema | ObjectSchema;
+export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues>;
 
-type DefaultValues = SomeSchema<any> | Primitives | readonly (SomeSchema<any> | Primitives)[];
+type DefaultValues = SomeSchema<any> | Primitives | Container<SomeSchema<any> | Primitives>;
+
+export type Container<T> = Record<string, T> | readonly T[];
 
 export type TupleOf<
   T,
@@ -66,7 +52,7 @@ type TypeOfModifiers<S extends SomeSchema<any>> =
   | If<S['__modifiers'], { readonly optional: true }, undefined>
   | If<S['__modifiers'], { readonly nullable: true }, null>;
 
-type TypeOfSchema<S extends SomeSchema<any>> = S extends SomeSchema<infer R> ? R : never;
+type TypeOfSchema<S extends SomeSchema<any>> = S['__type'];
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 

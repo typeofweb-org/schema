@@ -1,6 +1,6 @@
 import type { SomeSchema } from '../types';
 
-export const typeToPrint = (str: string) => '≫' + str + '≪';
+export const typeToPrint = (str: string) => str;
 export const objectToPrint = (str: string) => '{' + str + '}';
 export const quote = (str: string) => (/\s/.test(str) ? `"${str}"` : str);
 export const unionToPrint = (arr: readonly string[]): string => {

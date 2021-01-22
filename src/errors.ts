@@ -10,14 +10,14 @@ export class ValidationError extends Error {
     const expected = schemaToString(schema);
     const got = JSON.stringify(value);
 
-    const d: ErrorDetails = {
+    const details: ErrorDetails = {
       kind: 'TYPE_MISMATCH',
       got,
       expected,
     };
-    super(`Invalid type! Expected ${d.expected} but got ${d.got}!`);
+    super(`Invalid type! Expected ${details.expected} but got ${details.got}!`);
 
-    this.details = d;
+    this.details = details;
     this.name = 'ValidationError';
     Error.captureStackTrace(this);
 

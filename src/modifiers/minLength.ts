@@ -21,7 +21,6 @@ export const minLength = <L extends number>(length: L) => <
         readonly minLength: L;
       }
     >,
-    S['__values'],
-    S['__validator']
+    S['__values']
   >;
 };

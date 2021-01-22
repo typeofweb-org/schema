@@ -1,22 +1,18 @@
 /* eslint-disable functional/no-this-expression */
 import type { Schema } from '../types';
 
-import { TYPEOFWEB_SCHEMA, InitialModifiers } from './__schema';
+import { initialModifiers } from './__schema';
 import { typeToPrint } from './__stringifyHelpers';
 
-export type UNKNOWN_VALIDATOR = typeof UNKNOWN_VALIDATOR;
-export type UnknownSchema = ReturnType<typeof unknown>;
-export const UNKNOWN_VALIDATOR = Symbol('_unknown');
+const modifiers = { ...initialModifiers, nullable: true, optional: true };
 export const unknown = () => {
   return {
-    [TYPEOFWEB_SCHEMA]: true,
-    __validator: UNKNOWN_VALIDATOR,
-    __modifiers: InitialModifiers,
-    toString(plain) {
-      return plain ? 'unknown' : typeToPrint('unknown');
+    __modifiers: modifiers,
+    toString() {
+      return typeToPrint('unknown');
     },
     __validate(_schema, value) {
       return { _t: 'right', value };
     },
-  } as Schema<unknown, typeof InitialModifiers, never, UNKNOWN_VALIDATOR>;
+  } as Schema<unknown, typeof modifiers, never>;
 };
