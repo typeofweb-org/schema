@@ -1,10 +1,10 @@
 /* eslint-disable functional/no-this-expression */
 import { ValidationError } from '../errors';
+import { initialModifiers } from '../schema';
+import { typeToPrint } from '../stringify';
 import type { Schema } from '../types';
-import { isDate } from '../utils';
+import { isDate } from '../utils/dateUtils';
 
-import { initialModifiers } from './__schema';
-import { typeToPrint } from './__stringifyHelpers';
 import { __validate } from './__validate';
 
 export const string = () => {

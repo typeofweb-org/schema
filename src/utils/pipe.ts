@@ -1,10 +1,4 @@
-import type { SomeSchema } from './types';
-
-export const isDate = (d: unknown): d is Date =>
-  Object.prototype.toString.call(d) === '[object Date]';
-
-const simplifiedISODateStringRegex = /^[+-]?\d{4}/;
-export const isISODateString = (value: string) => simplifiedISODateStringRegex.test(value);
+import type { SomeSchema } from '../types';
 
 type Modifier<S1, S2> = (arg: S1) => S2;
 type SchemaArg<S> = (() => S) | S;

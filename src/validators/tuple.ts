@@ -1,10 +1,10 @@
 /* eslint-disable functional/no-this-expression */
 import { ValidationError } from '../errors';
+import { initialModifiers, isSchema } from '../schema';
+import { schemaToString } from '../stringify';
 import type { SomeSchema, TypeOf, Schema, Primitives, Either } from '../types';
+import { __mapEither } from '../utils/mapEither';
 
-import { __mapEither } from './__mapEither';
-import { initialModifiers, isSchema } from './__schema';
-import { schemaToString } from './__stringify';
 import { __validate } from './__validate';
 
 export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(

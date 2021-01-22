@@ -17,8 +17,8 @@ import {
   string,
   validate,
 } from '../src';
-import { isISODateString } from '../src/utils';
-import { schemaToString } from '../src/validators/__stringify';
+import { schemaToString } from '../src/stringify';
+import { isISODateString } from '../src/utils/dateUtils';
 
 describe('@typeofweb/schema unit tests', () => {
   const simpleValidators: ReadonlyArray<() => SomeSchema<any>> = [boolean, date, number, string];

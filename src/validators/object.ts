@@ -1,12 +1,11 @@
 /* eslint-disable functional/no-this-expression */
 import { ValidationError } from '../errors';
 import { isOptionalSchema } from '../modifiers/optional';
+import { initialModifiers } from '../schema';
+import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
+import { __mapEither } from '../utils/mapEither';
 
-import { __mapEither } from './__mapEither';
-import { initialModifiers } from './__schema';
-import { schemaToString } from './__stringify';
-import { objectToPrint, quote } from './__stringifyHelpers';
 import { __validate } from './__validate';
 
 export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {

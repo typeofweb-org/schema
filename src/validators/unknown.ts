@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-this-expression */
+import { initialModifiers } from '../schema';
+import { typeToPrint } from '../stringify';
 import type { Schema } from '../types';
-
-import { initialModifiers } from './__schema';
-import { typeToPrint } from './__stringifyHelpers';
 
 const modifiers = { ...initialModifiers, nullable: true, optional: true };
 export const unknown = () => {

@@ -1,9 +1,9 @@
 /* eslint-disable functional/no-this-expression */
 import { ValidationError } from '../errors';
+import { initialModifiers, isSchema } from '../schema';
+import { schemaToString } from '../stringify';
 import type { Either, Primitives, Schema, SomeSchema, TypeOf } from '../types';
 
-import { initialModifiers, isSchema } from './__schema';
-import { schemaToString } from './__stringify';
 import { __validate } from './__validate';
 
 // `U extends (Primitives)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly

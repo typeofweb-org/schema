@@ -1,6 +1,6 @@
-export { isSchema } from './validators/__schema';
+export { isSchema } from './schema';
 export { ValidationError } from './errors';
-export { λ, pipe } from './utils';
+export { λ, pipe } from './utils/pipe';
 export type { Schema, SomeSchema, TypeOf } from './types';
 
 export { array } from './validators/array';

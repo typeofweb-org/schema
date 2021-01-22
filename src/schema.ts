@@ -1,4 +1,4 @@
-import type { SomeSchema, DefaultModifiers } from '../types';
+import type { SomeSchema, DefaultModifiers } from './types';
 
 export const isSchema = (val: any): val is SomeSchema<any> => {
   return typeof val === 'object' && val !== null && '__modifiers' in val;

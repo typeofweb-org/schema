@@ -1,11 +1,9 @@
 /* eslint-disable functional/no-this-expression */
 import { ValidationError } from '../errors';
+import { initialModifiers } from '../schema';
+import { schemaToString, typeToPrint } from '../stringify';
 import type { Schema, SomeSchema, TypeOf } from '../types';
-
-import { __mapEither } from './__mapEither';
-import { initialModifiers } from './__schema';
-import { schemaToString } from './__stringify';
-import { typeToPrint } from './__stringifyHelpers';
+import { __mapEither } from '../utils/mapEither';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...arr: readonly [...U]) => {
   type TypeOfResult = readonly TypeOf<U[number]>[];
