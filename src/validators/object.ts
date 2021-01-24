@@ -54,6 +54,11 @@ function validateObject<
   const validators = this.__values as Record<string, SomeSchema<any>>;
 
   const valueKeys = Object.keys(value);
+  const unknownKeysCount = valueKeys.filter((k) => !(k in validators)).length;
+
+  if (!this.__modifiers.allowUnknownKeys && unknownKeysCount > 0) {
+    return { _t: 'left', value: new ValidationError(this, value) };
+  }
 
   const validatorEntries = Object.entries(validators);
   const allValidatorKeysCount = validatorEntries.length;
@@ -62,7 +67,11 @@ function validateObject<
     0,
   );
 
-  if (valueKeys.length > allValidatorKeysCount || valueKeys.length < requiredValidatorKeysCount) {
+  const isTooManyValues = this.__modifiers.allowUnknownKeys
+    ? false
+    : valueKeys.length > allValidatorKeysCount;
+
+  if (isTooManyValues || valueKeys.length - unknownKeysCount < requiredValidatorKeysCount) {
     return { _t: 'left', value: new ValidationError(this, value) };
   }
 

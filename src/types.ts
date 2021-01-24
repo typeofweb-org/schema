@@ -24,6 +24,7 @@ export type Either<R, L = ValidationError> =
 export type DefaultModifiers = {
   readonly optional: boolean | undefined;
   readonly nullable: boolean | undefined;
+  readonly allowUnknownKeys: boolean | undefined;
   readonly minLength: number | undefined;
 };
 

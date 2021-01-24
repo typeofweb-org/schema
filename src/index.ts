@@ -19,3 +19,4 @@ export { nil } from './modifiers/nil';
 export { nonEmpty } from './modifiers/nonEmpty';
 export { nullable } from './modifiers/nullable';
 export { optional } from './modifiers/optional';
+export { allowUnknownKeys } from './modifiers/allowUnknownKeys';
