@@ -1,10 +1,10 @@
 /* eslint-disable functional/no-loop-statement */
 import type { ValidationError } from '../errors';
-import type { Container, Either } from '../types';
+import type { Functor, Either } from '../types';
 
 export const __mapEither = <
-  Input extends Readonly<Container<unknown>>,
-  Output extends Readonly<Container<unknown>>
+  Input extends Readonly<Functor<unknown>>,
+  Output extends Readonly<Functor<unknown>>
 >(
   fn: (
     value: Input[keyof Input],
@@ -15,7 +15,7 @@ export const __mapEither = <
 ) => {
   let acc = { _t: 'right', value: Array.isArray(iterable) ? [] : {} } as Either<
     Output,
-    Container<ValidationError>
+    Functor<ValidationError>
   >;
 
   for (const i in iterable) {

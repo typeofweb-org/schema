@@ -38,9 +38,9 @@ export type MergeModifiers<
 
 export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues>;
 
-type DefaultValues = SomeSchema<any> | Primitives | Container<SomeSchema<any> | Primitives>;
+type DefaultValues = SomeSchema<any> | Primitives | Functor<SomeSchema<any> | Primitives>;
 
-export type Container<T> = Record<string, T> | readonly T[];
+export type Functor<T> = Record<string, T> | readonly T[];
 
 export type TupleOf<
   T,
