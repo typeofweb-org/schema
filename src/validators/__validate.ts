@@ -34,6 +34,5 @@ export const __validate = <S extends SomeSchema<any>>(
   }
 
   const parsedValue: unknown = schema.__parse ? schema.__parse(value) : value;
-
   return schema.__validate(schema, parsedValue);
 };

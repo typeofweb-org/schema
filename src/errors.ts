@@ -8,7 +8,7 @@ export class ValidationError extends Error {
 
   constructor(schema: SomeSchema<any>, value: any) {
     const expected = schemaToString(schema);
-    const got = JSON.stringify(value);
+    const got = typeof value === 'function' ? String(value) : JSON.stringify(value);
 
     const details: ErrorDetails = {
       kind: 'TYPE_MISMATCH',

@@ -19,6 +19,10 @@ export const __mapEither = <
   >;
 
   for (const i in iterable) {
+    if (!Object.prototype.hasOwnProperty.call(iterable, i)) {
+      continue;
+    }
+
     const result = fn(iterable[i], i as any, iterable);
 
     if (result._t === 'left') {
