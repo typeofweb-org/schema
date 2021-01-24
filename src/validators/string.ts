@@ -3,8 +3,7 @@ import { initialModifiers } from '../schema';
 import { typeToPrint } from '../stringify';
 import type { Schema } from '../types';
 import { isDate } from '../utils/dateUtils';
-
-import { __validate } from './__validate';
+import { left, right } from '../utils/either';
 
 export const string = () => {
   return {
@@ -28,7 +27,7 @@ function parseString(this: Schema<string, typeof initialModifiers, never>, value
 
 function validateString(this: Schema<string, typeof initialModifiers, never>, value: unknown) {
   if (typeof value !== 'string') {
-    return { _t: 'left', value: new ValidationError(this, value) };
+    return left(new ValidationError(this, value));
   }
-  return { _t: 'right', value: value };
+  return right(value);
 }

@@ -2,38 +2,34 @@
 import type { ValidationError } from '../errors';
 import type { Functor, Either } from '../types';
 
-export const __mapEither = <
+import { left, right } from './either';
+
+export const sequenceA = <
   Input extends Readonly<Functor<unknown>>,
   Output extends Readonly<Functor<unknown>>
 >(
   fn: (
     value: Input[keyof Input],
-    index: Input extends readonly unknown[] ? number & keyof Input : string & keyof Input,
+    index: keyof Input,
     iterable: Input,
   ) => Either<Output[keyof Output]>,
-  iterable: Input,
+  functor: Input,
 ) => {
-  let acc = { _t: 'right', value: Array.isArray(iterable) ? [] : {} } as Either<
-    Output,
-    Functor<ValidationError>
-  >;
+  let acc = right(Array.isArray(functor) ? [] : {}) as Either<Output, Functor<ValidationError>>;
 
-  for (const i in iterable) {
-    if (!Object.prototype.hasOwnProperty.call(iterable, i)) {
+  for (const i in functor) {
+    if (!Object.prototype.hasOwnProperty.call(functor, i)) {
       continue;
     }
 
-    const result = fn(iterable[i], i as any, iterable);
+    const result = fn(functor[i], i as any, functor);
 
     if (result._t === 'left') {
       if (acc._t === 'left') {
         (acc.value as Record<typeof i, ValidationError>)[i] = result.value;
         continue;
       } else {
-        acc = {
-          _t: 'left',
-          value: Array.isArray(iterable) ? [result.value] : { [i]: result.value },
-        };
+        acc = left(Array.isArray(functor) ? [result.value] : { [i]: result.value });
         continue;
       }
     }

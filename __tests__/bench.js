@@ -19,6 +19,6 @@ function run(i) {
   };
   return validator(obj);
 }
-for (let i = 0; i < 1000000; ++i) {
+for (let i = 0; i < 2000000; ++i) {
   run(i);
 }

@@ -3,8 +3,7 @@ import { initialModifiers } from '../schema';
 import { typeToPrint } from '../stringify';
 import type { Schema } from '../types';
 import { isDate, isISODateString } from '../utils/dateUtils';
-
-import { __validate } from './__validate';
+import { left, right } from '../utils/either';
 
 export const date = () => {
   return {
@@ -28,7 +27,7 @@ function parseDate(this: Schema<Date, typeof initialModifiers, never>, value: un
 
 function validateDate(this: Schema<Date, typeof initialModifiers, never>, value: unknown) {
   if (!isDate(value) || Number.isNaN(Number(value))) {
-    return { _t: 'left', value: new ValidationError(this, value) };
+    return left(new ValidationError(this, value));
   }
-  return { _t: 'right', value };
+  return right(value);
 }

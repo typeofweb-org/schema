@@ -30,6 +30,9 @@ describe('@typeofweb/schema unit tests', () => {
     { bivarianceHack(schema: SomeSchema<any>): SomeSchema<any> }['bivarianceHack']
   > = [minLength(35), nil, nonEmpty, nullable, optional];
 
+  const x = object({});
+  x.__parse;
+
   describe('validation', () => {
     it('string validator should coerce Date to ISOString', () => {
       expect(validate(string())(new Date(0))).toBe('1970-01-01T00:00:00.000Z');

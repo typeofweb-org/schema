@@ -12,7 +12,13 @@ export interface Schema<
   readonly __type: Type;
   readonly __values: Values;
   readonly __modifiers: Modifiers;
+  /**
+   * @internal
+   */
   readonly __parse?: (val: unknown) => Type;
+  /**
+   * @internal
+   */
   readonly __validate: (val: unknown) => Either<Type>;
   toString(): string;
 }
