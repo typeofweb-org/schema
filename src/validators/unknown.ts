@@ -1,6 +1,7 @@
 import { initialModifiers } from '../schema';
 import { typeToPrint } from '../stringify';
 import type { Schema } from '../types';
+import { right } from '../utils/either';
 
 const modifiers = { ...initialModifiers, nullable: true, optional: true };
 export const unknown = () => {
@@ -15,5 +16,5 @@ function toStringUnknown() {
   return typeToPrint('unknown');
 }
 function validateUnknown(this: Schema<unknown, typeof modifiers, never>, value: unknown) {
-  return { _t: 'right', value };
+  return right(value);
 }

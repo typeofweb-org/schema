@@ -409,15 +409,16 @@ Platform info:
    Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz × 8
 ```
 
-| library                     | relative speed | operations per second | avg. operation time |
-| --------------------------- | -------------: | --------------------: | ------------------: |
-| **@typeofweb/schema@0.4.2** |         **0%** |   **(1,691,616 rps)** |  **(avg: 0.591μs)** |
-| mschema@0.5.6               |        -65.44% |         (584,672 rps) |          (avg: 1μs) |
-| validator.js@2.0.4          |        -71.04% |         (489,821 rps) |          (avg: 2μs) |
-| validate.js@0.13.1          |        -85.39% |         (247,122 rps) |          (avg: 4μs) |
-| validatorjs@3.22.1          |        -90.01% |         (169,048 rps) |          (avg: 5μs) |
-| joi@17.3.0                  |        -92.74% |         (122,755 rps) |          (avg: 8μs) |
-| superstruct@0.13.3          |        -96.16% |          (64,908 rps) |         (avg: 15μs) |
-| yup@0.32.8                  |        -96.40% |          (60,843 rps) |         (avg: 16μs) |
-| jsonschema@1.4.0            |        -97.75% |          (38,016 rps) |         (avg: 26μs) |
-| parambulator@1.5.2          |        -98.63% |          (23,210 rps) |         (avg: 43μs) |
+| library               | relative speed | operations per second | avg. operation time |
+| --------------------- | -------------: | --------------------: | ------------------: |
+| **@typeofweb/schema** |         **0%** |   **(2,326,284 rps)** |  **(avg: 0.429μs)** |
+| io-ts@2.2.13          |        -13.67% |       (2,008,248 rps) |      (avg: 0.497μs) |
+| mschema@0.5.6         |        -78.00% |         (511,675 rps) |          (avg: 1μs) |
+| validator.js@2.0.4    |        -80.62% |         (450,823 rps) |          (avg: 2μs) |
+| validate.js@0.13.1    |        -89.41% |         (246,273 rps) |          (avg: 4μs) |
+| validatorjs@3.22.1    |        -92.91% |         (165,025 rps) |          (avg: 6μs) |
+| joi@17.3.0            |        -94.72% |         (122,854 rps) |          (avg: 8μs) |
+| superstruct@0.13.3    |        -97.31% |          (62,487 rps) |         (avg: 16μs) |
+| yup@0.32.8            |        -97.34% |          (61,856 rps) |         (avg: 16μs) |
+| parambulator@1.5.2    |        -99.06% |          (21,842 rps) |         (avg: 45μs) |
+| zod@1.11.11           |        -99.29% |          (16,530 rps) |         (avg: 60μs) |

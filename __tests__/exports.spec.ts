@@ -11,7 +11,7 @@ describe('check exports', () => {
 
     validators.forEach((v) => {
       it(`${v} should be exported from index.ts`, async () =>
-        expect(Object.keys(await import('../'))).toContain(v));
+        expect(Object.keys(await import('../src/index'))).toContain(v));
     });
   });
 
@@ -23,7 +23,7 @@ describe('check exports', () => {
 
     modifiers.forEach((v) => {
       it(`${v} should be exported from index.ts`, async () =>
-        expect(Object.keys(await import('../'))).toContain(v));
+        expect(Object.keys(await import('../src/index'))).toContain(v));
     });
   });
 });

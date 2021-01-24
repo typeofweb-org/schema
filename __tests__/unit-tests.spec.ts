@@ -213,6 +213,69 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() => validator(obj)).not.toThrow();
     });
 
+    it(`object() should work with objects with null prototype`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj = Object.create(null, { name: { value: 'halo', enumerable: true } }) as object;
+
+      expect(validator(obj)).toEqual({ name: 'halo' });
+    });
+
+    it(`object() should work with sealed and frozen objects`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj1 = Object.seal({ name: 'jeden' });
+      const obj2 = Object.freeze({ name: 'dwa' });
+      const obj3 = Object.preventExtensions({ name: 'trzy' });
+
+      expect(validator(obj1)).toEqual({ name: 'jeden' });
+      expect(validator(obj2)).toEqual({ name: 'dwa' });
+      expect(validator(obj3)).toEqual({ name: 'trzy' });
+    });
+
+    it(`object() should strip non-enumerable properties when validating`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj = Object.create(null, {
+        name: { value: 'halo', enumerable: true },
+        sneaky: { value: 'spy', enumerable: false },
+      }) as object;
+
+      expect(validator(obj)).toEqual({ name: 'halo' });
+      expect((validator(obj) as Record<string, any>)['sneaky']).toEqual(undefined);
+    });
+
+    it(`object() should not mutate existing objects`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj = Object.create(null, {
+        name: { value: 'halo', enumerable: true, writable: true, configurable: true },
+        sneaky: { value: 'spy', enumerable: false, writable: true, configurable: true },
+      }) as Record<string, any>;
+
+      const result = validator(obj);
+
+      expect(result).toEqual({ name: 'halo' });
+      expect(result === obj).toEqual(false);
+
+      (result as Record<string, any>).name = 'blabla';
+
+      expect(obj.name).toEqual('halo');
+      expect(obj.sneaky).toEqual('spy');
+    });
+
     it('tuple should validate given items in given order', () => {
       const schema = object({
         a: tuple([]),

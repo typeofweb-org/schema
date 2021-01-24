@@ -2,7 +2,8 @@ import { ValidationError } from '../errors';
 import { initialModifiers } from '../schema';
 import { schemaToString, typeToPrint } from '../stringify';
 import type { Schema, SomeSchema, TypeOf } from '../types';
-import { __mapEither } from '../utils/mapEither';
+import { left, right } from '../utils/either';
+import { sequenceA } from '../utils/sequenceA';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...arr: readonly [...U]) => {
   type TypeOfResult = readonly TypeOf<U[number]>[];
@@ -28,13 +29,11 @@ function validateArray<
   TypeOfResult extends readonly TypeOf<U[number]>[]
 >(this: Schema<TypeOfResult, typeof initialModifiers, U>, value: unknown) {
   if (!Array.isArray(value)) {
-    return { _t: 'left', value: new ValidationError(this, value) };
+    return left(new ValidationError(this, value));
   }
 
-  return __mapEither<readonly unknown[], readonly unknown[]>((val) => {
+  return sequenceA<readonly unknown[], readonly unknown[]>((val) => {
     const isValid = this.__values.some((validator) => validator.__validate(val)._t === 'right');
-    return isValid
-      ? { _t: 'right', value: val }
-      : { _t: 'left', value: new ValidationError(this, value) };
+    return isValid ? right(val) : left(new ValidationError(this, value));
   }, value);
 }

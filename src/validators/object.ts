@@ -3,9 +3,8 @@ import { isOptionalSchema } from '../modifiers/optional';
 import { initialModifiers } from '../schema';
 import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
-import { __mapEither } from '../utils/mapEither';
-
-import { __validate } from './__validate';
+import { left } from '../utils/either';
+import { sequenceA } from '../utils/sequenceA';
 
 export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
   type TypeOfResult = UndefinedToOptional<
@@ -49,16 +48,11 @@ function validateObject<
   >
 >(this: Schema<TypeOfResult, typeof initialModifiers, U>, value: Record<string, unknown>) {
   if (typeof value !== 'object' || value === null) {
-    return { _t: 'left', value: new ValidationError(this, value) };
+    return left(new ValidationError(this, value));
   }
   const validators = this.__values as Record<string, SomeSchema<any>>;
 
   const valueKeys = Object.keys(value);
-  const unknownKeysCount = valueKeys.filter((k) => !(k in validators)).length;
-
-  if (!this.__modifiers.allowUnknownKeys && unknownKeysCount > 0) {
-    return { _t: 'left', value: new ValidationError(this, value) };
-  }
 
   const validatorEntries = Object.entries(validators);
   const allValidatorKeysCount = validatorEntries.length;
@@ -67,17 +61,13 @@ function validateObject<
     0,
   );
 
-  const isTooManyValues = this.__modifiers.allowUnknownKeys
-    ? false
-    : valueKeys.length > allValidatorKeysCount;
-
-  if (isTooManyValues || valueKeys.length - unknownKeysCount < requiredValidatorKeysCount) {
-    return { _t: 'left', value: new ValidationError(this, value) };
+  if (valueKeys.length > allValidatorKeysCount || valueKeys.length < requiredValidatorKeysCount) {
+    return left(new ValidationError(this, value));
   }
 
-  return __mapEither<Record<string, SomeSchema<any>>, TypeOfResult>((validator, key) => {
+  return sequenceA<Record<string, SomeSchema<any>>, TypeOfResult>((validator, key) => {
     const valueForValidator = value[key];
-    return __validate(validator, valueForValidator) as Exclude<
+    return validator.__validate(valueForValidator) as Exclude<
       TypeOfResult[keyof TypeOfResult],
       undefined
     >;

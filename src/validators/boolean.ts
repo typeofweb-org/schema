@@ -2,6 +2,7 @@ import { ValidationError } from '../errors';
 import { initialModifiers } from '../schema';
 import { typeToPrint } from '../stringify';
 import type { Schema } from '../types';
+import { left, right } from '../utils/either';
 
 export const boolean = () => {
   return {
@@ -17,7 +18,7 @@ function toStringBoolean() {
 
 function validateBoolean(this: Schema<boolean, typeof initialModifiers, never>, value: unknown) {
   if (typeof value !== 'boolean') {
-    return { _t: 'left', value: new ValidationError(this, value) };
+    return left(new ValidationError(this, value));
   }
-  return { _t: 'right', value };
+  return right(value);
 }

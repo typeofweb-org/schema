@@ -41,7 +41,7 @@
   },
   "overrides": [
     {
-      "files": ["src/validators/**.ts", "src/errors.ts"],
+      "files": ["src/validators/**.ts", "src/modifiers/**.ts", "src/errors.ts"],
       "rules": {
         "functional/no-this-expression": 0
       }

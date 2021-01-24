@@ -2,9 +2,8 @@ import { ValidationError } from '../errors';
 import { initialModifiers, isSchema } from '../schema';
 import { schemaToString } from '../stringify';
 import type { SomeSchema, TypeOf, Schema, Primitives, Either } from '../types';
-import { __mapEither } from '../utils/mapEither';
-
-import { __validate } from './__validate';
+import { left, right } from '../utils/either';
+import { sequenceA } from '../utils/sequenceA';
 
 export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
@@ -42,21 +41,19 @@ function validateTuple<
   }
 >(this: Schema<TypeOfResult, typeof initialModifiers, U>, value: unknown) {
   if (!Array.isArray(value) || value.length !== this.__values.length) {
-    return { _t: 'left', value: new ValidationError(this, value) };
+    return left(new ValidationError(this, value));
   }
 
   const v = value as readonly (Primitives | SomeSchema<any>)[];
 
-  return __mapEither<readonly (Primitives | SomeSchema<any>)[], TypeOfResult>(
+  return sequenceA<readonly (Primitives | SomeSchema<any>)[], TypeOfResult>(
     (valueOrSchema, key) => {
       const valueForValidator = v[key] as unknown;
       if (isSchema(valueOrSchema)) {
-        return __validate(valueOrSchema, valueForValidator);
+        return valueOrSchema.__validate(valueForValidator);
       } else {
         const isValid = valueForValidator === valueOrSchema;
-        return (isValid
-          ? { _t: 'right', value: valueOrSchema }
-          : { _t: 'left', value: new ValidationError(this, value) }) as Either<
+        return (isValid ? right(valueOrSchema) : left(new ValidationError(this, value))) as Either<
           TypeOfResult[keyof TypeOfResult]
         >;
       }
