@@ -411,14 +411,14 @@ Platform info:
 
 | library               | relative speed | operations per second | avg. operation time |
 | --------------------- | -------------: | --------------------: | ------------------: |
-| io-ts@2.2.13          |         +2.19% |       (1,795,265 rps) |      (avg: 0.557μs) |
-| **@typeofweb/schema** |        **ref** |   **(1,756,781 rps)** |  **(avg: 0.569μs)** |
-| mschema@0.5.6         |        -69.22% |         (540,677 rps) |          (avg: 1μs) |
-| validator.js@2.0.4    |        -76.78% |         (407,998 rps) |          (avg: 2μs) |
-| validate.js@0.13.1    |        -87.21% |         (224,762 rps) |          (avg: 4μs) |
-| validatorjs@3.22.1    |        -91.24% |         (153,877 rps) |          (avg: 6μs) |
-| joi@17.3.0            |        -93.17% |         (120,062 rps) |          (avg: 8μs) |
-| yup@0.32.8            |        -96.17% |          (67,263 rps) |         (avg: 14μs) |
-| superstruct@0.13.3    |        -96.37% |          (63,762 rps) |         (avg: 15μs) |
-| parambulator@1.5.2    |        -98.65% |          (23,649 rps) |         (avg: 42μs) |
-| zod@1.11.11           |        -99.08% |          (16,099 rps) |         (avg: 62μs) |
+| **@typeofweb/schema** |         **0%** |   **(2,326,284 rps)** |  **(avg: 0.429μs)** |
+| io-ts@2.2.13          |        -13.67% |       (2,008,248 rps) |      (avg: 0.497μs) |
+| mschema@0.5.6         |        -78.00% |         (511,675 rps) |          (avg: 1μs) |
+| validator.js@2.0.4    |        -80.62% |         (450,823 rps) |          (avg: 2μs) |
+| validate.js@0.13.1    |        -89.41% |         (246,273 rps) |          (avg: 4μs) |
+| validatorjs@3.22.1    |        -92.91% |         (165,025 rps) |          (avg: 6μs) |
+| joi@17.3.0            |        -94.72% |         (122,854 rps) |          (avg: 8μs) |
+| superstruct@0.13.3    |        -97.31% |          (62,487 rps) |         (avg: 16μs) |
+| yup@0.32.8            |        -97.34% |          (61,856 rps) |         (avg: 16μs) |
+| parambulator@1.5.2    |        -99.06% |          (21,842 rps) |         (avg: 45μs) |
+| zod@1.11.11           |        -99.29% |          (16,530 rps) |         (avg: 60μs) |
