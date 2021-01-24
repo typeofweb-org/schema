@@ -287,6 +287,18 @@ describe('@typeofweb/schema unit tests', () => {
       };
 
       expect(() => validator(obj)).not.toThrow();
+      expect(validator(obj)).toEqual({
+        a: 1,
+        b: '2',
+        c: ['Hello'],
+        d: {
+          e: 'World',
+          f: false,
+        },
+        g: 34,
+        h: 'Prop',
+        i: [{ name: 'John' }, { name: 'Mark' }],
+      });
     });
 
     it('should throw on when array was expected but not given', () => {
