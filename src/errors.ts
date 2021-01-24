@@ -1,5 +1,3 @@
-/* eslint-disable functional/no-this-expression */
-
 import { schemaToString } from './stringify';
 import type { SomeSchema } from './types';
 

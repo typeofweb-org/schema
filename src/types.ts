@@ -13,7 +13,7 @@ export interface Schema<
   readonly __values: Values;
   readonly __modifiers: Modifiers;
   readonly __parse?: (val: unknown) => Type;
-  readonly __validate: (schema: SomeSchema<any>, val: unknown) => Either<Type>;
+  readonly __validate: (val: unknown) => Either<Type>;
   toString(): string;
 }
 
