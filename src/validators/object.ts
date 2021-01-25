@@ -72,7 +72,7 @@ function validateObject<
       continue;
     }
     const validationResult = validator.__validate(object[key]);
-    failed = failed || validationResult._t === 'left';
+    failed ||= validationResult._t === 'left';
     entries[i] = [key, validationResult.value];
     continue;
   }
