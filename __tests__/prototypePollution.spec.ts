@@ -43,7 +43,7 @@ describe('prototype pollution', () => {
     const schema = object({
       constructor: optional(object({ polluted: optional(string()) })),
     });
-    expect(() => validate(schema)(t)).toThrowError();
+    expect(() => validate(schema)(t)).not.toThrowError();
     expect(typeof t.constructor).toBe('function');
     expect(obj.polluted).toBe(undefined);
     // @ts-ignore

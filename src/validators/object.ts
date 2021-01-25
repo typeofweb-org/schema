@@ -50,35 +50,50 @@ function validateObject<
     return left(new ValidationError(this, object));
   }
   const validators = this.__values as Record<string, SomeSchema<any>>;
-  const valueKeys = Object.keys(object);
-  const validatorsKeys = Object.keys(validators);
+  const allowUnknownKeys = !!this.__modifiers.allowUnknownKeys;
 
-  const keysToIterate = [...new Set([...valueKeys, ...validatorsKeys])];
-
-  const entries = new Array<readonly [string, any]>(keysToIterate.length);
-  let failed = false;
-  for (let i = 0; i < keysToIterate.length; ++i) {
-    const key = keysToIterate[i]!;
-    const value = object[key];
-    const validator = validators[key];
-
-    if (!validator) {
-      if (this.__modifiers.allowUnknownKeys) {
-        entries[i] = [key, value];
-        continue;
-      }
-      failed = true;
-      entries[i] = [key, new ValidationError(this, value)];
+  let isError = false;
+  const result = {} as Record<string, unknown>;
+  for (const key in object) {
+    if (!Object.prototype.hasOwnProperty.call(object, key)) {
       continue;
     }
-    const validationResult = validator.__validate(object[key]);
-    failed ||= validationResult._t === 'left';
-    entries[i] = [key, validationResult.value];
-    continue;
+    const value = object[key];
+
+    const validator = validators[key];
+    if (validator) {
+      const r = validator.__validate(value);
+      result[key] = r.value;
+      isError ||= r._t === 'left';
+      continue;
+    } else {
+      if (allowUnknownKeys) {
+        result[key] = value;
+        continue;
+      } else {
+        isError = true;
+        result[key] = new ValidationError(this, object);
+        continue;
+      }
+    }
   }
 
-  if (failed) {
-    return left(Object.fromEntries(entries));
+  for (const key in validators) {
+    if (!Object.prototype.hasOwnProperty.call(validators, key)) {
+      continue;
+    }
+    if (key in result) {
+      continue;
+    }
+    const validator = validators[key]!;
+    const value = object[key];
+    const r = validator.__validate(value);
+    result[key] = r.value;
+    isError ||= r._t === 'left';
   }
-  return right(Object.fromEntries(entries));
+
+  if (isError) {
+    return left(result);
+  }
+  return right(result);
 }
