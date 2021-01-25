@@ -20,8 +20,3 @@ export const optional = <S extends SomeSchema<any>>(schema: S) => {
     S['__values']
   >;
 };
-
-export const isOptionalSchema = (
-  s: SomeSchema<any>,
-): s is SomeSchema<any> & { readonly __modifiers: { readonly optional: true } } =>
-  !!s.__modifiers.optional;

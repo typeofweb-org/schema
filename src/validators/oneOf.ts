@@ -1,11 +1,12 @@
+/* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
 import { initialModifiers, isSchema } from '../schema';
 import { schemaToString } from '../stringify';
-import type { Either, Primitives, Schema, SomeSchema, TypeOf } from '../types';
+import type { Primitives, Schema, SomeSchema, TypeOf } from '../types';
 import { left, right } from '../utils/either';
 
 // `U extends (Primitives)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly
-// thanks to schema, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)
+// thanks to this, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)
 export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
 ) => {
@@ -41,17 +42,19 @@ function validateOneOf<
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }[number]
 >(this: Schema<TypeOfResult, typeof initialModifiers, U>, value: unknown) {
-  return this.__values.reduce<Either<TypeOfResult>>((acc, valueOrValidator) => {
-    if (acc._t === 'right') {
-      return acc;
-    }
-    if (isSchema(valueOrValidator)) {
-      return valueOrValidator.__validate(value) as Either<TypeOfResult>;
+  for (let i = 0; i < this.__values.length; ++i) {
+    const valueOrSchema = this.__values[i];
+    if (isSchema(valueOrSchema)) {
+      const r = valueOrSchema.__validate(value);
+      if (r._t === 'right') {
+        return r;
+      }
+      continue;
     } else {
-      const isValid = value === valueOrValidator;
-      return isValid
-        ? right(valueOrValidator as TypeOfResult)
-        : left(new ValidationError(this, value));
+      if (value === valueOrSchema) {
+        return right(valueOrSchema as TypeOfResult);
+      }
     }
-  }, left(undefined) as Either<TypeOfResult>);
+  }
+  return left(new ValidationError(this, value));
 }
