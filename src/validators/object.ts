@@ -1,9 +1,8 @@
 import { ValidationError } from '../errors';
-import { isOptionalSchema } from '../modifiers/optional';
 import { initialModifiers } from '../schema';
 import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
-import { left } from '../utils/either';
+import { left, right } from '../utils/either';
 import { sequenceA } from '../utils/sequenceA';
 
 export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
@@ -51,25 +50,30 @@ function validateObject<
     return left(new ValidationError(this, value));
   }
   const validators = this.__values as Record<string, SomeSchema<any>>;
-
   const valueKeys = Object.keys(value);
+  const validatorsKeys = Object.keys(validators);
 
-  const validatorEntries = Object.entries(validators);
-  const allValidatorKeysCount = validatorEntries.length;
-  const requiredValidatorKeysCount = validatorEntries.reduce(
-    (acc, [_, schema]) => acc + (isOptionalSchema(schema) ? 0 : 1),
-    0,
+  const result = sequenceA<readonly string[], readonly (readonly [string, unknown])[]>(
+    (key) => {
+      if (!validators[key as keyof typeof validators]) {
+        if (this.__modifiers.allowUnknownKeys) {
+          return right([key, value[key as keyof typeof validators]]);
+        }
+        return left([key, new ValidationError(this, value[key as keyof typeof validators])]);
+      }
+      const validationResult = validators[key as keyof typeof validators]?.__validate(
+        value[key as keyof typeof validators],
+      );
+      return validationResult?._t === 'left'
+        ? left([key, validationResult.value])
+        : right([key, validationResult?.value]);
+    },
+    this.__modifiers.allowUnknownKeys
+      ? validatorsKeys
+      : [...new Set([...valueKeys, ...validatorsKeys])],
   );
 
-  if (valueKeys.length > allValidatorKeysCount || valueKeys.length < requiredValidatorKeysCount) {
-    return left(new ValidationError(this, value));
-  }
-
-  return sequenceA<Record<string, SomeSchema<any>>, TypeOfResult>((validator, key) => {
-    const valueForValidator = value[key];
-    return validator.__validate(valueForValidator) as Exclude<
-      TypeOfResult[keyof TypeOfResult],
-      undefined
-    >;
-  }, validators);
+  return result._t === 'left'
+    ? left(result.value)
+    : right(Object.fromEntries(result.value) as TypeOfResult);
 }
