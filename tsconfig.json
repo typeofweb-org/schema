@@ -14,7 +14,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "allowUnreachableCode": true
+    "allowUnreachableCode": true,
+    "stripInternal": true,
+    "declarationMap": true
   },
   "include": ["src", "__tests__"]
 }

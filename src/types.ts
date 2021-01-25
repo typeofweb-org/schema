@@ -1,12 +1,4 @@
-import type {
-  TYPEOFWEB_SCHEMA,
-  AllValidators,
-  ArraySchema,
-  TupleSchema,
-  SimpleSchema,
-  OneOfSchema,
-  ObjectSchema,
-} from './validators';
+import type { ValidationError } from './errors';
 
 export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfModifiers<S> | TypeOfSchema<S>>;
 
@@ -15,23 +7,30 @@ export type Json = Primitives | { readonly [prop in string | number]: Json } | r
 export interface Schema<
   Type extends unknown,
   Modifiers extends DefaultModifiers,
-  Values extends DefaultValues,
-  Validator extends AllValidators = AllValidators
+  Values extends DefaultValues
 > {
-  readonly [TYPEOFWEB_SCHEMA]: true;
   readonly __type: Type;
-  readonly __validator: Validator;
   readonly __values: Values;
   readonly __modifiers: Modifiers;
+  /**
+   * @internal
+   */
+  readonly __parse?: (val: unknown) => Type;
+  /**
+   * @internal
+   */
+  readonly __validate: (val: unknown) => Either<Type>;
+  toString(): string;
 }
 
-export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues, AllValidators>;
-
-export type AnySchema = SimpleSchema | OneOfSchema | TupleSchema | ArraySchema | ObjectSchema;
+export type Either<R, L = ValidationError> =
+  | { readonly _t: 'left'; readonly value: L }
+  | { readonly _t: 'right'; readonly value: R };
 
 export type DefaultModifiers = {
   readonly optional: boolean | undefined;
   readonly nullable: boolean | undefined;
+  readonly allowUnknownKeys: boolean | undefined;
   readonly minLength: number | undefined;
 };
 
@@ -44,7 +43,11 @@ export type MergeModifiers<
   }
 >;
 
-type DefaultValues = SomeSchema<any> | Primitives | readonly (SomeSchema<any> | Primitives)[];
+export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues>;
+
+type DefaultValues = SomeSchema<any> | Primitives | Functor<SomeSchema<any> | Primitives>;
+
+export type Functor<T> = Record<string, T> | readonly T[];
 
 export type TupleOf<
   T,
@@ -56,7 +59,7 @@ type TypeOfModifiers<S extends SomeSchema<any>> =
   | If<S['__modifiers'], { readonly optional: true }, undefined>
   | If<S['__modifiers'], { readonly nullable: true }, null>;
 
-type TypeOfSchema<S extends SomeSchema<any>> = S extends SomeSchema<infer R> ? R : never;
+type TypeOfSchema<S extends SomeSchema<any>> = S['__type'];
 
 type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 

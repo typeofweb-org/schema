@@ -16,45 +16,6 @@ import {
   nonEmpty,
   unknown,
 } from '../src';
-import type { TypeOf, SomeSchema } from '../src';
-import type {
-  StringSchema,
-  NumberSchema,
-  BooleanSchema,
-  DateSchema,
-  UnknownSchema,
-  OneOfSchema,
-  TupleSchema,
-  ArraySchema,
-  ObjectSchema,
-} from '../src/validators';
-
-declare const string1: TypeOf<StringSchema>;
-expectType<string>(string1);
-
-declare const number1: TypeOf<NumberSchema>;
-expectType<number>(number1);
-
-declare const boolean1: TypeOf<BooleanSchema>;
-expectType<boolean>(boolean1);
-
-declare const date1: TypeOf<DateSchema>;
-expectType<Date>(date1);
-
-declare const unknown1: TypeOf<UnknownSchema>;
-expectType<unknown>(unknown1);
-
-declare const literal1: TypeOf<OneOfSchema>;
-expectType<string | number | boolean | SomeSchema<any>>(literal1);
-
-declare const tuple1: TypeOf<TupleSchema>;
-expectType<readonly (string | number | boolean | SomeSchema<any>)[]>(tuple1);
-
-declare const array1: TypeOf<ArraySchema>;
-expectType<readonly unknown[]>(array1);
-
-declare const record1: TypeOf<ObjectSchema>;
-expectType<{}>(record1);
 
 // validators
 const validator1 = string();

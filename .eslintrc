@@ -38,5 +38,13 @@
     "functional/prefer-readonly-type": "error",
     "functional/no-this-expression": "error",
     "functional/no-loop-statement": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/validators/**.ts", "src/modifiers/**.ts", "src/errors.ts"],
+      "rules": {
+        "functional/no-this-expression": 0
+      }
+    }
+  ]
 }

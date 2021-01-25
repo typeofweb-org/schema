@@ -1,5 +1,7 @@
-import type { AnySchema, SomeSchema } from '../src';
+import type { SomeSchema } from '../src';
 import {
+  allowUnknownKeys,
+  tuple,
   unknown,
   array,
   boolean,
@@ -16,18 +18,11 @@ import {
   string,
   validate,
 } from '../src';
-import { schemaToString } from '../src/errors';
-import { isISODateString } from '../src/parse';
-import {
-  isArraySchema,
-  isLiteralSchema,
-  isRecordSchema,
-  isSimpleSchema,
-  tuple,
-} from '../src/validators';
+import { schemaToString } from '../src/stringify';
+import { isISODateString } from '../src/utils/dateUtils';
 
 describe('@typeofweb/schema unit tests', () => {
-  const simpleValidators: ReadonlyArray<() => AnySchema> = [boolean, date, number, string];
+  const simpleValidators: ReadonlyArray<() => SomeSchema<any>> = [boolean, date, number, string];
   const objectValidator = () => object({});
   const arrayValidator = () => array(string());
   const literalValidator = () => oneOf(['a']);
@@ -47,7 +42,7 @@ describe('@typeofweb/schema unit tests', () => {
 
     it('number validator should not coerce empty string to 0', () => {
       expect(() => validate(number())('')).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫number≪ but got \\"\\"!"`,
+        `"Invalid type! Expected number but got \\"\\"!"`,
       );
     });
 
@@ -57,7 +52,7 @@ describe('@typeofweb/schema unit tests', () => {
 
     it('date validator should not accept invalid date', () => {
       expect(() => validate(date())(new Date(' '))).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫Date≪ but got null!"`,
+        `"Invalid type! Expected Date but got null!"`,
       );
     });
 
@@ -65,7 +60,7 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() =>
         validate(date())('123456789123456789123456789'),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫Date≪ but got \\"123456789123456789123456789\\"!"`,
+        `"Invalid type! Expected Date but got \\"123456789123456789123456789\\"!"`,
       );
     });
 
@@ -81,13 +76,13 @@ describe('@typeofweb/schema unit tests', () => {
 
     it("date validator should not coerce '0' to ISOString", () => {
       expect(() => validate(date())('0')).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫Date≪ but got \\"0\\"!"`,
+        `"Invalid type! Expected Date but got \\"0\\"!"`,
       );
     });
 
     it('date validator should not coerce invalid string', () => {
       expect(() => validate(date())('abc')).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫Date≪ but got \\"abc\\"!"`,
+        `"Invalid type! Expected Date but got \\"abc\\"!"`,
       );
     });
 
@@ -144,7 +139,7 @@ describe('@typeofweb/schema unit tests', () => {
           email: 123123123,
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected { name: ≫string≪, age: ≫number≪, email: (≫string≪ | undefined) } but got {\\"name\\":\\"Mark\\",\\"age\\":29,\\"email\\":123123123}!"`,
+        `"Invalid type! Expected { name: string, age: number, email: (string | undefined) } but got {\\"name\\":\\"Mark\\",\\"age\\":29,\\"email\\":123123123}!"`,
       );
     });
 
@@ -154,7 +149,17 @@ describe('@typeofweb/schema unit tests', () => {
         age: optional(number()),
       });
       expect(() => validate(user)({ age: 23 })).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected { name: ≫string≪, age: (≫number≪ | undefined) } but got {\\"age\\":23}!"`,
+        `"Invalid type! Expected { name: string, age: (number | undefined) } but got {\\"age\\":23}!"`,
+      );
+    });
+
+    it('should not allow unknown fields instead of optional', () => {
+      const user = object({
+        name: string(),
+        age: optional(number()),
+      });
+      expect(() => validate(user)({ name: '32', x: 23 })).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected { name: string, age: (number | undefined) } but got {\\"name\\":\\"32\\",\\"x\\":23}!"`,
       );
     });
 
@@ -169,36 +174,8 @@ describe('@typeofweb/schema unit tests', () => {
       });
     });
 
-    it('should detect specific schemas', () => {
-      const testCases: readonly {
-        readonly fn: (s: SomeSchema<any>) => boolean;
-        readonly shouldDetect: ReadonlyArray<() => SomeSchema<any>>;
-      }[] = [
-        { fn: isSimpleSchema, shouldDetect: simpleValidators },
-        { fn: isLiteralSchema, shouldDetect: [literalValidator] },
-        { fn: isArraySchema, shouldDetect: [arrayValidator] },
-        { fn: isRecordSchema, shouldDetect: [objectValidator] },
-      ];
-
-      expect.assertions((modifiers.length + 1) * allValidators.length * testCases.length);
-
-      testCases.forEach(({ fn, shouldDetect }) => {
-        const correct = shouldDetect;
-        const incorrect = allValidators.filter((v) => !correct.includes(v));
-
-        correct.forEach((v) => {
-          expect(fn(v())).toBe(true);
-          modifiers.forEach((m) => {
-            expect(fn(m(v()))).toBe(true);
-          });
-        });
-        incorrect.forEach((v) => {
-          expect(fn(v())).toBe(false);
-          modifiers.forEach((m) => {
-            expect(fn(m(v()))).toBe(false);
-          });
-        });
-      });
+    it('should fail minLength for non-string values', () => {
+      expect(() => validate(minLength(10)(string()))({})).toThrowError();
     });
 
     it('should handle more complex case', () => {
@@ -222,7 +199,7 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() => validator(obj)).not.toThrow();
     });
 
-    it('unknown() should allow missing keys in objecy', () => {
+    it('unknown() should allow missing keys in object', () => {
       const schema = object({
         name: minLength(4)(string()),
         email: unknown(),
@@ -234,6 +211,69 @@ describe('@typeofweb/schema unit tests', () => {
       };
 
       expect(() => validator(obj)).not.toThrow();
+    });
+
+    it(`object() should work with objects with null prototype`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj = Object.create(null, { name: { value: 'halo', enumerable: true } }) as object;
+
+      expect(validator(obj)).toEqual({ name: 'halo' });
+    });
+
+    it(`object() should work with sealed and frozen objects`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj1 = Object.seal({ name: 'jeden' });
+      const obj2 = Object.freeze({ name: 'dwa' });
+      const obj3 = Object.preventExtensions({ name: 'trzy' });
+
+      expect(validator(obj1)).toEqual({ name: 'jeden' });
+      expect(validator(obj2)).toEqual({ name: 'dwa' });
+      expect(validator(obj3)).toEqual({ name: 'trzy' });
+    });
+
+    it(`object() should strip non-enumerable properties when validating`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj = Object.create(null, {
+        name: { value: 'halo', enumerable: true },
+        sneaky: { value: 'spy', enumerable: false },
+      }) as object;
+
+      expect(validator(obj)).toEqual({ name: 'halo' });
+      expect((validator(obj) as Record<string, any>)['sneaky']).toEqual(undefined);
+    });
+
+    it(`object() should not mutate existing objects`, () => {
+      const schema = object({
+        name: string(),
+      });
+      const validator = validate(schema);
+
+      const obj = Object.create(null, {
+        name: { value: 'halo', enumerable: true, writable: true, configurable: true },
+        sneaky: { value: 'spy', enumerable: false, writable: true, configurable: true },
+      }) as Record<string, any>;
+
+      const result = validator(obj);
+
+      expect(result).toEqual({ name: 'halo' });
+      expect(result === obj).toEqual(false);
+
+      (result as Record<string, any>).name = 'blabla';
+
+      expect(obj.name).toEqual('halo');
+      expect(obj.sneaky).toEqual('spy');
     });
 
     it('tuple should validate given items in given order', () => {
@@ -280,21 +320,61 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() =>
         validator({ '': [], ' ': [], '!': {}, '"': {} }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected { a: ≫number≪, b: ≫string≪, c: ≫string[]≪, d: { e: ≫string≪, f: (≫string≪ | false) } } but got {\\"\\":[],\\" \\":[],\\"!\\":{},\\"\\\\\\"\\":{}}!"`,
+        `"Invalid type! Expected { a: number, b: string, c: string[], d: { e: string, f: (string | false) } } but got {\\"\\":[],\\" \\":[],\\"!\\":{},\\"\\\\\\"\\":{}}!"`,
       );
+    });
+
+    it('object should not throw on unknown keys when allowUnknownKeys modifier is used', () => {
+      const validator = validate(
+        allowUnknownKeys(
+          object({
+            a: number(),
+            b: string(),
+            c: array(string()),
+            d: object({ e: string(), f: oneOf([string(), false]) }),
+          }),
+        ),
+      );
+
+      const obj = {
+        a: 1,
+        b: '2',
+        c: ['Hello'],
+        d: {
+          e: 'World',
+          f: false,
+        },
+        g: 34,
+        h: 'Prop',
+        i: [{ name: 'John' }, { name: 'Mark' }],
+      };
+
+      expect(() => validator(obj)).not.toThrow();
+      expect(validator(obj)).toEqual({
+        a: 1,
+        b: '2',
+        c: ['Hello'],
+        d: {
+          e: 'World',
+          f: false,
+        },
+        g: 34,
+        h: 'Prop',
+        i: [{ name: 'John' }, { name: 'Mark' }],
+      });
     });
 
     it('should throw on when array was expected but not given', () => {
       const validator = validate(array(string()));
       expect(() => validator(42)).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫string[]≪ but got 42!"`,
+        `"Invalid type! Expected string[] but got 42!"`,
       );
     });
 
     it('should throw on invalid values in arrays', () => {
       const validator = validate(array(object({ a: string() })));
       expect(() => validator([123])).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected ≫{ a: ≫string≪ }[]≪ but got [123]!"`,
+        `"Invalid type! Expected { a: string }[] but got [123]!"`,
       );
     });
 
@@ -333,54 +413,65 @@ describe('@typeofweb/schema unit tests', () => {
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Invalid type! Expected { a: ≫number≪, b: { c: ≫string≪, d: { e: ≫{ f: ≫string≪ }[]≪ } } } but got {\\"a\\":1,\\"b\\":{\\"c\\":\\"aaa\\",\\"d\\":{\\"e\\":[{\\"f\\":\\"bbb\\"},{\\"f\\":123}]}}}!"`,
+        `"Invalid type! Expected { a: number, b: { c: string, d: { e: { f: string }[] } } } but got {\\"a\\":1,\\"b\\":{\\"c\\":\\"aaa\\",\\"d\\":{\\"e\\":[{\\"f\\":\\"bbb\\"},{\\"f\\":123}]}}}!"`,
       );
     });
   });
 
   describe('schemaToString', () => {
     it('should work for simple validators', () => {
-      expect(schemaToString(string())).toEqual('≫string≪');
-      expect(schemaToString(number())).toEqual('≫number≪');
-      expect(schemaToString(boolean())).toEqual('≫boolean≪');
-      expect(schemaToString(date())).toEqual('≫Date≪');
-      expect(schemaToString(unknown())).toEqual('≫unknown≪');
+      expect(schemaToString(string())).toMatchInlineSnapshot(`"string"`);
+      expect(schemaToString(number())).toMatchInlineSnapshot(`"number"`);
+      expect(schemaToString(boolean())).toMatchInlineSnapshot(`"boolean"`);
+      expect(schemaToString(date())).toMatchInlineSnapshot(`"Date"`);
+      expect(schemaToString(unknown())).toMatchInlineSnapshot(`"(unknown | undefined | null)"`);
     });
 
     it('should work for oneOf', () => {
-      expect(schemaToString(oneOf([1]))).toEqual('1');
-      expect(schemaToString(oneOf([string()]))).toEqual('≫string≪');
-      expect(schemaToString(oneOf([1, 2, 3]))).toEqual('(1 | 2 | 3)');
-      expect(schemaToString(oneOf(['a', 'b', 'c']))).toEqual('("a" | "b" | "c")');
-      expect(schemaToString(oneOf(['a', 'b', 12, 'c']))).toEqual('("a" | "b" | 12 | "c")');
-      expect(schemaToString(oneOf([1, 2, string(), 3, boolean()]))).toEqual(
-        '(1 | 2 | ≫string≪ | 3 | ≫boolean≪)',
+      expect(schemaToString(oneOf([1]))).toMatchInlineSnapshot(`"1"`);
+      expect(schemaToString(oneOf([string()]))).toMatchInlineSnapshot(`"string"`);
+      expect(schemaToString(oneOf([1, 2, 3]))).toMatchInlineSnapshot(`"(1 | 2 | 3)"`);
+      expect(schemaToString(oneOf(['a', 'b', 'c']))).toMatchInlineSnapshot(
+        `"(\\"a\\" | \\"b\\" | \\"c\\")"`,
+      );
+      expect(schemaToString(oneOf(['a', 'b', 12, 'c']))).toMatchInlineSnapshot(
+        `"(\\"a\\" | \\"b\\" | 12 | \\"c\\")"`,
+      );
+      expect(schemaToString(oneOf([1, 2, string(), 3, boolean()]))).toMatchInlineSnapshot(
+        `"(1 | 2 | string | 3 | boolean)"`,
       );
     });
 
     it('should work for arrays', () => {
-      expect(schemaToString(array(number()))).toEqual('≫number[]≪');
-      expect(schemaToString(array(string()))).toEqual('≫string[]≪');
-      expect(schemaToString(array(string(), boolean()))).toEqual('≫(string | boolean)[]≪');
+      expect(schemaToString(array(number()))).toMatchInlineSnapshot(`"number[]"`);
+      expect(schemaToString(array(string()))).toMatchInlineSnapshot(`"string[]"`);
+      expect(schemaToString(array(string(), boolean()))).toMatchInlineSnapshot(
+        `"(string | boolean)[]"`,
+      );
+      expect(schemaToString(array(unknown()))).toMatchInlineSnapshot(
+        `"(unknown | undefined | null)[]"`,
+      );
     });
 
     it('should work for objects', () => {
-      expect(schemaToString(object({}))).toEqual('{}');
-      expect(schemaToString(object({ a: string() }))).toEqual('{ a: ≫string≪ }');
+      expect(schemaToString(object({}))).toMatchInlineSnapshot(`"{}"`);
+      expect(schemaToString(object({ a: string() }))).toMatchInlineSnapshot(`"{ a: string }"`);
       expect(
         schemaToString(object({ a: string(), b: number(), 'no elo koleś': boolean() })),
-      ).toEqual('{ a: ≫string≪, b: ≫number≪, "no elo koleś": ≫boolean≪ }');
+      ).toMatchInlineSnapshot(`"{ a: string, b: number, \\"no elo koleś\\": boolean }"`);
     });
 
     it('should work for tuples', () => {
-      expect(schemaToString(tuple(['a', string(), number()]))).toEqual('["a", ≫string≪, ≫number≪]');
-      expect(schemaToString(tuple(['a']))).toEqual('["a"]');
-      expect(schemaToString(tuple([number(), oneOf(['s', 'm', 'h'])]))).toEqual(
-        '[≫number≪, ("s" | "m" | "h")]',
+      expect(schemaToString(tuple(['a', string(), number()]))).toMatchInlineSnapshot(
+        `"[\\"a\\", string, number]"`,
       );
-      expect(schemaToString(tuple([number(), tuple([string(), oneOf(['s', 'm', 'h'])])]))).toEqual(
-        '[≫number≪, [≫string≪, ("s" | "m" | "h")]]',
+      expect(schemaToString(tuple(['a']))).toMatchInlineSnapshot(`"[\\"a\\"]"`);
+      expect(schemaToString(tuple([number(), oneOf(['s', 'm', 'h'])]))).toMatchInlineSnapshot(
+        `"[number, (\\"s\\" | \\"m\\" | \\"h\\")]"`,
       );
+      expect(
+        schemaToString(tuple([number(), tuple([string(), oneOf(['s', 'm', 'h'])])])),
+      ).toMatchInlineSnapshot(`"[number, [string, (\\"s\\" | \\"m\\" | \\"h\\")]]"`);
     });
 
     it('should work for deeply nested objects', () => {
@@ -393,43 +484,53 @@ describe('@typeofweb/schema unit tests', () => {
             c: object({ e: array(oneOf([array(string()), object({ xxx: number() })])) }),
           }),
         ),
-      ).toEqual(
-        '{ a: ≫string≪, b: ≫number≪, "no elo koleś": ≫boolean≪, c: { e: ≫(≫string[]≪ | { xxx: ≫number≪ })[]≪ } }',
+      ).toMatchInlineSnapshot(
+        `"{ a: string, b: number, \\"no elo koleś\\": boolean, c: { e: (string[] | { xxx: number })[] } }"`,
       );
     });
 
     it('should work for simple validators with modifiers', () => {
-      expect(schemaToString(optional(string()))).toEqual('(≫string≪ | undefined)');
-      expect(schemaToString(nullable(string()))).toEqual('(≫string≪ | null)');
-      expect(schemaToString(optional(number()))).toEqual('(≫number≪ | undefined)');
-      expect(schemaToString(nullable(number()))).toEqual('(≫number≪ | null)');
-      expect(schemaToString(optional(boolean()))).toEqual('(≫boolean≪ | undefined)');
-      expect(schemaToString(nullable(boolean()))).toEqual('(≫boolean≪ | null)');
-      expect(schemaToString(optional(date()))).toEqual('(≫Date≪ | undefined)');
-      expect(schemaToString(nullable(date()))).toEqual('(≫Date≪ | null)');
+      expect(schemaToString(optional(string()))).toMatchInlineSnapshot(`"(string | undefined)"`);
+      expect(schemaToString(nullable(string()))).toMatchInlineSnapshot(`"(string | null)"`);
+      expect(schemaToString(optional(number()))).toMatchInlineSnapshot(`"(number | undefined)"`);
+      expect(schemaToString(nullable(number()))).toMatchInlineSnapshot(`"(number | null)"`);
+      expect(schemaToString(optional(boolean()))).toMatchInlineSnapshot(`"(boolean | undefined)"`);
+      expect(schemaToString(nullable(boolean()))).toMatchInlineSnapshot(`"(boolean | null)"`);
+      expect(schemaToString(optional(date()))).toMatchInlineSnapshot(`"(Date | undefined)"`);
+      expect(schemaToString(nullable(date()))).toMatchInlineSnapshot(`"(Date | null)"`);
     });
 
     it('should work for oneOf with modifiers', () => {
-      expect(schemaToString(optional(oneOf([1])))).toEqual('(1 | undefined)');
-      expect(schemaToString(nullable(oneOf([string()])))).toEqual('(≫string≪ | null)');
-      expect(schemaToString(nullable(oneOf([1, 2, 3])))).toEqual('(1 | 2 | 3 | null)');
-      expect(schemaToString(oneOf([1, 2, optional(string()), 3, boolean()]))).toEqual(
-        '(1 | 2 | (≫string≪ | undefined) | 3 | ≫boolean≪)',
+      expect(schemaToString(optional(oneOf([1])))).toMatchInlineSnapshot(`"(1 | undefined)"`);
+      expect(schemaToString(nullable(oneOf([string()])))).toMatchInlineSnapshot(
+        `"(string | null)"`,
+      );
+      expect(schemaToString(nullable(oneOf([1, 2, 3])))).toMatchInlineSnapshot(
+        `"((1 | 2 | 3) | null)"`,
+      );
+      expect(schemaToString(oneOf([1, 2, optional(string()), 3, boolean()]))).toMatchInlineSnapshot(
+        `"(1 | 2 | (string | undefined) | 3 | boolean)"`,
       );
     });
 
     it('should work for arrays with modifiers', () => {
-      expect(schemaToString(array(number()))).toEqual('≫number[]≪');
-      expect(schemaToString(array(string()))).toEqual('≫string[]≪');
-      expect(schemaToString(array(string(), boolean()))).toEqual('≫(string | boolean)[]≪');
+      expect(schemaToString(array(number()))).toMatchInlineSnapshot(`"number[]"`);
+      expect(schemaToString(array(string()))).toMatchInlineSnapshot(`"string[]"`);
+      expect(schemaToString(array(string(), boolean()))).toMatchInlineSnapshot(
+        `"(string | boolean)[]"`,
+      );
     });
 
     it('should work for objects with modifiers', () => {
-      expect(schemaToString(optional(object({})))).toEqual('({} | undefined)');
-      expect(schemaToString(nullable(object({ a: string() })))).toEqual('({ a: ≫string≪ } | null)');
+      expect(schemaToString(optional(object({})))).toMatchInlineSnapshot(`"({} | undefined)"`);
+      expect(schemaToString(nullable(object({ a: string() })))).toMatchInlineSnapshot(
+        `"({ a: string } | null)"`,
+      );
       expect(
         schemaToString(nil(object({ a: string(), b: number(), 'no elo koleś': boolean() }))),
-      ).toEqual('({ a: ≫string≪, b: ≫number≪, "no elo koleś": ≫boolean≪ } | undefined | null)');
+      ).toMatchInlineSnapshot(
+        `"({ a: string, b: number, \\"no elo koleś\\": boolean } | undefined | null)"`,
+      );
     });
 
     it('should work for deeply nested objects with modifiers', () => {
@@ -444,8 +545,8 @@ describe('@typeofweb/schema unit tests', () => {
             }),
           }),
         ),
-      ).toEqual(
-        '{ a: (≫string≪ | undefined), b: ≫number≪, "no elo koleś": ≫boolean≪, c: { e: (≫((≫string[]≪ | undefined) | { xxx: ≫number≪ })[]≪ | null) } }',
+      ).toMatchInlineSnapshot(
+        `"{ a: (string | undefined), b: number, \\"no elo koleś\\": boolean, c: { e: (((string[] | undefined) | { xxx: number })[] | null) } }"`,
       );
     });
   });

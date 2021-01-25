@@ -21,6 +21,7 @@ module.exports = {
             'modifiers/nil',
             'modifiers/nonEmpty',
             'modifiers/minLength',
+            'modifiers/allowUnknownKeys',
           ],
           Utilities: ['utilities/pipe', 'utilities/typeOf'],
         },
