@@ -20,6 +20,7 @@ import {
   pipe,
   unknown,
   tuple,
+  allowUnknownKeys,
 } from '../src';
 import { isISODateString } from '../src/utils/dateUtils';
 
@@ -212,7 +213,7 @@ describe('@typeofweb/schema', () => {
         ));
     });
 
-    describe('any', () => {
+    describe('unknown', () => {
       it('should pass anything', () =>
         Fc.assert(Fc.property(Fc.anything(), notThrows(validate(unknown())))));
     });
@@ -341,6 +342,11 @@ describe('@typeofweb/schema', () => {
           ),
         ));
     });
+
+    describe('allowUnknownKeys', () =>
+      Fc.assert(
+        Fc.property(Fc.object(), (obj) => notThrows(validate(allowUnknownKeys(object({}))))(obj)),
+      ));
   });
 
   describe('utils', () => {

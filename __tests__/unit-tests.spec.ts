@@ -1,5 +1,6 @@
 import type { SomeSchema } from '../src';
 import {
+  allowUnknownKeys,
   tuple,
   unknown,
   array,
@@ -149,6 +150,16 @@ describe('@typeofweb/schema unit tests', () => {
       });
       expect(() => validate(user)({ age: 23 })).toThrowErrorMatchingInlineSnapshot(
         `"Invalid type! Expected { name: string, age: (number | undefined) } but got {\\"age\\":23}!"`,
+      );
+    });
+
+    it('should not allow unknown fields instead of optional', () => {
+      const user = object({
+        name: string(),
+        age: optional(number()),
+      });
+      expect(() => validate(user)({ name: '32', x: 23 })).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid type! Expected { name: string, age: (number | undefined) } but got {\\"name\\":\\"32\\",\\"x\\":23}!"`,
       );
     });
 
@@ -311,6 +322,46 @@ describe('@typeofweb/schema unit tests', () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `"Invalid type! Expected { a: number, b: string, c: string[], d: { e: string, f: (string | false) } } but got {\\"\\":[],\\" \\":[],\\"!\\":{},\\"\\\\\\"\\":{}}!"`,
       );
+    });
+
+    it('object should not throw on unknown keys when allowUnknownKeys modifier is used', () => {
+      const validator = validate(
+        allowUnknownKeys(
+          object({
+            a: number(),
+            b: string(),
+            c: array(string()),
+            d: object({ e: string(), f: oneOf([string(), false]) }),
+          }),
+        ),
+      );
+
+      const obj = {
+        a: 1,
+        b: '2',
+        c: ['Hello'],
+        d: {
+          e: 'World',
+          f: false,
+        },
+        g: 34,
+        h: 'Prop',
+        i: [{ name: 'John' }, { name: 'Mark' }],
+      };
+
+      expect(() => validator(obj)).not.toThrow();
+      expect(validator(obj)).toEqual({
+        a: 1,
+        b: '2',
+        c: ['Hello'],
+        d: {
+          e: 'World',
+          f: false,
+        },
+        g: 34,
+        h: 'Prop',
+        i: [{ name: 'John' }, { name: 'Mark' }],
+      });
     });
 
     it('should throw on when array was expected but not given', () => {

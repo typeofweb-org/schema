@@ -7,5 +7,6 @@ export const isSchema = (val: any): val is SomeSchema<any> => {
 export const initialModifiers: DefaultModifiers = {
   optional: false,
   nullable: false,
+  allowUnknownKeys: false,
   minLength: undefined,
 };
