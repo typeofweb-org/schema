@@ -87,6 +87,9 @@ module.exports = {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/vsDark'),
     },
+    gtag: {
+      trackingID: 'G-XHK1XXC1FD',
+    },
   },
   presets: [
     [
@@ -101,6 +104,15 @@ module.exports = {
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
+      },
+    ],
+  ],
+  plugins: [
+    '@docusaurus/plugin-google-analytics',
+    [
+      '@docusaurus/plugin-sitemap',
+      {
+        cacheTime: 600 * 1000,
       },
     ],
   ],
