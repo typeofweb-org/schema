@@ -1,9 +1,9 @@
+/* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
 import { initialModifiers } from '../schema';
 import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
 import { left, right } from '../utils/either';
-import { sequenceA } from '../utils/sequenceA';
 
 export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
   type TypeOfResult = UndefinedToOptional<
@@ -45,35 +45,40 @@ function validateObject<
       readonly [K in keyof U]: TypeOf<U[K]>;
     }
   >
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, value: Record<string, unknown>) {
-  if (typeof value !== 'object' || value === null) {
-    return left(new ValidationError(this, value));
+>(this: Schema<TypeOfResult, typeof initialModifiers, U>, object: Record<string, unknown>) {
+  if (typeof object !== 'object' || object === null) {
+    return left(new ValidationError(this, object));
   }
   const validators = this.__values as Record<string, SomeSchema<any>>;
-  const valueKeys = Object.keys(value);
+  const valueKeys = Object.keys(object);
   const validatorsKeys = Object.keys(validators);
 
-  const result = sequenceA<readonly string[], readonly (readonly [string, unknown])[]>(
-    (key) => {
-      if (!validators[key as keyof typeof validators]) {
-        if (this.__modifiers.allowUnknownKeys) {
-          return right([key, value[key as keyof typeof validators]]);
-        }
-        return left([key, new ValidationError(this, value[key as keyof typeof validators])]);
-      }
-      const validationResult = validators[key as keyof typeof validators]?.__validate(
-        value[key as keyof typeof validators],
-      );
-      return validationResult?._t === 'left'
-        ? left([key, validationResult.value])
-        : right([key, validationResult?.value]);
-    },
-    this.__modifiers.allowUnknownKeys
-      ? validatorsKeys
-      : [...new Set([...valueKeys, ...validatorsKeys])],
-  );
+  const keysToIterate = [...new Set([...valueKeys, ...validatorsKeys])];
 
-  return result._t === 'left'
-    ? left(result.value)
-    : right(Object.fromEntries(result.value) as TypeOfResult);
+  const entries = new Array<readonly [string, any]>(keysToIterate.length);
+  let failed = false;
+  for (let i = 0; i < keysToIterate.length; ++i) {
+    const key = keysToIterate[i]!;
+    const value = object[key];
+    const validator = validators[key];
+
+    if (!validator) {
+      if (this.__modifiers.allowUnknownKeys) {
+        entries[i] = [key, value];
+        continue;
+      }
+      failed = true;
+      entries[i] = [key, new ValidationError(this, value)];
+      continue;
+    }
+    const validationResult = validator.__validate(object[key]);
+    failed = failed || validationResult._t === 'left';
+    entries[i] = [key, validationResult.value];
+    continue;
+  }
+
+  if (failed) {
+    return left(Object.fromEntries(entries));
+  }
+  return right(Object.fromEntries(entries));
 }
