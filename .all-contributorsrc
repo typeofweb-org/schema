@@ -51,6 +51,15 @@
       "contributions": [
         "security"
       ]
+    },
+    {
+      "login": "malydok",
+      "name": "Marek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1423385?v=4",
+      "profile": "https://devalchemist.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 3,
