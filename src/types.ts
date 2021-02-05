@@ -45,7 +45,7 @@ export type MergeModifiers<
 
 export type SomeSchema<T> = Schema<T, DefaultModifiers, DefaultValues>;
 
-type DefaultValues = SomeSchema<any> | Primitives | Functor<SomeSchema<any> | Primitives>;
+export type DefaultValues = SomeSchema<any> | Primitives | Functor<SomeSchema<any> | Primitives>;
 
 export type Functor<T> = Record<string, T> | readonly T[];
 
@@ -55,13 +55,13 @@ export type TupleOf<
   Acc extends readonly unknown[] = readonly []
 > = Acc['length'] extends Length ? Acc : TupleOf<T, Length, readonly [T, ...Acc]>;
 
-type TypeOfModifiers<S extends SomeSchema<any>> =
+export type TypeOfModifiers<S extends SomeSchema<any>> =
   | If<S['__modifiers'], { readonly optional: true }, undefined>
   | If<S['__modifiers'], { readonly nullable: true }, null>;
 
 type TypeOfSchema<S extends SomeSchema<any>> = S['__type'];
 
-type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
+export type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 
 export type Pretty<X> = X extends Date
   ? X
@@ -71,13 +71,13 @@ export type Pretty<X> = X extends Date
     }
   : X;
 
-type KeysOfType<T extends object, SelectedType> = {
+export type KeysOfType<T extends object, SelectedType> = {
   readonly [key in keyof T]: SelectedType extends T[key] ? key : never;
 }[keyof T];
 
 type PlainObject = { readonly [name: string]: any };
-type Optional<T extends object> = Partial<Pick<T, KeysOfType<T, undefined>>>;
-type Required<T extends object> = Omit<T, KeysOfType<T, undefined>>;
+export type Optional<T extends object> = Partial<Pick<T, KeysOfType<T, undefined>>>;
+export type Required<T extends object> = Omit<T, KeysOfType<T, undefined>>;
 
 export type UndefinedToOptional<T> = T extends PlainObject
   ? {} extends T
@@ -86,3 +86,9 @@ export type UndefinedToOptional<T> = T extends PlainObject
     ? T
     : Required<T> & Optional<T>
   : T;
+
+export type IfAny<X, Y, N = X> = 0 extends 1 & X
+  ? Y
+  : X extends readonly unknown[]
+  ? IfAny<X[number], Y, N>
+  : N;

@@ -1,11 +1,11 @@
 import { ValidationError } from '../errors';
 import { initialModifiers } from '../schema';
 import { typeToPrint } from '../stringify';
-import type { Schema } from '../types';
+import type { Schema, SomeSchema } from '../types';
 import { isDate } from '../utils/dateUtils';
 import { left, right } from '../utils/either';
 
-export const string = () => {
+export const string = <S extends SomeSchema<unknown>>(schema?: S) => {
   return {
     __modifiers: initialModifiers,
     toString: toStringString,
