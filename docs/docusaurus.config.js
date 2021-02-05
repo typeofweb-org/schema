@@ -90,6 +90,10 @@ module.exports = {
     gtag: {
       trackingID: 'G-XHK1XXC1FD',
     },
+    algolia: {
+      apiKey: 'b92bbf4c75637e2a6106845987bf60cc',
+      indexName: 'typeofweb',
+    },
   },
   presets: [
     [
