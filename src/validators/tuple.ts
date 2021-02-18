@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
-import { initialModifiers, isSchema } from '../schema';
+import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
 import type { SomeSchema, TypeOf, Schema, Primitives } from '../types';
 import { left, right } from '../utils/either';
@@ -15,10 +15,10 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   return {
     __values: values,
     __type: {} as TypeOfResult,
-    __modifiers: initialModifiers,
+
     toString: toStringTuple,
     __validate: validateTuple,
-  } as Schema<TypeOfResult, typeof initialModifiers, U>;
+  } as Schema<TypeOfResult, U>;
 };
 
 function toStringTuple<
@@ -26,7 +26,7 @@ function toStringTuple<
   TypeOfResult extends {
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, _value: unknown) {
+>(this: Schema<TypeOfResult, U>, _value: unknown) {
   return (
     '[' +
     this.__values.map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s))).join(', ') +
@@ -39,7 +39,7 @@ function validateTuple<
   TypeOfResult extends {
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, values: readonly unknown[]) {
+>(this: Schema<TypeOfResult, U>, values: readonly unknown[]) {
   if (!Array.isArray(values) || values.length !== this.__values.length) {
     return left(new ValidationError(this, values));
   }

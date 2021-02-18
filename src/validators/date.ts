@@ -1,31 +1,29 @@
 import { ValidationError } from '../errors';
-import { initialModifiers } from '../schema';
 import { typeToPrint } from '../stringify';
-import type { Schema } from '../types';
+import type { Schema, SomeSchema } from '../types';
 import { isDate, isISODateString } from '../utils/dateUtils';
 import { left, right } from '../utils/either';
 
-export const date = () => {
+export const date = <S extends SomeSchema<S>>(schema?: S) => {
   return {
-    __modifiers: initialModifiers,
     toString: toStringDate,
     __parse: parseDate,
     __validate: validateDate,
-  } as Schema<Date, typeof initialModifiers, never>;
+  } as Schema<Date, never>;
 };
 
 function toStringDate() {
   return typeToPrint('Date');
 }
 
-function parseDate(this: Schema<Date, typeof initialModifiers, never>, value: unknown) {
+function parseDate(this: Schema<Date, never>, value: unknown) {
   if (typeof value === 'string' && isISODateString(value)) {
     return new Date(value);
   }
   return value;
 }
 
-function validateDate(this: Schema<Date, typeof initialModifiers, never>, value: unknown) {
+function validateDate(this: Schema<Date, never>, value: unknown) {
   if (!isDate(value) || Number.isNaN(Number(value))) {
     return left(new ValidationError(this, value));
   }

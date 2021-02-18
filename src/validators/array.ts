@@ -1,25 +1,27 @@
 /* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
-import { initialModifiers } from '../schema';
 import { schemaToString, typeToPrint } from '../stringify';
 import type { Schema, SomeSchema, TypeOf } from '../types';
 import { left, right } from '../utils/either';
 
-export const array = <U extends readonly SomeSchema<unknown>[]>(...arr: readonly [...U]) => {
+export const array = <U extends readonly SomeSchema<unknown>[]>(...arr: readonly [...U]) => <
+  S extends SomeSchema<any>
+>(
+  schema?: S,
+) => {
   type TypeOfResult = readonly TypeOf<U[number]>[];
   return {
-    __modifiers: initialModifiers,
     __type: {} as TypeOfResult,
     __values: arr,
     toString: toStringArray,
     __validate: validateArray,
-  } as Schema<TypeOfResult, typeof initialModifiers, U>;
+  } as Schema<TypeOfResult, U>;
 };
 
 function toStringArray<
   U extends readonly SomeSchema<unknown>[],
   TypeOfResult extends readonly TypeOf<U[number]>[]
->(this: Schema<TypeOfResult, typeof initialModifiers, U>) {
+>(this: Schema<TypeOfResult, U>) {
   const str = this.__values.map((s) => schemaToString(s)).join(' | ');
   return this.__values.length > 1 ? typeToPrint(`(${str})[]`) : typeToPrint(`${str}[]`);
 }
@@ -27,7 +29,7 @@ function toStringArray<
 function validateArray<
   U extends readonly SomeSchema<unknown>[],
   TypeOfResult extends readonly TypeOf<U[number]>[]
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, values: readonly unknown[]) {
+>(this: Schema<TypeOfResult, U>, values: readonly unknown[]) {
   if (!Array.isArray(values)) {
     return left(new ValidationError(this, values));
   }

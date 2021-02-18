@@ -1,6 +1,5 @@
 /* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
-import { initialModifiers } from '../schema';
 import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
 import { left, right } from '../utils/either';
@@ -13,12 +12,11 @@ export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
   >;
 
   return {
-    __modifiers: initialModifiers,
     __type: {} as TypeOfResult,
     __values: obj,
     toString: toStringObject,
     __validate: validateObject,
-  } as Schema<TypeOfResult, typeof initialModifiers, U>;
+  } as Schema<TypeOfResult, U>;
 };
 
 function toStringObject<
@@ -28,7 +26,7 @@ function toStringObject<
       readonly [K in keyof U]: TypeOf<U[K]>;
     }
   >
->(this: Schema<TypeOfResult, typeof initialModifiers, U>) {
+>(this: Schema<TypeOfResult, U>) {
   const entries = Object.entries(this.__values).map(
     ([key, val]) => [key, schemaToString(val)] as const,
   );
@@ -45,12 +43,12 @@ function validateObject<
       readonly [K in keyof U]: TypeOf<U[K]>;
     }
   >
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, object: Record<string, unknown>) {
+>(this: Schema<TypeOfResult, U>, object: Record<string, unknown>) {
   if (typeof object !== 'object' || object === null) {
     return left(new ValidationError(this, object));
   }
   const validators = this.__values as Record<string, SomeSchema<any>>;
-  const allowUnknownKeys = !!this.__modifiers.allowUnknownKeys;
+  const allowUnknownKeys = true; // @todo !!this.__modifiers.allowUnknownKeys;
 
   let isError = false;
   const result = {} as Record<string, unknown>;

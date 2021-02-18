@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
-import { initialModifiers, isSchema } from '../schema';
+import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
 import type { Primitives, Schema, SomeSchema, TypeOf } from '../types';
 import { left, right } from '../utils/either';
@@ -17,10 +17,10 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   return {
     __values: values,
     __type: {} as unknown,
-    __modifiers: initialModifiers,
+
     toString: toStringOneOf,
     __validate: validateOneOf,
-  } as Schema<TypeOfResult, typeof initialModifiers, U>;
+  } as Schema<TypeOfResult, U>;
 };
 
 function toStringOneOf<
@@ -28,7 +28,7 @@ function toStringOneOf<
   TypeOfResult extends {
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }[number]
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, _value: unknown) {
+>(this: Schema<TypeOfResult, U>, _value: unknown) {
   const str = this.__values
     .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
     .join(' | ');
@@ -41,7 +41,7 @@ function validateOneOf<
   TypeOfResult extends {
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }[number]
->(this: Schema<TypeOfResult, typeof initialModifiers, U>, value: unknown) {
+>(this: Schema<TypeOfResult, U>, value: unknown) {
   for (let i = 0; i < this.__values.length; ++i) {
     const valueOrSchema = this.__values[i];
     if (isSchema(valueOrSchema)) {

@@ -1,17 +1,7 @@
 import type { ValidationError } from './errors';
 import { minLength } from './modifiers/minLength';
 import { optional } from './modifiers/optional';
-import type { initialModifiers } from './schema';
-import type {
-  DefaultModifiers,
-  DefaultValues,
-  Either,
-  IfAny,
-  MergeModifiers,
-  Schema,
-  SomeSchema,
-  TypeOf,
-} from './types';
+import type { DefaultValues, Either, IfAny, Pretty, Schema, SomeSchema, TypeOf } from './types';
 import { left, right } from './utils/either';
 import { pipe } from './utils/pipe';
 import { validate } from './validators/__validate';
@@ -23,9 +13,10 @@ import { unknown } from './validators/unknown';
 import { nullable } from '.';
 
 const CONTINUE = Symbol('@typeofweb/schema/continue');
-type CONTINUE = typeof CONTINUE;
+type Continue<Output> = { readonly [CONTINUE]: Output };
+const Continue = <Output>(value: Output) => ({ [CONTINUE]: value });
 
-type ExitEarly<Output> = Output | Either<Output, any> | CONTINUE;
+type ExitEarly<Output> = Either<Output, any> | Continue<Output>;
 type Refinement<Output, Input, R extends ExitEarly<Output>> = (
   value: Input,
   t: RefinementToolkit,
@@ -34,51 +25,44 @@ type Refinement<Output, Input, R extends ExitEarly<Output>> = (
 const refinementToolkit = {
   right,
   left,
-  continue: CONTINUE,
+  continue: Continue,
 } as const;
 type RefinementToolkit = typeof refinementToolkit;
 
 export const refine = <Output, Input, RefinementResult extends ExitEarly<Output>>(
   refinement: Refinement<Output, Input, RefinementResult>,
-) => <S extends SomeSchema<Input>>(
-  schema?:
-    | (RefinementResult extends { readonly _t: 'right'; readonly value: infer ExitEarlyResult }
-        ? SomeSchema<ExitEarlyResult>
-        : S)
-    | undefined,
-) => {
-  type Modifiers = undefined extends S
-    ? DefaultModifiers
-    : S extends { readonly __modifiers: DefaultModifiers }
-    ? S['__modifiers']
-    : DefaultModifiers;
+) => <S extends SomeSchema<Input>>(schema?: S | undefined) => {
   type Values = undefined extends S
     ? DefaultValues
     : S extends { readonly __values: DefaultValues }
     ? S['__values']
     : DefaultValues;
 
-  type Optional = Output extends undefined ? true : Modifiers['optional'];
-  type Nullable = Output extends null ? true : Modifiers['nullable'];
-
   type TypeOfResult =
     | (unknown extends Output ? never : readonly unknown[] extends Output ? never : Output)
     | (undefined extends S ? never : S extends {} ? S['__type'] : never);
 
-  // @todo
   return {} as Schema<
-    RefinementResult extends { readonly _t: 'right'; readonly value: infer ExitEarlyResult }
-      ? ExitEarlyResult
-      : TypeOfResult extends never
+    RefinementResult extends { readonly _t: 'right'; readonly value: infer ExitEarlyResult1 }
+      ? ExitEarlyResult1
+      : TypeOfResult extends Continue<infer ExitEarlyResult3>
+      ? ExitEarlyResult3
+      : // : RefinementResult extends Continue<infer ExitEarlyResult2>
+      // ? ExitEarlyResult2
+      TypeOfResult extends never
       ? Output
-      : IfAny<TypeOfResult, Output>,
-    MergeModifiers<
-      Modifiers,
-      {
-        readonly optional: Optional;
-        readonly nullable: Nullable;
-      }
-    >,
+      : unknown extends TypeOfResult
+      ? never
+      : TypeOfResult,
     Values
   >;
+
+  // return {} as Schema<
+  //   RefinementResult extends { readonly _t: 'right'; readonly value: infer ExitEarlyResult }
+  //     ? ExitEarlyResult
+  //     : TypeOfResult extends never
+  //     ? Output
+  //     : IfAny<TypeOfResult, Output>,
+  //   Values
+  // >;
 };

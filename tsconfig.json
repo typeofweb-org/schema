@@ -15,8 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowUnreachableCode": true,
-    "stripInternal": true,
-    "declarationMap": true
+    "stripInternal": true
   },
   "include": ["src", "__tests__"]
 }
