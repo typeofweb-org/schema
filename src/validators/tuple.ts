@@ -7,7 +7,7 @@ import { left, right } from '../utils/either';
 
 export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
-) => {
+) => <S extends SomeSchema<any>>(schema?: S) => {
   type TypeOfResult = {
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   };

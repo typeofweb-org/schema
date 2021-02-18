@@ -1,9 +1,9 @@
 import { ValidationError } from '../errors';
 import { typeToPrint } from '../stringify';
-import type { Schema } from '../types';
+import type { Schema, SomeSchema } from '../types';
 import { left, right } from '../utils/either';
 
-export const boolean = () => {
+export const boolean = <S extends SomeSchema<unknown>>(schema?: S) => {
   return {
     toString: toStringBoolean,
     __validate: validateBoolean,

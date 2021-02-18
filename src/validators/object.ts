@@ -4,7 +4,11 @@ import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
 import { left, right } from '../utils/either';
 
-export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => {
+export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => <
+  S extends SomeSchema<any>
+>(
+  schema?: S,
+) => {
   type TypeOfResult = UndefinedToOptional<
     {
       readonly [K in keyof U]: TypeOf<U[K]>;

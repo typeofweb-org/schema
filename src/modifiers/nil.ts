@@ -1,7 +1,5 @@
-import { nullable } from '../modifiers/nullable';
-import { optional } from '../modifiers/optional';
-import type { SomeSchema } from '../types';
+import { refine } from '../refine';
 
-export const nil = <S extends SomeSchema<any>>(schema: S) => {
-  return nullable(optional(schema));
-};
+export const nil = refine((value, t) =>
+  value === null || value === undefined ? t.right(value) : t.next(value),
+);

@@ -1,22 +1,3 @@
-import type { SomeSchema, Schema, MergeModifiers } from '../types';
-import { right } from '../utils/either';
+import { refine } from '../refine';
 
-export const nullable = <S extends SomeSchema<any>>(schema: S) => {
-  return {
-    ...schema,
-    __modifiers: {
-      ...schema.__modifiers,
-      nullable: true,
-    },
-    __validate(value) {
-      if (value === null) {
-        return right(value);
-      }
-      return schema.__validate(value);
-    },
-  } as Schema<
-    S['__type'],
-    MergeModifiers<S['__modifiers'], { readonly nullable: true }>,
-    S['__values']
-  >;
-};
+export const nullable = refine((value, t) => (value === null ? t.right(null) : t.next(value)));

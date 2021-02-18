@@ -4,7 +4,7 @@ import type { Schema, SomeSchema } from '../types';
 import { isDate, isISODateString } from '../utils/dateUtils';
 import { left, right } from '../utils/either';
 
-export const date = <S extends SomeSchema<S>>(schema?: S) => {
+export const date = <S extends SomeSchema<unknown>>(schema?: S) => {
   return {
     toString: toStringDate,
     __parse: parseDate,

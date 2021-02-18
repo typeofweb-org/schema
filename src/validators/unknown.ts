@@ -1,8 +1,8 @@
 import { typeToPrint } from '../stringify';
-import type { Schema } from '../types';
+import type { Schema, SomeSchema } from '../types';
 import { right } from '../utils/either';
 
-export const unknown = () => {
+export const unknown = <S extends SomeSchema<any>>(schema?: S) => {
   return {
     toString: toStringUnknown,
     __validate: validateUnknown,

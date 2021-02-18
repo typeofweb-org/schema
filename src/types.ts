@@ -1,4 +1,5 @@
 import type { ValidationError } from './errors';
+import type { Next } from './utils/either';
 
 export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfSchema<S>>;
 
@@ -14,13 +15,14 @@ export interface Schema<Type extends unknown, Values extends DefaultValues> {
   /**
    * @internal
    */
-  readonly __validate: (val: unknown) => Either<Type>;
+  readonly __validate: (val: unknown) => Either<Type> | Next<Type>;
   toString(): string;
 }
 
-export type Either<R, L = ValidationError> =
-  | { readonly _t: 'left'; readonly value: L }
-  | { readonly _t: 'right'; readonly value: R };
+type Left<L> = { readonly _t: 'left'; readonly value: L };
+type Right<R> = { readonly _t: 'right'; readonly value: R };
+
+export type Either<R, L = ValidationError> = Left<L> | Right<R>;
 
 export type SomeSchema<T> = Schema<T, DefaultValues>;
 
@@ -59,7 +61,7 @@ export type UndefinedToOptional<T> = T extends PlainObject
     ? {}
     : T extends Date | readonly unknown[]
     ? T
-    : Required<T> & Optional<T>
+    : Pretty<Required<T> & Optional<T>>
   : T;
 
 export type IfAny<X, Y, N = X> = 0 extends 1 & X

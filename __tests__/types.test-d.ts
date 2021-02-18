@@ -1,72 +1,14 @@
-import { expectError, expectType } from 'tsd';
+import { expectType } from 'tsd';
 
 import type {
   If,
   IfAny,
   KeysOfType,
-  MergeModifiers,
   Optional,
   Required,
-  Schema,
   TupleOf,
-  TypeOfModifiers,
   UndefinedToOptional,
 } from '../src/types';
-
-/**
- * MergeModifiers
- */
-declare const t1: MergeModifiers<
-  {
-    readonly optional: undefined;
-    readonly nullable: undefined;
-    readonly minLength: undefined;
-    readonly allowUnknownKeys: undefined;
-  },
-  {}
->;
-expectType<{
-  readonly optional: undefined;
-  readonly nullable: undefined;
-  readonly minLength: undefined;
-  readonly allowUnknownKeys: undefined;
-}>(t1);
-
-declare const t2: MergeModifiers<
-  {
-    readonly optional: true;
-    readonly nullable: undefined;
-    readonly minLength: undefined;
-    readonly allowUnknownKeys: undefined;
-  },
-  {
-    readonly nullable: true;
-  }
->;
-expectType<{
-  readonly optional: true;
-  readonly nullable: true;
-  readonly minLength: undefined;
-  readonly allowUnknownKeys: undefined;
-}>(t2);
-
-declare const t3: MergeModifiers<
-  {
-    readonly optional: true;
-    readonly nullable: undefined;
-    readonly minLength: undefined;
-    readonly allowUnknownKeys: undefined;
-  },
-  {
-    readonly minLength: 10;
-  }
->;
-expectType<{
-  readonly optional: true;
-  readonly nullable: undefined;
-  readonly minLength: 10;
-  readonly allowUnknownKeys: undefined;
-}>(t3);
 
 /**
  * TupleOf
@@ -80,67 +22,7 @@ expectType<
 >(to2);
 
 // @ts-expect-error
-declare const to3: TupleOf<string, 10000>;
-expectError(to3);
-
-/**
- * TypeOfModifiers
- */
-declare const tom1: TypeOfModifiers<
-  Schema<
-    any,
-    {
-      readonly optional: boolean | undefined;
-      readonly nullable: boolean | undefined;
-      readonly allowUnknownKeys: boolean | undefined;
-      readonly minLength: number | undefined;
-    },
-    any
-  >
->;
-expectType<never>(tom1);
-
-declare const tom2: TypeOfModifiers<
-  Schema<
-    any,
-    {
-      readonly optional: true;
-      readonly nullable: boolean | undefined;
-      readonly allowUnknownKeys: boolean | undefined;
-      readonly minLength: number | undefined;
-    },
-    any
-  >
->;
-expectType<undefined>(tom2);
-
-declare const tom3: TypeOfModifiers<
-  Schema<
-    any,
-    {
-      readonly optional: boolean | undefined;
-      readonly nullable: true;
-      readonly allowUnknownKeys: boolean | undefined;
-      readonly minLength: number | undefined;
-    },
-    any
-  >
->;
-expectType<null>(tom3);
-
-declare const tom4: TypeOfModifiers<
-  Schema<
-    any,
-    {
-      readonly optional: true;
-      readonly nullable: true;
-      readonly allowUnknownKeys: boolean | undefined;
-      readonly minLength: number | undefined;
-    },
-    any
-  >
->;
-expectType<null | undefined>(tom4);
+declare const _to3: TupleOf<string, 100>;
 
 /**
  * If

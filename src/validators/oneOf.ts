@@ -9,7 +9,7 @@ import { left, right } from '../utils/either';
 // thanks to this, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)
 export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   values: readonly [...U],
-) => {
+) => <S extends SomeSchema<any>>(schema?: S) => {
   type TypeOfResult = {
     readonly [Index in keyof U]: U[Index] extends SomeSchema<any> ? TypeOf<U[Index]> : U[Index];
   }[number];

@@ -5,7 +5,7 @@ export const validate = <S extends SomeSchema<unknown>>(schema: S) => (value: un
   const parsedValue: unknown = schema.__parse ? schema.__parse(value) : value;
   const result = schema.__validate(parsedValue);
 
-  if (result._t === 'right') {
+  if (result._t === 'right' || result._t === 'next') {
     return result.value as TypeOf<S>;
   } else {
     // throw result.value;

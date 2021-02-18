@@ -1,68 +1,72 @@
-import type { ValidationError } from './errors';
-import { minLength } from './modifiers/minLength';
-import { optional } from './modifiers/optional';
-import type { DefaultValues, Either, IfAny, Pretty, Schema, SomeSchema, TypeOf } from './types';
-import { left, right } from './utils/either';
-import { pipe } from './utils/pipe';
-import { validate } from './validators/__validate';
-import { array } from './validators/array';
-import { number } from './validators/number';
-import { string } from './validators/string';
-import { unknown } from './validators/unknown';
+import { unionToPrint } from './stringify';
+import type { Either, If, Pretty, SomeSchema } from './types';
+import type { Next } from './utils/either';
+import { left, right, next } from './utils/either';
 
-import { nullable } from '.';
-
-const CONTINUE = Symbol('@typeofweb/schema/continue');
-type Continue<Output> = { readonly [CONTINUE]: Output };
-const Continue = <Output>(value: Output) => ({ [CONTINUE]: value });
-
-type ExitEarly<Output> = Either<Output, any> | Continue<Output>;
-type Refinement<Output, Input, R extends ExitEarly<Output>> = (
+type Refinement<NextResult, Input, ExitEarlyResult> = (
   value: Input,
   t: RefinementToolkit,
-) => R;
+) => Either<ExitEarlyResult, any> | Next<NextResult>;
 
 const refinementToolkit = {
   right,
   left,
-  continue: Continue,
+  next,
 } as const;
 type RefinementToolkit = typeof refinementToolkit;
 
-export const refine = <Output, Input, RefinementResult extends ExitEarly<Output>>(
-  refinement: Refinement<Output, Input, RefinementResult>,
-) => <S extends SomeSchema<Input>>(schema?: S | undefined) => {
-  type Values = undefined extends S
-    ? DefaultValues
-    : S extends { readonly __values: DefaultValues }
-    ? S['__values']
-    : DefaultValues;
+export const refine = <Output, Input, ExitEarlyResult = never>(
+  refinement: Refinement<Output, Input, ExitEarlyResult>,
+  toString?: () => string,
+) => <S extends SomeSchema<Input>>(schema?: S) => {
+  type HasExitEarlyResult = unknown extends ExitEarlyResult
+    ? false
+    : ExitEarlyResult extends never
+    ? false
+    : readonly unknown[] extends ExitEarlyResult
+    ? false
+    : true;
 
-  type TypeOfResult =
-    | (unknown extends Output ? never : readonly unknown[] extends Output ? never : Output)
-    | (undefined extends S ? never : S extends {} ? S['__type'] : never);
+  type HasOutput = unknown extends Output
+    ? false
+    : Output extends never
+    ? false
+    : readonly unknown[] extends Output
+    ? false
+    : true;
 
-  return {} as Schema<
-    RefinementResult extends { readonly _t: 'right'; readonly value: infer ExitEarlyResult1 }
-      ? ExitEarlyResult1
-      : TypeOfResult extends Continue<infer ExitEarlyResult3>
-      ? ExitEarlyResult3
-      : // : RefinementResult extends Continue<infer ExitEarlyResult2>
-      // ? ExitEarlyResult2
-      TypeOfResult extends never
-      ? Output
-      : unknown extends TypeOfResult
-      ? never
-      : TypeOfResult,
-    Values
-  >;
+  type Result =
+    | If<true, HasExitEarlyResult, ExitEarlyResult>
+    | If<
+        true,
+        HasOutput,
+        // if schema is an array schema
+        S['__type'] extends readonly (infer TypeOfSchemaElement)[]
+          ? // and Output is a *tuple* schema
+            Output extends readonly [...infer _]
+            ? // replace each tuple element in Output with the type of element from schema
+              { readonly [Index in keyof Output]: TypeOfSchemaElement }
+            : Output
+          : Output
+      >
+    | If<false, HasExitEarlyResult, S['__type']>
+    | If<false, HasOutput | HasExitEarlyResult, S['__type']>;
 
-  // return {} as Schema<
-  //   RefinementResult extends { readonly _t: 'right'; readonly value: infer ExitEarlyResult }
-  //     ? ExitEarlyResult
-  //     : TypeOfResult extends never
-  //     ? Output
-  //     : IfAny<TypeOfResult, Output>,
-  //   Values
-  // >;
+  return {
+    ...schema,
+    toString() {
+      return unionToPrint([schema?.toString()!, toString?.()!].filter(Boolean));
+    },
+    __validate(val) {
+      const innerResult = refinement(val as Input, refinementToolkit);
+
+      if (innerResult?._t === 'left' || innerResult?._t === 'right') {
+        return innerResult;
+      }
+      if (!schema) {
+        return innerResult;
+      }
+      return schema.__validate(innerResult.value);
+    },
+  } as SomeSchema<Pretty<Result>>;
 };

@@ -1,14 +1,5 @@
-import type { Schema, SomeSchema } from '../types';
-import { right } from '../utils/either';
+import { refine } from '../refine';
 
-export const optional = <S extends SomeSchema<any>>(schema: S) => {
-  return {
-    ...schema,
-    __validate(value) {
-      if (value === undefined) {
-        return right(value);
-      }
-      return schema.__validate(value);
-    },
-  } as Schema<S['__type'], S['__values']>;
-};
+export const optional = refine((value, t) =>
+  value === undefined ? t.right(undefined) : t.next(value),
+);
