@@ -4,11 +4,14 @@ import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { Schema, SomeSchema, TypeOf, UndefinedToOptional } from '../types';
 import { left, right } from '../utils/either';
 
-export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => <
-  S extends SomeSchema<any>
->(
-  schema?: S,
-) => {
+export interface ObjectSchemaOptions {
+  readonly allowUnknownKeys?: boolean;
+}
+
+export const object = <U extends Record<string, SomeSchema<any>>>(
+  obj: U,
+  options?: ObjectSchemaOptions,
+) => <S extends SomeSchema<any>>(schema?: S) => {
   type TypeOfResult = UndefinedToOptional<
     {
       readonly [K in keyof U]: TypeOf<U[K]>;
@@ -20,6 +23,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(obj: U) => <
     __values: obj,
     toString: toStringObject,
     __validate: validateObject,
+    __modifiers: options ? { ...options } : undefined,
   } as Schema<TypeOfResult, U>;
 };
 
@@ -47,12 +51,12 @@ function validateObject<
       readonly [K in keyof U]: TypeOf<U[K]>;
     }
   >
->(this: Schema<TypeOfResult, U>, object: Record<string, unknown>) {
+>(this: Schema<TypeOfResult, U, ObjectSchemaOptions>, object: Record<string, unknown>) {
   if (typeof object !== 'object' || object === null) {
     return left(new ValidationError(this, object));
   }
   const validators = this.__values as Record<string, SomeSchema<any>>;
-  const allowUnknownKeys = true; // @todo !!this.__modifiers.allowUnknownKeys;
+  const allowUnknownKeys = !!this.__modifiers?.allowUnknownKeys;
 
   let isError = false;
   const result = {} as Record<string, unknown>;

@@ -5,13 +5,17 @@ export type TypeOf<S extends SomeSchema<any>> = Pretty<TypeOfSchema<S>>;
 
 export type Primitives = string | number | boolean;
 export type Json = Primitives | { readonly [prop in string | number]: Json } | readonly Json[];
-export interface Schema<Type extends unknown, Values extends DefaultValues> {
+export interface Schema<Type extends unknown, Values extends DefaultValues, Modifiers = never> {
   readonly __type: Type;
   readonly __values: Values;
   /**
    * @internal
    */
   readonly __parse?: (val: unknown) => Type;
+  /**
+   * @internal
+   */
+  readonly __modifiers?: Modifiers;
   /**
    * @internal
    */
@@ -24,7 +28,7 @@ type Right<R> = { readonly _t: 'right'; readonly value: R };
 
 export type Either<R, L = ValidationError> = Left<L> | Right<R>;
 
-export type SomeSchema<T> = Schema<T, DefaultValues>;
+export type SomeSchema<T> = Schema<T, DefaultValues, unknown>;
 
 export type DefaultValues = SomeSchema<any> | Primitives | Functor<SomeSchema<any> | Primitives>;
 

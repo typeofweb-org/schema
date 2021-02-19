@@ -17,6 +17,5 @@ export { validate } from './validators/__validate';
 export { nil } from './modifiers/nil';
 export { nullable } from './modifiers/nullable';
 export { optional } from './modifiers/optional';
-export { allowUnknownKeys } from './modifiers/allowUnknownKeys';
 export { minArrayLength } from './modifiers/minArrayLength';
 export { minStringLength } from './modifiers/minStringLength';

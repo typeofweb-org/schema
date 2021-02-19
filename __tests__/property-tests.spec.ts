@@ -20,7 +20,6 @@ import {
   pipe,
   unknown,
   tuple,
-  allowUnknownKeys,
   minStringLength,
 } from '../src';
 import { isISODateString } from '../src/utils/dateUtils';
@@ -352,7 +351,9 @@ describe('@typeofweb/schema', () => {
 
     describe('allowUnknownKeys', () =>
       Fc.assert(
-        Fc.property(Fc.object(), (obj) => notThrows(validate(allowUnknownKeys(object({})())))(obj)),
+        Fc.property(Fc.object(), (obj) =>
+          notThrows(validate(object({}, { allowUnknownKeys: true })()))(obj),
+        ),
       ));
   });
 

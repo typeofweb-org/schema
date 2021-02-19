@@ -1,7 +1,6 @@
 import type { SomeSchema } from '../src';
 import {
   minStringLength,
-  allowUnknownKeys,
   tuple,
   unknown,
   array,
@@ -323,16 +322,17 @@ describe('@typeofweb/schema unit tests', () => {
       );
     });
 
-    it('object should not throw on unknown keys when allowUnknownKeys modifier is used', () => {
+    it('object should not throw on unknown keys when allowUnknownKeys option is true', () => {
       const validator = validate(
-        allowUnknownKeys(
-          object({
+        object(
+          {
             a: number(),
             b: string(),
             c: array(string())(),
             d: object({ e: string(), f: oneOf([string(), false])() })(),
-          })(),
-        ),
+          },
+          { allowUnknownKeys: true },
+        )(),
       );
 
       const obj = {
