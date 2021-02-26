@@ -41,6 +41,12 @@ const allowDateTimestamps = pipe(date, allowTimestamps);
 const allowDateTimestampsR = pipe(allowDateTimestamps, validate)('');
 expectType<Date>(allowDateTimestampsR);
 
+const presentOrFuture = refine((value: Date, t) =>
+  value.getTime() >= Date.now() ? t.next(value) : t.left(value),
+);
+const allowDateTimestampsR2 = pipe(presentOrFuture, date, allowTimestamps, validate)('');
+expectType<Date>(allowDateTimestampsR2);
+
 const ref1 = pipe(string, nullable, optional, validate)('');
 expectType<string | null | undefined>(ref1);
 

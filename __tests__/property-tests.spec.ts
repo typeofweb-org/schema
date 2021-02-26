@@ -330,7 +330,7 @@ describe('@typeofweb/schema', () => {
               const assertion = arr.length >= length ? notThrows : throws;
 
               return assertion(
-                validate(minArrayLength(length)(array(...primitiveValidators.map((v) => v()))())),
+                λ(array(...primitiveValidators.map((v) => v())), minArrayLength(length), validate),
               )(arr);
             },
           ),

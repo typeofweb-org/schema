@@ -1,5 +1,7 @@
 import type { SomeSchema } from '../src';
 import {
+  minArrayLength,
+  λ,
   minStringLength,
   tuple,
   unknown,
@@ -414,6 +416,30 @@ describe('@typeofweb/schema unit tests', () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `"Invalid type! Expected { a: number, b: { c: string, d: { e: { f: string }[] } } } but got {\\"a\\":1,\\"b\\":{\\"c\\":\\"aaa\\",\\"d\\":{\\"e\\":[{\\"f\\":\\"bbb\\"},{\\"f\\":123}]}}}!"`,
       );
+    });
+
+    it('should only accept arrays with at least 0 elements when [false] is given', () => {
+      const primitiveValidators: readonly ((schema?: SomeSchema<any>) => SomeSchema<any>)[] = [
+        number,
+        string,
+        date,
+        boolean,
+      ];
+      expect(
+        λ(array(...primitiveValidators.map((v) => v())), minArrayLength(0), validate)([false]),
+      );
+    });
+
+    it('should not accept arrays with at least 1 element when [] is given', () => {
+      const primitiveValidators: readonly ((schema?: SomeSchema<any>) => SomeSchema<any>)[] = [
+        number,
+        string,
+        date,
+        boolean,
+      ];
+      expect(() =>
+        λ(array(...primitiveValidators.map((v) => v())), minArrayLength(1), validate)([]),
+      ).toThrow();
     });
   });
 

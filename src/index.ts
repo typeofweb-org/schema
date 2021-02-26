@@ -19,3 +19,5 @@ export { nullable } from './modifiers/nullable';
 export { optional } from './modifiers/optional';
 export { minArrayLength } from './modifiers/minArrayLength';
 export { minStringLength } from './modifiers/minStringLength';
+
+export { refine } from './refine';

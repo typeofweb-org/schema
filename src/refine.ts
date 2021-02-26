@@ -58,7 +58,8 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
       return unionToPrint([schema?.toString()!, toString?.()!].filter(Boolean));
     },
     __validate(val) {
-      const innerResult = refinement(val as Input, refinementToolkit);
+      // eslint-disable-next-line functional/no-this-expression
+      const innerResult = refinement.call(this, val as Input, refinementToolkit);
 
       if (innerResult?._t === 'left' || innerResult?._t === 'right') {
         return innerResult;
