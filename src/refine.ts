@@ -1,6 +1,5 @@
 import { unionToPrint } from './stringify';
-import type { Either, If, Pretty, SomeSchema } from './types';
-import type { Next } from './utils/either';
+import type { Either, If, Next, Pretty, SomeSchema } from './types';
 import { left, right, next } from './utils/either';
 
 type Refinement<NextResult, Input, ExitEarlyResult> = (

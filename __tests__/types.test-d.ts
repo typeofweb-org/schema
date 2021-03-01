@@ -2,7 +2,6 @@ import { expectType } from 'tsd';
 
 import type {
   If,
-  IfAny,
   KeysOfType,
   Optional,
   Required,
@@ -106,18 +105,3 @@ expectType<{
   readonly b?: number | undefined;
   readonly c?: object | undefined;
 }>(uto5);
-
-/**
- * IfAny
- */
-declare const ifany1: IfAny<any, true, false>;
-expectType<true>(ifany1);
-
-declare const ifany2: IfAny<unknown, true, false>;
-expectType<false>(ifany2);
-
-declare const ifany3: IfAny<unknown, true>;
-expectType<unknown>(ifany3);
-
-declare const ifany4: IfAny<unknown | any, true, false>;
-expectType<true>(ifany4);
