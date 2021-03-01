@@ -443,13 +443,13 @@ describe('@typeofweb/schema unit tests', () => {
     });
   });
 
-  describe.skip('schemaToString', () => {
+  describe('schemaToString', () => {
     it('should work for simple validators', () => {
       expect(schemaToString(string())).toMatchInlineSnapshot(`"string"`);
       expect(schemaToString(number())).toMatchInlineSnapshot(`"number"`);
       expect(schemaToString(boolean())).toMatchInlineSnapshot(`"boolean"`);
       expect(schemaToString(date())).toMatchInlineSnapshot(`"Date"`);
-      expect(schemaToString(unknown())).toMatchInlineSnapshot(`"(unknown | undefined | null)"`);
+      expect(schemaToString(unknown())).toMatchInlineSnapshot(`"unknown"`);
     });
 
     it('should work for oneOf', () => {
@@ -473,9 +473,7 @@ describe('@typeofweb/schema unit tests', () => {
       expect(schemaToString(array(string(), boolean())())).toMatchInlineSnapshot(
         `"(string | boolean)[]"`,
       );
-      expect(schemaToString(array(unknown())())).toMatchInlineSnapshot(
-        `"(unknown | undefined | null)[]"`,
-      );
+      expect(schemaToString(array(unknown())())).toMatchInlineSnapshot(`"unknown[]"`);
     });
 
     it('should work for objects', () => {

@@ -34,9 +34,9 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
     ? false
     : {} extends Output
     ? true
-    : readonly unknown[] extends Output
-    ? false
-    : true;
+    : // : readonly unknown[] extends Output
+      // ? false
+      true;
 
   type Result =
     | If<true, HasExitEarlyResult, ExitEarlyResult>
