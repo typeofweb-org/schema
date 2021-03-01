@@ -20,6 +20,7 @@ const rollupConfig = [
         format: 'es',
         dir: './',
         entryFileNames: pkg.module,
+        sourcemap: true,
         plugins: [
           shouldCompress
             ? terser({
@@ -37,6 +38,7 @@ const rollupConfig = [
         format: 'cjs',
         dir: './',
         entryFileNames: pkg.main,
+        sourcemap: true,
         plugins: [
           shouldCompress
             ? terser({
@@ -52,6 +54,7 @@ const rollupConfig = [
       {
         name: '@typeofweb/schema',
         entryFileNames: pkg.browser,
+        sourcemap: true,
         format: 'umd',
         dir: './',
         plugins: [
