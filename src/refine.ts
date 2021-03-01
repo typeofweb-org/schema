@@ -4,6 +4,7 @@ import type { Next } from './utils/either';
 import { left, right, next } from './utils/either';
 
 type Refinement<NextResult, Input, ExitEarlyResult> = (
+  this: SomeSchema<any>,
   value: Input,
   t: RefinementToolkit,
 ) => Either<ExitEarlyResult, any> | Next<NextResult>;
@@ -31,6 +32,8 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
     ? false
     : Output extends never
     ? false
+    : {} extends Output
+    ? true
     : readonly unknown[] extends Output
     ? false
     : true;
