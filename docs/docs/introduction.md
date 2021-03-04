@@ -21,7 +21,7 @@ const personSchema = object({
   name: string(),
   age: number(),
   email: optional(string()),
-});
+})();
 
 const mark = {
   name: 'Mark',
@@ -47,7 +47,7 @@ import { number, object, date, validate } from '@typeofweb/schema';
 const userQuery = object({
   dob: date(),
   query: number(),
-});
+})();
 
 const payload = {
   dob: '2001-04-16T00:00:00.000Z',
@@ -69,10 +69,10 @@ const result = userQueryValidator(payload);
 ```ts
 import { string, object, array, validate } from '@typeofweb/schema';
 
-const validator = validate(array(object({ a: string() })));
+const validator = validate(array(object({ a: string() })())());
 
 const result = validator([123]);
-// throws ValidationError: Invalid type! Expected ≫{ a: ≫string≪ }[]≪ but got [123]!
+// throws ValidationError: Invalid type! Expected { a: string }[] but got [123]!
 ```
 
 ## Types generated from validators
@@ -84,7 +84,7 @@ const personSchema = object({
   name: string(),
   age: number(),
   email: optional(string()),
-});
+})();
 
 type Person = TypeOf<typeof personSchema>;
 // type Person = {

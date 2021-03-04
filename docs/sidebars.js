@@ -21,6 +21,7 @@ module.exports = {
             'modifiers/nil',
             'modifiers/minArrayLength',
             'modifiers/minStringLength',
+            'modifiers/refinements',
           ],
           Utilities: ['utilities/pipe', 'utilities/typeOf'],
         },

@@ -6,7 +6,7 @@ title: oneOf
 Creates a schema that matches only specified values.
 
 ```ts
-const fishSchema = oneOf(['trout', 'catfish']);
+const fishSchema = oneOf(['trout', 'catfish'])();
 const fishValidator = validate(fishSchema);
 
 // Returns 'trout'
