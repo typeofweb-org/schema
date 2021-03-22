@@ -17,4 +17,4 @@ const annieBirthday = dateValidator(
 
 ## Other date formats
 
-By default, other date formats or timestamps are not supported. However, you're encouraged to create a custom refinement for this purpose. You can find a working example in [Custom modifiers (refinements)](/modifiers/refinements).
+By default, other date formats or timestamps are not supported. However, you're encouraged to create a custom refinement for this purpose. You can find a working example in [Custom modifiers (refinements)](modifiers/refinements.md).
