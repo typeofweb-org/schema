@@ -1,3 +1,5 @@
+import Qs from 'qs';
+
 import type { SomeSchema } from '../src';
 import {
   pipe,
@@ -459,6 +461,25 @@ describe('@typeofweb/schema unit tests', () => {
       expect(validate(nil())(null)).toEqual(null);
       expect(validate(nil())(undefined)).toEqual(undefined);
       expect(() => validate(nil())('aaaa')).toThrow();
+    });
+
+    it('parse and validate fields in objects #49', () => {
+      const queryString = `dateFrom=2020-10-15&dateTo=2020-10-15&resultsPerPage=10`;
+
+      const parsedQuery = Qs.parse(queryString);
+
+      const queryValidator = validate(
+        object({
+          dateFrom: date(),
+          dateTo: date(),
+          resultsPerPage: number(),
+        })(),
+      );
+
+      const queryObject = queryValidator(parsedQuery);
+      expect(queryObject.dateFrom).toBeInstanceOf(Date);
+      expect(queryObject.dateTo).toBeInstanceOf(Date);
+      expect(queryObject.resultsPerPage).toEqual(10);
     });
   });
 
