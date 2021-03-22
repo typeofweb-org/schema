@@ -5,7 +5,7 @@
     "strict": true,
     "alwaysStrict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
@@ -16,7 +16,9 @@
     "resolveJsonModule": true,
     "allowUnreachableCode": true,
     "stripInternal": true,
-    "declarationMap": true
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
   },
   "include": ["src", "__tests__"]
 }

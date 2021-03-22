@@ -3,7 +3,7 @@ id: number
 title: number
 ---
 
-Creates a schema that matches numbers.
+Creates a schema that matches numbers:
 
 ```ts
 const numberSchema = number();

@@ -1,24 +1,24 @@
 'use strict';
 exports.__esModule = true;
-const src_1 = require('../dist/index.common.js');
+const { object, minStringLength, string, number, validate } = require('../dist/index.common.js');
 function run(i) {
-  const schema = src_1.object({
-    name: src_1.minLength(4)(src_1.string()),
-    email: src_1.string(),
-    firstName: src_1.nonEmpty(src_1.string()),
-    phone: src_1.nonEmpty(src_1.string()),
-    age: src_1.oneOf([i]),
-  });
-  const validator = src_1.validate(schema);
+  const schema = object({
+    name: minStringLength(4)(string()),
+    email: string(),
+    firstName: minStringLength(0)(string()),
+    phone: string(),
+    // age: number(),
+  })();
+  const validator = validate(schema);
   const obj = {
     name: 'John Doe',
     email: 'john.doe@company.space',
     firstName: 'John',
     phone: '123-4567',
-    age: i,
+    // age: i,
   };
   return validator(obj);
 }
-for (let i = 0; i < 2000000; ++i) {
+for (let i = 0; i < 4000000; ++i) {
   run(i);
 }

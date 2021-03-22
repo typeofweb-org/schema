@@ -1,23 +1,18 @@
-import { ValidationError } from '../errors';
-import { initialModifiers } from '../schema';
+import { refine } from '../refine';
 import { typeToPrint } from '../stringify';
-import type { Schema } from '../types';
-import { left, right } from '../utils/either';
 
-export const number = () => {
-  return {
-    __modifiers: initialModifiers,
-    toString: toStringNumber,
-    __parse: parseNumber,
-    __validate: validateNumber,
-  } as Schema<number, typeof initialModifiers, never>;
-};
+export const number = refine(
+  (value, t) => {
+    const parsedValue = parseNumber(value);
+    if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
+      return t.left(parsedValue);
+    }
+    return t.nextValid(parsedValue);
+  },
+  () => typeToPrint('number'),
+);
 
-function toStringNumber() {
-  return typeToPrint('number');
-}
-
-function parseNumber(this: Schema<number, typeof initialModifiers, never>, value: unknown) {
+function parseNumber(value: unknown) {
   if (typeof value === 'string') {
     if (value.trim() === '') {
       return value;
@@ -25,11 +20,4 @@ function parseNumber(this: Schema<number, typeof initialModifiers, never>, value
     return Number(value);
   }
   return value;
-}
-
-function validateNumber(this: Schema<number, typeof initialModifiers, never>, value: unknown) {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return left(new ValidationError(this, value));
-  }
-  return right(value);
 }

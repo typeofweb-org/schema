@@ -12,7 +12,7 @@ const carSchema = object({
   mass: number(),
   enginePower: number(),
   fuelCapacity: number(),
-});
+})();
 const carValidator = validate(carSchema);
 
 /* Returns {
@@ -29,4 +29,41 @@ const matthewCar = carValidator({
   enginePower: 135,
   fuelCapacity: 59,
 });
+```
+
+## `allowUnknownKeys`
+
+The `allowUnknownKeys` option is used to not throw validation error on unspecifed fields in object (`false` by default):
+
+```ts
+const computerSchema = object(
+  {
+    cpuModel: string(),
+    gpuModel: string(),
+    RAM: number(),
+  },
+  { allowUnknownKeys: false },
+)();
+
+const anotherComputerSchema = object(
+  {
+    cpuModel: string(),
+    gpuModel: string(),
+    RAM: number(),
+  },
+  { allowUnknownKeys: true },
+)();
+
+const computer = {
+  cpuModel: 'Intel',
+  gpuModel: 'Nvidia',
+  RAM: 8,
+  motherboard: 'MSI',
+};
+
+// Throws ValidationError
+validate(computerSchema)(computer);
+
+// It's fine
+validate(anotherComputerSchema)(computer);
 ```

@@ -23,5 +23,5 @@ const blogSchema = object({
   description: λ(string, nil),
   href: λ(string, nil, nonEmpty),
   rssUrl: λ(string, nil, nonEmpty),
-});
+})();
 ```

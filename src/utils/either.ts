@@ -1,4 +1,9 @@
-import type { Either } from '../types';
+import type { Either, Next } from '../types';
 
-export const left = <L>(value: L) => ({ _t: 'left', value } as Either<never, L>);
-export const right = <R>(value: R) => ({ _t: 'right', value } as Either<R, never>);
+export const left = <L>(value: L): Either<never, L> => ({ _t: 'left', value });
+export const right = <R>(value: R): Either<R, never> => ({ _t: 'right', value });
+export const nextValid = <Output>(value: Output): Next<Output> => ({ _t: 'nextValid', value });
+export const nextNotValid = <Output>(value: Output): Next<Output> => ({
+  _t: 'nextNotValid',
+  value,
+});

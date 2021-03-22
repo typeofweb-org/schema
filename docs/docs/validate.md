@@ -23,7 +23,7 @@ const queryValidator = validate(
     dateFrom: date(),
     dateTo: date(),
     resultsPerPage: number(),
-  }),
+  })(),
 );
 
 const queryObject = queryValidator(parsedQuery);

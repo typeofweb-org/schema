@@ -1,6 +1,7 @@
 import Fc from 'fast-check';
 import { anyPass, complement, is, sort } from 'ramda';
 
+import type { SomeSchema } from '../src';
 import {
   validate,
   number,
@@ -14,13 +15,12 @@ import {
   optional,
   nil,
   ValidationError,
-  minLength,
-  nonEmpty,
+  minArrayLength,
   λ,
   pipe,
   unknown,
   tuple,
-  allowUnknownKeys,
+  minStringLength,
 } from '../src';
 import { isISODateString } from '../src/utils/dateUtils';
 
@@ -52,7 +52,13 @@ const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unkn
   ...args: T
 ) => !throws(predicate)(...args);
 
-const primitiveValidators = [number, string, date, boolean];
+// eslint-disable-next-line
+const primitiveValidators: ((schema?: SomeSchema<any>) => SomeSchema<any>)[] = [
+  number,
+  string,
+  date,
+  boolean,
+];
 
 describe('@typeofweb/schema', () => {
   describe('validators', () => {
@@ -143,7 +149,7 @@ describe('@typeofweb/schema', () => {
             Fc.array(Fc.oneof(Fc.string(), Fc.double(), Fc.integer())).filter(
               (arr) => arr.length > 0,
             ),
-            (arr) => notThrows(validate(oneOf(arr)))(arr[0]),
+            (arr) => notThrows(validate(oneOf(arr)()))(arr[0]),
           ),
         ));
 
@@ -154,9 +160,9 @@ describe('@typeofweb/schema', () => {
               (arr) => arr.length > 0,
             ),
             (arr) =>
-              notThrows(validate(oneOf(shuffle([...arr, ...primitiveValidators.map((v) => v())]))))(
-                shuffle(arr)[0],
-              ),
+              notThrows(
+                validate(oneOf(shuffle([...arr, ...primitiveValidators.map((v) => v())]))()),
+              )(shuffle(arr)[0]),
           ),
         ));
 
@@ -164,7 +170,7 @@ describe('@typeofweb/schema', () => {
         Fc.assert(
           Fc.property(
             Fc.set(Fc.oneof(Fc.string(), Fc.double(), Fc.integer())).filter((x) => x.length > 1),
-            ([el, ...arr]) => throws(validate(oneOf(arr)), ValidationError)(el),
+            ([el, ...arr]) => throws(validate(oneOf(arr)()), ValidationError)(el),
           ),
         ));
     });
@@ -186,9 +192,9 @@ describe('@typeofweb/schema', () => {
                 object({
                   a: number(),
                   b: string(),
-                  c: array(number(), string(), boolean()),
-                  d: object({ e: string() }),
-                }),
+                  c: array(number(), string(), boolean())(),
+                  d: object({ e: string() })(),
+                })(),
               ),
             ),
           ),
@@ -203,9 +209,9 @@ describe('@typeofweb/schema', () => {
                 object({
                   a: number(),
                   b: string(),
-                  c: array(string()),
-                  d: object({ e: string() }),
-                }),
+                  c: array(string())(),
+                  d: object({ e: string() })(),
+                })(),
               ),
               ValidationError,
             ),
@@ -222,7 +228,7 @@ describe('@typeofweb/schema', () => {
       it('should validate tuples', () =>
         Fc.assert(
           Fc.property(Fc.string(), Fc.integer(), (...args) =>
-            notThrows(validate(tuple([string(), number()])))(args),
+            notThrows(validate(tuple([string(), number()])()))(args),
           ),
         ));
 
@@ -231,7 +237,7 @@ describe('@typeofweb/schema', () => {
           Fc.property(
             Fc.anything().filter(complement(is(String))),
             Fc.anything().filter(complement(anyPass([is(Number), isCoercibleToNum]))),
-            (...args) => throws(validate(tuple([string(), number()])))(args),
+            (...args) => throws(validate(tuple([string(), number()])()))(args),
           ),
         ));
     });
@@ -292,9 +298,9 @@ describe('@typeofweb/schema', () => {
             Fc.array(Fc.oneof(Fc.string(), Fc.integer(), Fc.date(), Fc.boolean())),
             (arr) => {
               const assertion = arr.length > 0 ? notThrows : throws;
-              return assertion(validate(nonEmpty(array(...primitiveValidators.map((v) => v())))))(
-                arr,
-              );
+              return assertion(
+                validate(minArrayLength(1)(array(...primitiveValidators.map((v) => v()))())),
+              )(arr);
             },
           ),
         ));
@@ -303,7 +309,7 @@ describe('@typeofweb/schema', () => {
         Fc.assert(
           Fc.property(Fc.string(), (str) => {
             const assertion = str.length > 0 ? notThrows : throws;
-            return assertion(validate(nonEmpty(string())))(str);
+            return assertion(validate(minStringLength(1)(string())))(str);
           }),
         ));
     });
@@ -324,7 +330,7 @@ describe('@typeofweb/schema', () => {
               const assertion = arr.length >= length ? notThrows : throws;
 
               return assertion(
-                validate(minLength(length)(array(...primitiveValidators.map((v) => v())))),
+                λ(array(...primitiveValidators.map((v) => v())), minArrayLength(length), validate),
               )(arr);
             },
           ),
@@ -337,7 +343,7 @@ describe('@typeofweb/schema', () => {
             Fc.integer({ min, max }),
             (str, length) => {
               const assertion = str.length >= length ? notThrows : throws;
-              return assertion(validate(minLength(length)(string())))(str);
+              return assertion(validate(minStringLength(length)(string())))(str);
             },
           ),
         ));
@@ -345,7 +351,9 @@ describe('@typeofweb/schema', () => {
 
     describe('allowUnknownKeys', () =>
       Fc.assert(
-        Fc.property(Fc.object(), (obj) => notThrows(validate(allowUnknownKeys(object({}))))(obj)),
+        Fc.property(Fc.object(), (obj) =>
+          notThrows(validate(object({}, { allowUnknownKeys: true })()))(obj),
+        ),
       ));
   });
 
@@ -356,7 +364,7 @@ describe('@typeofweb/schema', () => {
           Fc.property(Fc.oneof(Fc.constant(null), Fc.constant(undefined), Fc.string()), (value) => {
             const assertion =
               typeof value === 'string' ? (value.length > 0 ? notThrows : throws) : notThrows;
-            const validator = λ(string, nonEmpty, nullable, optional);
+            const validator = λ(string, minStringLength(1), nullable, optional);
             return assertion(validate(validator))(value);
           }),
         ));
@@ -366,7 +374,7 @@ describe('@typeofweb/schema', () => {
           Fc.property(Fc.oneof(Fc.constant(null), Fc.constant(undefined), Fc.string()), (value) => {
             const assertion =
               typeof value === 'string' ? (value.length > 0 ? notThrows : throws) : notThrows;
-            const validator = pipe(string(), nonEmpty, nullable, optional);
+            const validator = pipe(string(), minStringLength(1), nullable, optional);
             return assertion(validate(validator))(value);
           }),
         ));

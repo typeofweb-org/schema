@@ -1,22 +1,7 @@
-import type { MergeModifiers, Schema, SomeSchema } from '../types';
-import { right } from '../utils/either';
+import { refine } from '../refine';
+import { typeToPrint } from '../stringify';
 
-export const optional = <S extends SomeSchema<any>>(schema: S) => {
-  return {
-    ...schema,
-    __modifiers: {
-      ...schema.__modifiers,
-      optional: true,
-    },
-    __validate(value) {
-      if (value === undefined) {
-        return right(value);
-      }
-      return schema.__validate(value);
-    },
-  } as Schema<
-    S['__type'],
-    MergeModifiers<S['__modifiers'], { readonly optional: true }>,
-    S['__values']
-  >;
-};
+export const optional = refine(
+  (value, t) => (value === undefined ? t.right(undefined) : t.nextNotValid(value)),
+  () => typeToPrint('undefined'),
+);

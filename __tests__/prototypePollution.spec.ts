@@ -8,8 +8,8 @@ describe('prototype pollution', () => {
     const schema = object({
       __proto__: object({
         polluted: string(),
-      }),
-    });
+      })(),
+    })();
     expect(() => validate(schema)({ __proto__: { polluted: true } })).not.toThrowError();
     expect(obj.polluted).toBe(undefined);
     // @ts-ignore
@@ -25,9 +25,9 @@ describe('prototype pollution', () => {
         prototype: optional(
           object({
             polluted: optional(string()),
-          }),
+          })(),
         ),
-      }),
+      })(),
     );
     expect(() => validate(schema)(Object)).toThrowError();
     expect(obj.polluted).toBe(undefined);
@@ -41,8 +41,8 @@ describe('prototype pollution', () => {
     expect(obj.polluted).toBe(undefined);
     const t = {};
     const schema = object({
-      constructor: optional(object({ polluted: optional(string()) })),
-    });
+      constructor: optional(object({ polluted: optional(string()) })()),
+    })();
     expect(() => validate(schema)(t)).not.toThrowError();
     expect(typeof t.constructor).toBe('function');
     expect(obj.polluted).toBe(undefined);
@@ -58,9 +58,9 @@ describe('prototype pollution', () => {
       constructor: object({
         prototype: object({
           polluted: string(),
-        }),
-      }),
-    });
+        })(),
+      })(),
+    })();
     expect(() =>
       validate(schema)({ constructor: { prototype: { polluted: 'yes' } } }),
     ).not.toThrowError();
