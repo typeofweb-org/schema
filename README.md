@@ -73,24 +73,24 @@ Early benchmarks show some really promising performance of `@typeofweb/schema` w
 ```
 Platform info:
 ==============
-   Darwin 20.2.0 x64
-   Node.JS: 14.15.2
-   V8: 8.4.371.19-node.17
+   Darwin 20.3.0 x64
+   Node.JS: 14.16.0
+   V8: 8.4.371.19-node.18
    Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz × 8
 ```
 
 | library               | relative speed | operations per second | avg. operation time |
 | --------------------- | -------------: | --------------------: | ------------------: |
-| **@typeofweb/schema** |            ref |   **(2,812,709 rps)** |  **(avg: 0.355μs)** |
-| io-ts@2.2.13          |        -27.82% |       (2,030,076 rps) |      (avg: 0.492μs) |
-| mschema@0.5.6         |        -79.15% |         (586,537 rps) |          (avg: 1μs) |
-| validator.js@2.0.4    |        -83.22% |         (471,847 rps) |          (avg: 2μs) |
-| validate.js@0.13.1    |        -91.62% |         (235,741 rps) |          (avg: 4μs) |
-| validatorjs@3.22.1    |        -94.08% |         (166,599 rps) |          (avg: 6μs) |
-| joi@17.3.0            |        -95.52% |         (125,992 rps) |          (avg: 7μs) |
-| superstruct@0.13.3    |        -97.17% |          (79,536 rps) |         (avg: 12μs) |
-| yup@0.32.8            |        -97.66% |          (65,748 rps) |         (avg: 15μs) |
-| parambulator@1.5.2    |        -99.17% |          (23,308 rps) |         (avg: 42μs) |
-| zod@1.11.11           |        -99.36% |          (18,126 rps) |         (avg: 55μs) |
+| **@typeofweb/schema** |        **ref** |   **(1,934,098 rps)** |  **(avg: 0.517μs)** |
+| io-ts@2.2.13          |         -7.21% |       (1,794,594 rps) |      (avg: 0.557μs) |
+| mschema@0.5.6         |         -69.8% |         (584,151 rps) |          (avg: 1μs) |
+| validator.js@2.0.4    |        -76.16% |         (461,088 rps) |          (avg: 2μs) |
+| validate.js@0.13.1    |        -89.02% |         (212,408 rps) |          (avg: 4μs) |
+| validatorjs@3.22.1    |         -92.2% |         (150,791 rps) |          (avg: 6μs) |
+| joi@17.3.0            |        -93.25% |         (130,541 rps) |          (avg: 7μs) |
+| superstruct@0.13.3    |        -96.99% |          (58,197 rps) |         (avg: 17μs) |
+| yup@0.32.8            |        -97.09% |          (56,243 rps) |         (avg: 17μs) |
+| parambulator@1.5.2    |        -98.99% |          (19,492 rps) |         (avg: 51μs) |
+| zod@1.11.11           |        -99.03% |          (18,827 rps) |         (avg: 53μs) |
 
 ### 👉 [schema.typeofweb.com](https://schema.typeofweb.com/) 👈
