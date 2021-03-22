@@ -481,6 +481,37 @@ describe('@typeofweb/schema unit tests', () => {
       expect(queryObject.dateTo).toBeInstanceOf(Date);
       expect(queryObject.resultsPerPage).toEqual(10);
     });
+
+    it('skip non-existent optional fields in objects #50', () => {
+      const a = object({
+        key1: optional(string()),
+        key2: optional(string()),
+      })();
+      const validatorA = validate(a);
+
+      const value = validatorA({
+        key1: 'hello',
+      });
+
+      expect(value).toHaveProperty('key1', 'hello');
+      expect(value).not.toHaveProperty('key2');
+    });
+
+    it('do not skip undefined optional fields in objects #50', () => {
+      const a = object({
+        key1: optional(string()),
+        key2: optional(string()),
+      })();
+      const validatorA = validate(a);
+
+      const value = validatorA({
+        key1: 'hello',
+        key2: undefined,
+      });
+
+      expect(value).toHaveProperty('key1', 'hello');
+      expect(value).toHaveProperty('key2', undefined);
+    });
   });
 
   describe('schemaToString', () => {

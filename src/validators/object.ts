@@ -64,7 +64,9 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         const validator = validators[key]!;
         const value = object[key];
         const r = validator.__validate(value);
-        result[key] = r.value;
+        if (Object.prototype.hasOwnProperty.call(object, key)) {
+          result[key] = r.value;
+        }
         isError ||= r._t === 'left';
       }
 
