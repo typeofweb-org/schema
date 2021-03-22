@@ -1,4 +1,9 @@
-import './errors'; // is not removed
+import { ValidationError } from './errors'; // is not removed
+
+export const a = `stays as it's an export`;
 
 const b = 'will be removed';
-export const a = `stays as it's an export`;
+
+function object() {
+  new ValidationError({} as any, {});
+}
