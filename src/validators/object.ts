@@ -71,7 +71,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
       if (isError) {
         return t.left(result as TypeOfResult);
       }
-      return t.next(result as TypeOfResult);
+      return t.nextValid(result as TypeOfResult);
     },
     () => {
       const entries = Object.entries(schemasObject).map(

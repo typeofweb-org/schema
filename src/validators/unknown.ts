@@ -3,7 +3,7 @@ import { typeToPrint } from '../stringify';
 
 export const unknown = refine(
   (value, t) => {
-    return t.next(value);
+    return t.nextValid(value);
   },
   () => typeToPrint('unknown'),
 );

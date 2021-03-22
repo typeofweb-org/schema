@@ -8,7 +8,7 @@ export const string = refine(
     if (typeof parsedValue !== 'string') {
       return t.left(parsedValue);
     }
-    return t.next(parsedValue);
+    return t.nextValid(parsedValue);
   },
   () => typeToPrint('string'),
 );

@@ -44,7 +44,7 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
       if (isError) {
         return t.left((result as unknown) as TypeOfResult);
       }
-      return t.next((result as unknown) as TypeOfResult);
+      return t.nextValid((result as unknown) as TypeOfResult);
     },
     () =>
       '[' +

@@ -3,7 +3,9 @@
 `@typeofweb/schema` is a lightweight and extensible library for data validation with full TypeScript support!
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![codecov](https://codecov.io/gh/typeofweb/schema/branch/main/graph/badge.svg?token=6DNCIHEEUO)](https://codecov.io/gh/typeofweb/schema)
@@ -51,7 +53,7 @@ const personSchema = object({
   name: string(),
   age: number(),
   email: optional(string()),
-});
+})();
 
 const mark = {
   name: 'Mark',

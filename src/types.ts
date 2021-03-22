@@ -14,7 +14,9 @@ export interface Schema<Type extends unknown> {
 
 type Left<L> = { readonly _t: 'left'; readonly value: L };
 type Right<R> = { readonly _t: 'right'; readonly value: R };
-export type Next<Output> = { readonly _t: 'next'; readonly value: Output };
+export type Next<Output> =
+  | { readonly _t: 'nextNotValid'; readonly value: Output }
+  | { readonly _t: 'nextValid'; readonly value: Output };
 
 export type Either<R, L = ValidationError> = Left<L> | Right<R>;
 

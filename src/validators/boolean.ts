@@ -6,7 +6,7 @@ export const boolean = refine(
     if (typeof value !== 'boolean') {
       return t.left(value);
     }
-    return t.next(value);
+    return t.nextValid(value);
   },
   () => typeToPrint('boolean'),
 );

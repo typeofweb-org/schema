@@ -8,7 +8,7 @@ export const date = refine(
     if (!isDate(parsedValue) || Number.isNaN(Number(parsedValue))) {
       return t.left(parsedValue);
     }
-    return t.next(parsedValue);
+    return t.nextValid(parsedValue);
   },
   () => typeToPrint('Date'),
 );

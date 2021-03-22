@@ -20,13 +20,13 @@ expectType<string | null>(nullR);
 const optionalR = pipe(string, optional, validate)('');
 expectType<string | undefined>(optionalR);
 
-const even = refine((value: number, t) => (value % 2 === 0 ? t.next(value) : t.left(value)));
+const even = refine((value: number, t) => (value % 2 === 0 ? t.nextValid(value) : t.left(value)));
 const evenR = pipe(number, even, validate)('');
 expectType<number>(evenR);
 
 const noDuplicateItems = refine((arr: ReadonlyArray<unknown>, t) => {
   const allUnique = arr.every((item, index) => index === arr.indexOf(item));
-  return allUnique ? t.next(arr) : t.left(arr);
+  return allUnique ? t.nextValid(arr) : t.left(arr);
 });
 const noDuplicateItemsR = pipe(array(string()), noDuplicateItems, validate)('');
 expect<readonly string[]>(noDuplicateItemsR);
@@ -35,14 +35,14 @@ const noDuplicateItemsAnyR = pipe(array(number()), noDuplicateItems, validate)('
 expect<readonly number[]>(noDuplicateItemsAnyR);
 
 const allowTimestamps = refine((value, t) =>
-  typeof value === 'number' ? t.next(new Date(value)) : t.next(value),
+  typeof value === 'number' ? t.nextValid(new Date(value)) : t.nextValid(value),
 );
 const allowDateTimestamps = pipe(date, allowTimestamps);
 const allowDateTimestampsR = pipe(allowDateTimestamps, validate)('');
 expectType<Date>(allowDateTimestampsR);
 
 const presentOrFuture = refine((value: Date, t) =>
-  value.getTime() >= Date.now() ? t.next(value) : t.left(value),
+  value.getTime() >= Date.now() ? t.nextValid(value) : t.left(value),
 );
 const allowDateTimestampsR2 = pipe(presentOrFuture, date, allowTimestamps, validate)('');
 expectType<Date>(allowDateTimestampsR2);

@@ -1,6 +1,6 @@
 import { unionToPrint } from './stringify';
 import type { Either, If, Next, Pretty, SomeSchema } from './types';
-import { left, right, next } from './utils/either';
+import { left, right, nextValid, nextNotValid } from './utils/either';
 
 type Refinement<NextResult, Input, ExitEarlyResult> = (
   this: SomeSchema<any>,
@@ -9,9 +9,10 @@ type Refinement<NextResult, Input, ExitEarlyResult> = (
 ) => Either<ExitEarlyResult, any> | Next<NextResult>;
 
 const refinementToolkit = {
-  right,
-  left,
-  next,
+  right: right,
+  left: left,
+  nextValid,
+  nextNotValid,
 } as const;
 type RefinementToolkit = typeof refinementToolkit;
 

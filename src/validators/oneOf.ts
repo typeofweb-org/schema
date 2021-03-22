@@ -21,8 +21,8 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
           const r = valueOrSchema.__validate(value);
           if (r._t === 'right') {
             return t.right(r.value as TypeOfResult);
-          } else if (r._t === 'next') {
-            return t.next(r.value as TypeOfResult);
+          } else if (r._t === 'nextValid') {
+            return t.nextValid(r.value as TypeOfResult);
           }
           continue;
         } else {

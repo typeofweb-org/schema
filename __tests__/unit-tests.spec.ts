@@ -1,5 +1,7 @@
 import type { SomeSchema } from '../src';
 import {
+  pipe,
+  refine,
   minArrayLength,
   λ,
   minStringLength,
@@ -440,6 +442,23 @@ describe('@typeofweb/schema unit tests', () => {
       expect(() =>
         λ(array(...primitiveValidators.map((v) => v())), minArrayLength(1), validate)([]),
       ).toThrow();
+    });
+
+    it('should exit early if one of the validators in oneOf returns right', () => {
+      const spy = jest.fn();
+      const shouldNotBeCalled = refine((value) => {
+        spy(value);
+        throw new Error(String(value));
+      });
+      const validator = pipe(oneOf([string(), nullable(number()), shouldNotBeCalled()]), validate);
+      expect(validator(null)).toEqual(null);
+      expect(spy).toHaveBeenCalledTimes(0);
+    });
+
+    it('nil should allow undefined or null', () => {
+      expect(validate(nil())(null)).toEqual(null);
+      expect(validate(nil())(undefined)).toEqual(undefined);
+      expect(() => validate(nil())('aaaa')).toThrow();
     });
   });
 

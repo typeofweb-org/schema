@@ -20,7 +20,7 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
         for (let k = 0; k < validators.length; ++k) {
           const validator = validators[k]!;
           const r = validator.__validate(value);
-          if (r._t === 'right' || r._t === 'next') {
+          if (r._t === 'right' || r._t === 'nextValid') {
             result[i] = r.value;
             continue valuesLoop;
           }
@@ -33,7 +33,7 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
       if (isError) {
         return t.left(result as TypeOfResult);
       }
-      return t.next(result as TypeOfResult);
+      return t.nextValid(result as TypeOfResult);
     },
     () => {
       const str = validators.map((s) => schemaToString(s)).join(' | ');

@@ -13,19 +13,19 @@ import {
 } from '../src';
 
 describe('refinements', () => {
-  const even = refine((value: number, t) => (value % 2 === 0 ? t.next(value) : t.left(value)));
+  const even = refine((value: number, t) => (value % 2 === 0 ? t.nextValid(value) : t.left(value)));
 
   const noDuplicateItems = refine((arr: ReadonlyArray<unknown>, t) => {
     const allUnique = arr.every((item, index) => index === arr.indexOf(item));
-    return allUnique ? t.next(arr) : t.left(arr);
+    return allUnique ? t.nextValid(arr) : t.left(arr);
   });
 
   const allowTimestamps = refine((value, t) =>
-    typeof value === 'number' ? t.next(new Date(value)) : t.next(value),
+    typeof value === 'number' ? t.nextValid(new Date(value)) : t.nextValid(value),
   );
 
   const presentOrFuture = refine((value: Date, t) =>
-    value.getTime() >= Date.now() ? t.next(value) : t.left(value),
+    value.getTime() >= Date.now() ? t.nextValid(value) : t.left(value),
   );
 
   it('nullable', () => {

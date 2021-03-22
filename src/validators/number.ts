@@ -7,7 +7,7 @@ export const number = refine(
     if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
       return t.left(parsedValue);
     }
-    return t.next(parsedValue);
+    return t.nextValid(parsedValue);
   },
   () => typeToPrint('number'),
 );

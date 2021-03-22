@@ -1,5 +1,5 @@
 ---
-id: optional
+id: refinements
 title: Custom modifiers (refinements)
 ---
 
@@ -19,7 +19,7 @@ refine((value, t) => {
 });
 ```
 
-`value` is, well, the value passed to the validator, and `t` is an object which contains three functions: `right`, `left`, and `next`, all of which are described in detail below.
+`value` is, well, the value passed to the validator, and `t` is an object which contains four functions: `right`, `left`, `nextValid`, and `nextNotValid`, all of which are described in detail below.
 
 Second parameter of `refine` is another function which is used for stringifying the validator for error purposes:
 
@@ -40,29 +40,32 @@ As mentioned in the previous paragraph, `RefinementToolkit` consists of 3 functi
 
 - `right(value)` – ends validation with a success and `value`
 - `left(value)` – ends validation with an error
-- `next(value)` – continues validation if there are other validators after it; success otherwise
+- `nextValid(value)` – continues validation if there are other validators after it; success otherwise
+- `nextNotValid(value)` – continues validation if there are other validators after it; fail otherwise
+
+In most of the cases you'll want to use `left` and `nextValid`.
 
 Let's look at a few short examples of where each of these functions comes handy:
 
 ```ts
 export const optional = refine((value, t) =>
-  value === undefined ? t.right(undefined) : t.next(value),
+  value === undefined ? t.right(undefined) : t.nextNotValid(value),
 );
 
 const presentOrFuture = refine((value: Date, t) =>
-  value.getTime() >= Date.now() ? t.next(value) : t.left(value),
+  value.getTime() >= Date.now() ? t.nextValid(value) : t.left(value),
 );
 ```
 
-`optional` is a built-in validator which either succeeds instantly if given value is equal to `undefined` (`t.right`) or just passes it along to the next validator (`t.next`).
+`optional` is a built-in validator which either succeeds instantly if given value is equal to `undefined` (`t.right`) or passes it along to the next validator. In case there are no other validators in the pipeline, validation fails because the value is clearly not `undefined`.
 
-`presentOrFuture` is a validator meant to be used after the `date` validator. It's role is to determine if given date is present or in the future, and if it is so, it should pass the date to another validator in line (`t.next`). However, if given date is in the past, we expect this validator to short circuit and finish with an error.
+`presentOrFuture` is a validator meant to be used after the `date` validator. It's role is to determine if given date is present or in the future, and if it is so, it should pass the date to another validator in line (`t.nextValid`). However, if given date is in the past, we expect this validator to short circuit and finish with an error (`t.left`).
 
-`t.next` and `t.left` are most commonly used. Use `t.right` sparingly only if you're certain no further validation will ever be required on given value.
+`t.nextValid` and `t.left` are most commonly used. Use `t.right` sparingly only if you're certain no further validation will ever be required on given value. `t.nextNotValid` is meant for refinements which are supposed to extend other validators – such as optional, nullable or nil.
 
 ## Custom validator
 
-As a matter of fact, all built-in validators are now implement using the `refine` function. Let's look at the `number` implementation:
+As a matter of fact, all built-in validators are now implemented using the `refine` function. Let's look at the `number` implementation:
 
 ```ts
 export const number = refine(
@@ -71,7 +74,7 @@ export const number = refine(
     if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
       return t.left(value);
     }
-    return t.next(parsedValue);
+    return t.nextValid(parsedValue);
   },
   () => typeToPrint('number'),
 );
@@ -97,7 +100,7 @@ Another common scenario is allowing timestamps where dates are expected. We can 
 
 ```ts
 const allowTimestamps = refine((value, t) =>
-  typeof value === 'number' ? t.next(new Date(value)) : t.next(value),
+  typeof value === 'number' ? t.nextValid(new Date(value)) : t.nextValid(value),
 );
 
 λ(date, allowTimestamps, validate)(1231231231231); // new Date(1231231231231) Tue Jan 06 2009 09:40:31 GMT+0100
