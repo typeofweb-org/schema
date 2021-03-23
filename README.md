@@ -3,7 +3,7 @@
 `@typeofweb/schema` is a lightweight and extensible library for data validation with full TypeScript support!
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![codecov](https://codecov.io/gh/typeofweb/schema/branch/main/graph/badge.svg?token=6DNCIHEEUO)](https://codecov.io/gh/typeofweb/schema)
@@ -33,6 +33,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/asottile"><img src="https://avatars3.githubusercontent.com/u/1810591?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Anthony Sottile</b></sub></a><br /><a href="#security-asottile" title="Security">🛡️</a></td>
     <td align="center"><a href="https://devalchemist.com"><img src="https://avatars.githubusercontent.com/u/1423385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Marek</b></sub></a><br /><a href="https://github.com/typeofweb/schema/commits?author=malydok" title="Documentation">📖</a></td>
     <td align="center"><a href="https://www.upwork.com/freelancers/~018e2d48fa8a42e825"><img src="https://avatars.githubusercontent.com/u/9992724?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Olzhas Alexandrov</b></sub></a><br /><a href="https://github.com/typeofweb/schema/issues?q=author%3Ao-alexandrov" title="Bug reports">🐛</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/Aliath"><img src="https://avatars.githubusercontent.com/u/28493823?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Bartek Słysz</b></sub></a><br /><a href="https://github.com/typeofweb/schema/issues?q=author%3AAliath" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 

@@ -69,7 +69,16 @@
       "contributions": [
         "bug"
       ]
-    }
+    },
+    {
+      "login": "Aliath",
+      "name": "Bartek Słysz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28493823?v=4",
+      "profile": "https://github.com/Aliath",
+      "contributions": [
+        "bug"
+      ]
+    },
   ],
   "contributorsPerLine": 3,
   "skipCi": true
