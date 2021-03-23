@@ -78,7 +78,7 @@
       "contributions": [
         "bug"
       ]
-    },
+    }
   ],
   "contributorsPerLine": 3,
   "skipCi": true
