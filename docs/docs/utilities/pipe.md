@@ -16,10 +16,10 @@ nonEmpty(nullable(string()));
 `λ` is an alias for `pipe`:
 
 ```ts
-import { nonEmpty, minLength, nil, λ, object, string } from '@typeofweb/schema';
+import { nonEmpty, minStringLength, nil, λ, object, string } from '@typeofweb/schema';
 
 const blogSchema = object({
-  title: λ(string, minLength(10)),
+  title: λ(string, minStringLength(10)),
   description: λ(string, nil),
   href: λ(string, nil, nonEmpty),
   rssUrl: λ(string, nil, nonEmpty),

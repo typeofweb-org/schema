@@ -6,11 +6,11 @@ title: TypeOf<S>
 Types can be inferred based on validators:
 
 ```ts
-import { nonEmpty, minLength, nil, λ, object, string } from '@typeofweb/schema';
+import { nonEmpty, minStringLength, nil, λ, object, string } from '@typeofweb/schema';
 import type { TypeOf } from '@typeofweb/schema';
 
 const blogSchema = object({
-  title: λ(string, minLength(10)),
+  title: λ(string, minStringLength(10)),
   description: λ(string, nil),
   href: λ(string, nil, nonEmpty),
   rssUrl: λ(string, nil, nonEmpty),
