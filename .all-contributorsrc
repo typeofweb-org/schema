@@ -62,6 +62,15 @@
       ]
     },
     {
+      "login": "o-alexandrov",
+      "name": "Olzhas Alexandrov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9992724?v=4",
+      "profile": "https://www.upwork.com/freelancers/~018e2d48fa8a42e825",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
       "login": "Aliath",
       "name": "Bartek Słysz",
       "avatar_url": "https://avatars.githubusercontent.com/u/28493823?v=4",
@@ -69,7 +78,7 @@
       "contributions": [
         "bug"
       ]
-    }
+    },
   ],
   "contributorsPerLine": 3,
   "skipCi": true
