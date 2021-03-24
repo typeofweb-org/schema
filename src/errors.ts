@@ -4,16 +4,14 @@ import type { SomeSchema } from './types';
 export class ValidationError extends Error {
   public readonly details: ErrorDetails;
 
-  constructor(schema: SomeSchema<any>, value: any) {
-    const expected = schemaToString(schema);
-    const got = typeof value === 'function' ? String(value) : JSON.stringify(value);
+  constructor(schema: SomeSchema<any>, value: any, result?: unknown) {
+    const expectedStr = schemaToString(schema);
+    const gotStr = typeof value === 'function' ? String(value) : JSON.stringify(value);
 
     const details: ErrorDetails = {
-      kind: 'TYPE_MISMATCH',
-      got,
-      expected,
+      fields: result,
     };
-    super(`Invalid type! Expected ${details.expected} but got ${details.got}!`);
+    super(`Invalid type! Expected ${expectedStr} but got ${gotStr}!`);
 
     this.details = details;
     this.name = 'ValidationError';
@@ -24,7 +22,5 @@ export class ValidationError extends Error {
 }
 
 type ErrorDetails = {
-  readonly kind: 'TYPE_MISMATCH';
-  readonly expected: string;
-  readonly got: string;
+  readonly fields: any;
 };
