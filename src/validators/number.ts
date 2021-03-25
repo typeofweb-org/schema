@@ -1,16 +1,14 @@
+import { ErrorDataBasic } from '../errors';
 import { refine } from '../refine';
 import { typeToPrint } from '../stringify';
 
-export const number = refine(
-  (value, t) => {
-    const parsedValue = parseNumber(value);
-    if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
-      return t.left(parsedValue);
-    }
-    return t.nextValid(parsedValue);
-  },
-  () => typeToPrint('number'),
-);
+export const number = refine((value, t) => {
+  const parsedValue = parseNumber(value);
+  if (typeof parsedValue !== 'number' || Number.isNaN(parsedValue)) {
+    return t.left(new ErrorDataBasic('number', value));
+  }
+  return t.nextValid(parsedValue);
+}, numberToString);
 
 function parseNumber(value: unknown) {
   if (typeof value === 'string') {
@@ -20,4 +18,8 @@ function parseNumber(value: unknown) {
     return Number(value);
   }
   return value;
+}
+
+function numberToString() {
+  return typeToPrint('number');
 }

@@ -70,9 +70,10 @@
     "weak-napi": "2.0.2"
   },
   "scripts": {
-    "pretest": "yarn build",
-    "test": "yarn jest",
-    "jest": "jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
+    "prejest": "yarn build",
+    "jest": "jest",
+    "test": "yarn jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
+    "test:dev": "yarn jest --watch",
     "build": "rimraf dist && rollup --config",
     "prepublishOnly": "yarn build"
   },

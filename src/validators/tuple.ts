@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-loop-statement */
-import { ValidationError } from '../errors';
+import { ErrorDataBasic, ValidationError } from '../errors';
 import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
@@ -34,7 +34,9 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
             result[i] = value;
             continue;
           } else {
-            result[i] = new ValidationError(this, validatorsOrLiterals);
+            // TODO: not sure what to do here actually
+            // @ts-expect-error
+            result[i] = new ValidationError(this, validatorsOrLiterals, {});
             isError = true;
             continue;
           }
@@ -42,7 +44,7 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
       }
 
       if (isError) {
-        return t.left((result as unknown) as TypeOfResult);
+        return t.left(new ErrorDataBasic('tuple', values));
       }
       return t.nextValid((result as unknown) as TypeOfResult);
     },

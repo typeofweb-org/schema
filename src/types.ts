@@ -1,4 +1,4 @@
-import type { ValidationError } from './errors';
+import type { ErrorData } from './errors';
 
 export type TypeOf<S extends SomeSchema<any>> = Pretty<S['__type']>;
 
@@ -18,7 +18,7 @@ export type Next<Output> =
   | { readonly _t: 'nextNotValid'; readonly value: Output }
   | { readonly _t: 'nextValid'; readonly value: Output };
 
-export type Either<R, L = ValidationError> = Left<L> | Right<R>;
+export type Either<R, L = ErrorData> = Left<L> | Right<R>;
 
 export type SomeSchema<T> = Schema<T>;
 
