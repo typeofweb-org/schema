@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-loop-statement */
-import { ValidationError } from '../errors';
+import { ErrorDataObject, ObjectErrorAttr, ErrorDataBasic } from '../errors';
 import { refine } from '../refine';
 import { schemaToString, objectToPrint, quote } from '../stringify';
 import type { SomeSchema, TypeOf, UndefinedToOptional } from '../types';
@@ -28,6 +28,8 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
       const validators = schemasObject as Record<string, SomeSchema<any>>;
       const allowUnknownKeys = !!options?.allowUnknownKeys;
 
+      const errors = []; // as ObjectErrorAttr[];
+
       let isError = false;
       const result = {} as Record<string, unknown>;
       for (const key in object) {
@@ -40,7 +42,10 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         if (validator) {
           const r = validator.__validate(value);
           result[key] = r.value;
-          isError ||= r._t === 'left';
+          if (r._t === 'left') {
+            errors.push(new ObjectErrorAttr(key, r.value));
+            isError = true;
+          }
           continue;
         } else {
           if (allowUnknownKeys) {
@@ -48,7 +53,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
             continue;
           } else {
             isError = true;
-            result[key] = new ValidationError(this, object);
+            errors.push(new ObjectErrorAttr(key, new ErrorDataBasic('unknownKey', value)));
             continue;
           }
         }
@@ -64,11 +69,14 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         const validator = validators[key]!;
         const value = object[key];
         const r = validator.__validate(value);
-        isError ||= r._t === 'left';
+        if (r._t === 'left') {
+          errors.push(new ObjectErrorAttr(key, r.value));
+          isError = true;
+        }
       }
 
       if (isError) {
-        return t.left(result as TypeOfResult);
+        return t.left(new ErrorDataObject('object', result as TypeOfResult, errors));
       }
       return t.nextValid(result as TypeOfResult);
     },

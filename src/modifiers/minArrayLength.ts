@@ -1,3 +1,4 @@
+import { ErrorDataArgs } from '../errors';
 import { refine } from '../refine';
 import type { TupleOf } from '../types';
 
@@ -10,5 +11,5 @@ export const minArrayLength = <L extends number>(minLength: L) =>
             ...(readonly typeof value[number][])
           ],
         )
-      : t.left(value);
+      : t.left(new ErrorDataArgs('minArrayLength', value, [minLength]));
   });

@@ -7,7 +7,7 @@ export const validate = <S extends SomeSchema<unknown>>(schema: S) => (value: un
   if (result._t === 'right' || result._t === 'nextValid') {
     return result.value as TypeOf<S>;
   } else {
-    // throw result.value;
-    throw new ValidationError(schema, value);
+    // @ts-expect-error fix this
+    throw new ValidationError(schema, value, result);
   }
 };
