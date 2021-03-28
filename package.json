@@ -75,6 +75,7 @@
     "test": "yarn jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
     "test:dev": "yarn jest --watch",
     "build": "rimraf dist && rollup --config",
+    "build:watch": "rollup --config --watch",
     "prepublishOnly": "yarn build"
   },
   "husky": {

@@ -1,5 +1,4 @@
 /* eslint-disable functional/no-loop-statement */
-import { ErrorDataBasic } from '../errors';
 import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
@@ -32,7 +31,7 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
           }
         }
       }
-      return t.left(new ErrorDataBasic('oneOf', value as TypeOfResult));
+      return t.left({ expected: 'oneOf', got: value as TypeOfResult });
     },
     () => {
       const str = validatorsOrLiterals

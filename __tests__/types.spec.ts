@@ -4,7 +4,7 @@ import { identity } from 'ramda';
 import tsd from 'tsd';
 
 describe('@typeofweb/schema', () => {
-  it('tsd', async () => {
+  it.skip('tsd', async () => {
     const diagnostics = await tsd({
       cwd: join(__dirname, '..'),
       typingsFile: './dist/index.d.ts',

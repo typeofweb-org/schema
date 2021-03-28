@@ -1,8 +1,7 @@
-import type { ErrorData } from './errors';
-
 export type TypeOf<S extends SomeSchema<any>> = Pretty<S['__type']>;
 
 export type Primitives = string | number | boolean;
+
 export interface Schema<Type extends unknown> {
   readonly __type: Type;
   /**
@@ -14,11 +13,11 @@ export interface Schema<Type extends unknown> {
 
 type Left<L> = { readonly _t: 'left'; readonly value: L };
 type Right<R> = { readonly _t: 'right'; readonly value: R };
-export type Next<Output> =
-  | { readonly _t: 'nextNotValid'; readonly value: Output }
-  | { readonly _t: 'nextValid'; readonly value: Output };
 
-export type Either<R, L = ErrorData> = Left<L> | Right<R>;
+type NextNotValid<L> = { readonly _t: 'nextNotValid'; readonly value: L };
+type NextValid<R> = { readonly _t: 'nextValid'; readonly value: R };
+export type Next<R, L extends ErrorData = ErrorData> = NextNotValid<L> | NextValid<R>;
+export type Either<R, L extends ErrorData = ErrorData> = Left<L> | Right<R>;
 
 export type SomeSchema<T> = Schema<T>;
 
@@ -53,3 +52,20 @@ export type UndefinedToOptional<T> = T extends PlainObject
     ? T
     : Pretty<Required<T> & Optional<T>>
   : T;
+
+export interface ErrorDataBasic {
+  readonly expected: string;
+  readonly got: unknown;
+  readonly args?: ReadonlyArray<unknown>;
+}
+
+export interface ErrorDataObjectEntry {
+  readonly path: string;
+  readonly error: ErrorData;
+}
+
+export interface ErrorDataObject extends ErrorDataBasic {
+  readonly errors: ReadonlyArray<ErrorDataObjectEntry>;
+}
+
+export type ErrorData = ErrorDataObject | ErrorDataBasic;

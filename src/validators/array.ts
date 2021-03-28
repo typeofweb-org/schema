@@ -1,8 +1,8 @@
 /* eslint-disable functional/no-loop-statement */
-import { ErrorDataBasic, ValidationError } from '../errors';
+import { ValidationError } from '../errors';
 import { refine } from '../refine';
 import { schemaToString, typeToPrint } from '../stringify';
-import type { SomeSchema, TypeOf } from '../types';
+import type { SomeSchema, TypeOf, Either, Next } from '../types';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: readonly [...U]) => {
   type TypeOfResult = readonly TypeOf<U[number]>[];
@@ -10,30 +10,45 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
   return refine(
     function (values, t) {
       if (!Array.isArray(values)) {
-        return t.left(new ErrorDataBasic('array', values));
+        return t.left({
+          expected: 'array',
+          got: values,
+        });
       }
 
       let isError = false;
       const result = new Array(values.length);
       valuesLoop: for (let i = 0; i < values.length; ++i) {
         const value = values[i]! as unknown;
-        let r;
+        let r: Either<unknown> | Next<unknown>;
+        let validator: U[number];
         for (let k = 0; k < validators.length; ++k) {
-          const validator = validators[k]!;
+          validator = validators[k]!;
           r = validator.__validate(value);
           if (r._t === 'right' || r._t === 'nextValid') {
             result[i] = r.value;
             continue valuesLoop;
           }
         }
-        // @ts-expect-error fix this
-        result[i] = new ValidationError(this, values, r);
-        isError = true;
+        // Check just to make TS happy.
+        if (
+          // @ts-expect-error
+          r &&
+          // @ts-expect-error
+          validator &&
+          (r._t === 'nextNotValid' || r._t === 'left')
+        ) {
+          result[i] = new ValidationError(validator, value, r);
+          isError = true;
+        }
         continue;
       }
 
       if (isError) {
-        return t.left(new ErrorDataBasic('array', result as TypeOfResult));
+        return t.left({
+          expected: 'array',
+          got: result as TypeOfResult,
+        });
       }
       return t.nextValid(result as TypeOfResult);
     },

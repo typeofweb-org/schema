@@ -1,4 +1,3 @@
-import { ErrorDataBasic } from '../errors';
 import { refine } from '../refine';
 import { typeToPrint } from '../stringify';
 import { isDate, isISODateString } from '../utils/dateUtils';
@@ -7,7 +6,10 @@ export const date = refine(
   (value, t) => {
     const parsedValue = parseDate(value);
     if (!isDate(parsedValue) || Number.isNaN(Number(parsedValue))) {
-      return t.left(new ErrorDataBasic('date', value));
+      return t.left({
+        expected: 'date',
+        got: value,
+      });
     }
     return t.nextValid(parsedValue);
   },

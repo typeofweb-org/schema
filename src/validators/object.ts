@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
-import { ErrorDataObject, ObjectErrorAttr, ErrorDataBasic } from '../errors';
 import { refine } from '../refine';
 import { schemaToString, objectToPrint, quote } from '../stringify';
-import type { SomeSchema, TypeOf, UndefinedToOptional } from '../types';
+import type { SomeSchema, TypeOf, UndefinedToOptional, ErrorDataObjectEntry } from '../types';
 
 export interface ObjectSchemaOptions {
   readonly allowUnknownKeys?: boolean;
@@ -21,14 +20,18 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
   return refine(
     function (obj, t) {
       if (typeof obj !== 'object' || obj === null) {
-        return t.left(obj);
+        return t.left({
+          expected: 'object',
+          got: obj,
+        });
       }
       const object = obj as Record<string, unknown>;
 
       const validators = schemasObject as Record<string, SomeSchema<any>>;
       const allowUnknownKeys = !!options?.allowUnknownKeys;
 
-      const errors = []; // as ObjectErrorAttr[];
+      // eslint-disable-next-line functional/prefer-readonly-type
+      const errors: Array<ErrorDataObjectEntry> = [];
 
       let isError = false;
       const result = {} as Record<string, unknown>;
@@ -43,7 +46,10 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
           const r = validator.__validate(value);
           result[key] = r.value;
           if (r._t === 'left') {
-            errors.push(new ObjectErrorAttr(key, r.value));
+            errors.push({
+              path: key,
+              error: r.value,
+            });
             isError = true;
           }
           continue;
@@ -53,7 +59,13 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
             continue;
           } else {
             isError = true;
-            errors.push(new ObjectErrorAttr(key, new ErrorDataBasic('unknownKey', value)));
+            errors.push({
+              path: key,
+              error: {
+                expected: 'unknownKey',
+                got: value,
+              },
+            });
             continue;
           }
         }
@@ -70,13 +82,17 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         const value = object[key];
         const r = validator.__validate(value);
         if (r._t === 'left') {
-          errors.push(new ObjectErrorAttr(key, r.value));
+          errors.push({ path: key, error: r.value });
           isError = true;
         }
       }
 
       if (isError) {
-        return t.left(new ErrorDataObject('object', result as TypeOfResult, errors));
+        return t.left({
+          expected: 'object',
+          got: obj,
+          errors,
+        });
       }
       return t.nextValid(result as TypeOfResult);
     },
