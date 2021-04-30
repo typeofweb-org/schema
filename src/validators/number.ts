@@ -1,5 +1,4 @@
 import { refine } from '../refine';
-import { typeToPrint } from '../stringify';
 
 export const number = refine((value, t) => {
   const parsedValue = parseNumber(value);
@@ -10,7 +9,7 @@ export const number = refine((value, t) => {
 }, numberToString);
 
 function numberToString() {
-  return typeToPrint('number');
+  return ['number'];
 }
 
 function parseNumber(value: unknown) {

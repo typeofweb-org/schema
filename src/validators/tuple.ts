@@ -46,11 +46,12 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
       }
       return t.nextValid((result as unknown) as TypeOfResult);
     },
-    () =>
+    () => [
       '[' +
-      validatorsOrLiterals
-        .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
-        .join(', ') +
-      ']',
+        validatorsOrLiterals
+          .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
+          .join(', ') +
+        ']',
+    ],
   );
 };

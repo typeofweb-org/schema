@@ -1,7 +1,9 @@
 import { refine } from '../refine';
-import { typeToPrint } from '../stringify';
+import { unionToPrint } from '../stringify';
 
 export const nullable = refine(
   (value, t) => (value === null ? t.right(null) : t.nextNotValid(value)),
-  () => typeToPrint('null'),
+  (outerToString) => {
+    return [unionToPrint([...[outerToString?.()].flat(2), `null`])];
+  },
 );

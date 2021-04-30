@@ -1,5 +1,4 @@
 import { refine } from '../refine';
-import { typeToPrint } from '../stringify';
 
 export const boolean = refine(
   (value, t) => {
@@ -8,5 +7,5 @@ export const boolean = refine(
     }
     return t.nextValid(value);
   },
-  () => typeToPrint('boolean'),
+  () => ['boolean'],
 );

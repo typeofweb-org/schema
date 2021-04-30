@@ -1,18 +1,13 @@
-import { refine } from '../refine';
-import { typeToPrint } from '../stringify';
+import { refine, simpleTypeToString } from '../refine';
 import { isDate } from '../utils/dateUtils';
 
 export const string = refine((value, t) => {
   const parsedValue = parseString(value);
   if (typeof parsedValue !== 'string') {
-    return t.left(stringToString());
+    return t.left(value);
   }
   return t.nextValid(parsedValue);
-}, stringToString);
-
-function stringToString() {
-  return typeToPrint('string');
-}
+}, simpleTypeToString('string'));
 
 function parseString(value: unknown) {
   if (isDate(value)) {

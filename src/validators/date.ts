@@ -1,5 +1,4 @@
 import { refine } from '../refine';
-import { typeToPrint } from '../stringify';
 import { isDate, isISODateString } from '../utils/dateUtils';
 
 export const date = refine((value, t) => {
@@ -11,7 +10,7 @@ export const date = refine((value, t) => {
 }, dateToString);
 
 function dateToString() {
-  return typeToPrint('Date');
+  return ['Date'];
 }
 
 function parseDate(value: unknown) {

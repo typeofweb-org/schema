@@ -1,11 +1,12 @@
-import { number, object, string, validate, date, pipe, ValidationError } from '../src';
+import { number, object, string, validate, date, pipe, ValidationError, refine } from '../';
+import { modifierToString } from '../src/refine';
 
 const expectToMatchError = (fn: () => any, obj: Record<string, any>) => {
   try {
     fn();
   } catch (err) {
     if (err instanceof ValidationError) {
-      return expect(err.details).toStrictEqual(obj);
+      return expect(err.getDetails()).toStrictEqual(obj);
     }
     fail();
   }
@@ -37,11 +38,9 @@ describe('errors', () => {
           invalidDate: 'no siema eniu',
         }),
       {
-        fields: {
-          invalidNumber: { expected: 'number', got: 'vvvv' },
-          invalidString: { expected: 'string', got: 1333 },
-          invalidDate: { expected: 'Date', got: 'no siema eniu' },
-        },
+        invalidNumber: { expected: 'number', got: 'vvvv' },
+        invalidString: { expected: 'string', got: 1333 },
+        invalidDate: { expected: 'Date', got: 'no siema eniu' },
       },
     );
   });
@@ -57,9 +56,26 @@ describe('errors', () => {
     );
 
     expectToMatchError(() => validator({}), {
-      fields: {
-        nested: { expected: '{ invalid: string }', got: undefined },
-      },
+      nested: { expected: '{ invalid: string }', got: undefined },
+    });
+  });
+
+  it.only('should use custom refinement to string', () => {
+    const email = refine<string, string>(
+      (value: string, t) => (value.includes('@') ? t.nextValid(value) : t.left(value)),
+      modifierToString('email'),
+    );
+
+    const validator = pipe(
+      object({
+        // shouldBeEmail: string(email()),
+        shouldBeEmail: string(email()),
+      }),
+      validate,
+    );
+
+    expectToMatchError(() => validator({ shouldBeEmail: 123 }), {
+      shouldBeEmail: { expected: 'email(string)', got: 123 },
     });
   });
 });

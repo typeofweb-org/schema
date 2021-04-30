@@ -38,7 +38,7 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
         .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
         .join(' | ');
 
-      return validatorsOrLiterals.length > 1 ? `(${str})` : str;
+      return [validatorsOrLiterals.length > 1 ? `(${str})` : str];
     },
   );
 };

@@ -1,4 +1,4 @@
-import { unionToPrint } from './stringify';
+// import { unionToPrint } from './stringify';
 import type { Either, If, Next, Pretty, SomeSchema } from './types';
 import { left, right, nextValid, nextNotValid } from './utils/either';
 
@@ -18,8 +18,8 @@ type RefinementToolkit = typeof refinementToolkit;
 
 export const refine = <Output, Input, ExitEarlyResult = never>(
   refinement: Refinement<Output, Input, ExitEarlyResult>,
-  toString?: () => string,
-) => <S extends SomeSchema<Input>>(schema?: S) => {
+  currentToString: (outerToString?: () => string) => string,
+) => <S extends SomeSchema<Input>>(innerSchema?: S) => {
   type HasExitEarlyResult = unknown extends ExitEarlyResult
     ? false
     : ExitEarlyResult extends never
@@ -56,9 +56,20 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
     | If<false, HasOutput | HasExitEarlyResult, S['__type']>;
 
   return {
-    ...schema,
-    toString() {
-      return unionToPrint([schema?.toString()!, toString?.()!].filter(Boolean));
+    ...innerSchema,
+    toString(outerToString) {
+      // // return schema ? schema.toString(() => toString(outerToString)) : toString(outerToString);
+      // // unionToPrint([schema?.toString(), toString()].flat())
+      // console.log(
+      //   innerSchema?.toString(outerToString),
+      //   currentToString(outerToString),
+      //   innerSchema?.toString(() => currentToString(outerToString)),
+      // );
+      // return [
+      //   unionToPrint([innerSchema?.toString(), currentToString()].flat()),
+      // ] as readonly string[];
+      // // return [toString(), ...(schema?.toString(() => toString()) ?? [])] as readonly string[];
+      return '3';
     },
     __validate(val) {
       // eslint-disable-next-line functional/no-this-expression
@@ -67,10 +78,20 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
       if (innerResult?._t === 'left' || innerResult?._t === 'right') {
         return innerResult;
       }
-      if (!schema) {
+      if (!innerSchema) {
         return innerResult;
       }
-      return schema.__validate(innerResult.value);
+      return innerSchema.__validate(innerResult.value);
     },
   } as SomeSchema<Pretty<Result>>;
+};
+
+export const modifierToString = (str: string): Parameters<typeof refine>[1] => (outerToString) => {
+  return '2';
+};
+
+export const simpleTypeToString = (str: string): Parameters<typeof refine>[1] => (
+  outerToString,
+) => {
+  return '1';
 };
