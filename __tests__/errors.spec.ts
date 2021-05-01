@@ -60,6 +60,22 @@ describe('errors', () => {
     });
   });
 
+  it('should list nested objects which are undefined', () => {
+    const validator = pipe(
+      object({
+        a: number(),
+        nested: object({
+          invalid: string(),
+        })(),
+      }),
+      validate,
+    );
+
+    expectToMatchError(() => validator({ a: 123 }), {
+      nested: { expected: '{ invalid: string }', got: undefined },
+    });
+  });
+
   it('should use custom refinement to string', () => {
     const email = refine<string, string>(
       (value: string, t) => (value.includes('@') ? t.nextValid(value) : t.left(value)),

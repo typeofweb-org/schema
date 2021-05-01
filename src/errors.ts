@@ -34,10 +34,12 @@ export class ValidationError extends Error {
     } else if (typeof this.result === 'object' && this.result && !Array.isArray(this.result)) {
       return Object.fromEntries(
         Object.entries(this.result).map(([key, error]) => {
+          /* istanbul ignore else */
           if (error instanceof ValidationError) {
             return [key, error.getDetails()];
+          } else {
+            return [key, error];
           }
-          return [key, error];
         }),
       );
     } else {
