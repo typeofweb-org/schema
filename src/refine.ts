@@ -1,4 +1,4 @@
-import { unionToPrint } from './stringify';
+import { getErrorArray, unionToPrint } from './stringify';
 import type { Either, If, Next, Pretty, SomeSchema } from './types';
 import { left, right, nextValid, nextNotValid } from './utils/either';
 
@@ -87,14 +87,11 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
 export const modifierToString = (str: string): Exclude<Parameters<typeof refine>[1], string> => (
   outerToString,
 ) => {
-  return [outerToString?.(), str]
-    .flat()
-    .filter((x): x is string => typeof x === 'string')
-    .reduce((acc, el) => `${el}(${acc})`);
+  return getErrorArray(outerToString?.(), str).reduce((acc, el) => `${el}(${acc})`);
 };
 
 export const simpleTypeToString = (str: string): Exclude<Parameters<typeof refine>[1], string> => (
   outerToString,
 ) => {
-  return [str, outerToString?.()].flat().filter((x): x is string => typeof x === 'string');
+  return getErrorArray(str, outerToString?.());
 };
