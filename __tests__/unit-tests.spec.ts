@@ -586,15 +586,15 @@ describe('@typeofweb/schema unit tests', () => {
       );
     });
 
-    it.only('should work for simple validators with modifiers', () => {
+    it('should work for simple validators with modifiers', () => {
       expect(schemaToString(optional(string()))).toMatchInlineSnapshot(`"(string | undefined)"`);
-      // expect(schemaToString(nullable(string()))).toMatchInlineSnapshot(`"(string | null)"`);
-      // expect(schemaToString(optional(number()))).toMatchInlineSnapshot(`"(number | undefined)"`);
-      // expect(schemaToString(nullable(number()))).toMatchInlineSnapshot(`"(number | null)"`);
-      // expect(schemaToString(optional(boolean()))).toMatchInlineSnapshot(`"(boolean | undefined)"`);
-      // expect(schemaToString(nullable(boolean()))).toMatchInlineSnapshot(`"(boolean | null)"`);
-      // expect(schemaToString(optional(date()))).toMatchInlineSnapshot(`"(Date | undefined)"`);
-      // expect(schemaToString(nullable(date()))).toMatchInlineSnapshot(`"(Date | null)"`);
+      expect(schemaToString(nullable(string()))).toMatchInlineSnapshot(`"(string | null)"`);
+      expect(schemaToString(optional(number()))).toMatchInlineSnapshot(`"(number | undefined)"`);
+      expect(schemaToString(nullable(number()))).toMatchInlineSnapshot(`"(number | null)"`);
+      expect(schemaToString(optional(boolean()))).toMatchInlineSnapshot(`"(boolean | undefined)"`);
+      expect(schemaToString(nullable(boolean()))).toMatchInlineSnapshot(`"(boolean | null)"`);
+      expect(schemaToString(optional(date()))).toMatchInlineSnapshot(`"(Date | undefined)"`);
+      expect(schemaToString(nullable(date()))).toMatchInlineSnapshot(`"(Date | null)"`);
     });
 
     it('should work for oneOf with modifiers', () => {

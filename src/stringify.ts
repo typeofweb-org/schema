@@ -1,8 +1,7 @@
 import type { SomeSchema } from './types';
 
 export const schemaToString = (schema?: SomeSchema<any>): string => {
-  const strs = [schema?.toString()].flat().filter((x): x is string => typeof x !== 'undefined');
-  return strs.length === 0 ? '' : strs.reduce((acc, val) => `${val}(${acc})`);
+  return [schema?.toString()].flat().join('a');
 };
 
 export const typeToPrint = (str: string) => str;

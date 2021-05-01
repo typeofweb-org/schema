@@ -1,4 +1,4 @@
-import { refine, simpleTypeToString } from '../refine';
+import { refine } from '../refine';
 import { isDate } from '../utils/dateUtils';
 
 export const string = refine((value, t) => {
@@ -7,7 +7,7 @@ export const string = refine((value, t) => {
     return t.left(value);
   }
   return t.nextValid(parsedValue);
-}, simpleTypeToString('string'));
+}, 'string');
 
 function parseString(value: unknown) {
   if (isDate(value)) {

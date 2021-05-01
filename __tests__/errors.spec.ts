@@ -1,4 +1,4 @@
-import { number, object, string, validate, date, pipe, ValidationError, refine } from '../';
+import { number, object, string, validate, date, pipe, ValidationError, refine } from '../src';
 import { modifierToString } from '../src/refine';
 
 const expectToMatchError = (fn: () => any, obj: Record<string, any>) => {
@@ -8,7 +8,7 @@ const expectToMatchError = (fn: () => any, obj: Record<string, any>) => {
     if (err instanceof ValidationError) {
       return expect(err.getDetails()).toStrictEqual(obj);
     }
-    fail();
+    fail(err);
   }
   fail();
 };
@@ -60,7 +60,7 @@ describe('errors', () => {
     });
   });
 
-  it.only('should use custom refinement to string', () => {
+  it('should use custom refinement to string', () => {
     const email = refine<string, string>(
       (value: string, t) => (value.includes('@') ? t.nextValid(value) : t.left(value)),
       modifierToString('email'),
