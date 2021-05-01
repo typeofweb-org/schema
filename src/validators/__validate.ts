@@ -1,3 +1,4 @@
+import type { Result } from '../errors';
 import { ValidationError } from '../errors';
 import type { SomeSchema, TypeOf } from '../types';
 
@@ -8,6 +9,6 @@ export const validate = <S extends SomeSchema<unknown>>(schema: S) => (value: un
     return result.value as TypeOf<S>;
   } else {
     // throw result.value;
-    throw new ValidationError(schema, value);
+    throw new ValidationError(schema, value, result.value as Result);
   }
 };

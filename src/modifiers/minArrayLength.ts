@@ -1,4 +1,4 @@
-import { refine } from '../refine';
+import { modifierToString, refine } from '../refine';
 import type { TupleOf } from '../types';
 
 export const minArrayLength = <L extends number>(minLength: L) =>
@@ -11,4 +11,4 @@ export const minArrayLength = <L extends number>(minLength: L) =>
           ],
         )
       : t.left(value);
-  });
+  }, modifierToString(`minArrayLength(${minLength})`));

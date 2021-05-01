@@ -33,12 +33,12 @@ export const oneOf = <U extends readonly (Primitives | SomeSchema<any>)[]>(
       }
       return t.left(value as TypeOfResult);
     },
-    () => {
+    (() => {
       const str = validatorsOrLiterals
         .map((s) => (isSchema(s) ? schemaToString(s) : JSON.stringify(s)))
         .join(' | ');
 
       return validatorsOrLiterals.length > 1 ? `(${str})` : str;
-    },
+    })(),
   );
 };

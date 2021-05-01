@@ -38,7 +38,7 @@ const throws = <T extends readonly unknown[], Err extends Error>(
     if (ErrorClass) {
       const isValid = error instanceof ErrorClass && (!message || error.message === message);
       if (!isValid) {
-        console.log(error);
+        // console.log(error);
       }
       return isValid;
     }
