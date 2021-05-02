@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
 import { ValidationError } from '../errors';
 import { refine } from '../refine';
-import { schemaToString } from '../stringify';
+import { schemaToString, typeToPrint } from '../stringify';
 import type { SomeSchema, TypeOf } from '../types';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: readonly [...U]) => {
@@ -35,9 +35,9 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
       }
       return t.nextValid(result as TypeOfResult);
     },
-    (() => {
+    () => {
       const str = validators.map((s) => schemaToString(s)).join(' | ');
-      return validators.length > 1 ? `(${str})[]` : `${str}[]`;
-    })(),
+      return validators.length > 1 ? typeToPrint(`(${str})[]`) : typeToPrint(`${str}[]`);
+    },
   );
 };

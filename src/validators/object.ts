@@ -21,7 +21,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
   return refine(
     function (obj, t) {
       if (typeof obj !== 'object' || obj === null) {
-        return t.left(new ValidationError(this, obj));
+        return t.left(obj);
       }
       const object = obj as Record<string, unknown>;
 
@@ -30,7 +30,6 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
 
       let isError = false;
       const result = {} as Record<string, unknown>;
-      const errors = {} as Record<string, ValidationError>;
       for (const key in object) {
         if (!Object.prototype.hasOwnProperty.call(object, key)) {
           continue;
@@ -40,12 +39,8 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         const validator = validators[key];
         if (validator) {
           const r = validator.__validate(value);
-          if (r._t === 'left') {
-            errors[key] = new ValidationError(validator, value, r.value);
-            isError = true;
-          } else {
-            result[key] = r.value;
-          }
+          result[key] = r.value;
+          isError ||= r._t === 'left';
           continue;
         } else {
           if (allowUnknownKeys) {
@@ -53,7 +48,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
             continue;
           } else {
             isError = true;
-            errors[key] = new ValidationError(undefined, value);
+            result[key] = new ValidationError(this, object);
             continue;
           }
         }
@@ -63,24 +58,21 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         if (!Object.prototype.hasOwnProperty.call(validators, key)) {
           continue;
         }
-        if (key in result || key in errors) {
+        if (key in result) {
           continue;
         }
         const validator = validators[key]!;
         const value = object[key];
         const r = validator.__validate(value);
-        if (r._t === 'left') {
-          errors[key] = new ValidationError(validator, value, r.value);
-          isError = true;
-        }
+        isError ||= r._t === 'left';
       }
 
       if (isError) {
-        return t.left(errors);
+        return t.left(result as TypeOfResult);
       }
       return t.nextValid(result as TypeOfResult);
     },
-    (() => {
+    () => {
       const entries = Object.entries(schemasObject).map(
         ([key, val]) => [key, schemaToString(val)] as const,
       );
@@ -88,8 +80,8 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         return objectToPrint('');
       }
       return objectToPrint(
-        ' ' + entries.map(([key, val]) => quote(key) + ': ' + String(val)).join(', ') + ' ',
+        ' ' + entries.map(([key, val]) => quote(key) + ': ' + val).join(', ') + ' ',
       );
-    })(),
+    },
   );
 };

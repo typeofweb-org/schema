@@ -448,13 +448,10 @@ describe('@typeofweb/schema unit tests', () => {
 
     it('should exit early if one of the validators in oneOf returns right', () => {
       const spy = jest.fn();
-      const shouldNotBeCalled = refine(
-        (value) => {
-          spy(value);
-          throw new Error(String(value));
-        },
-        () => [''],
-      );
+      const shouldNotBeCalled = refine((value) => {
+        spy(value);
+        throw new Error(String(value));
+      });
       const validator = pipe(oneOf([string(), nullable(number()), shouldNotBeCalled()]), validate);
       expect(validator(null)).toEqual(null);
       expect(spy).toHaveBeenCalledTimes(0);

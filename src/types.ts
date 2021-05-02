@@ -9,9 +9,7 @@ export interface Schema<Type extends unknown> {
    * @internal
    */
   readonly __validate: (val: unknown) => Either<Type> | Next<Type>;
-  toString(innerToString?: () => string | readonly string[]): string | readonly string[];
-
-  readonly name?: string;
+  toString(): string;
 }
 
 type Left<L> = { readonly _t: 'left'; readonly value: L };

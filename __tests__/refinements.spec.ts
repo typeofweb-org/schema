@@ -11,27 +11,21 @@ import {
   validate,
   λ,
 } from '../src';
-import { modifierToString } from '../src/refine';
 
 describe('refinements', () => {
-  const even = refine(
-    (value: number, t) => (value % 2 === 0 ? t.nextValid(value) : t.left(value)),
-    modifierToString('even'),
-  );
+  const even = refine((value: number, t) => (value % 2 === 0 ? t.nextValid(value) : t.left(value)));
 
   const noDuplicateItems = refine((arr: ReadonlyArray<unknown>, t) => {
     const allUnique = arr.every((item, index) => index === arr.indexOf(item));
     return allUnique ? t.nextValid(arr) : t.left(arr);
-  }, modifierToString('noDuplicateItems'));
+  });
 
-  const allowTimestamps = refine(
-    (value, t) => (typeof value === 'number' ? t.nextValid(new Date(value)) : t.nextValid(value)),
-    modifierToString('allowTimestamps'),
+  const allowTimestamps = refine((value, t) =>
+    typeof value === 'number' ? t.nextValid(new Date(value)) : t.nextValid(value),
   );
 
-  const presentOrFuture = refine(
-    (value: Date, t) => (value.getTime() >= Date.now() ? t.nextValid(value) : t.left(value)),
-    modifierToString('presentOrFuture'),
+  const presentOrFuture = refine((value: Date, t) =>
+    value.getTime() >= Date.now() ? t.nextValid(value) : t.left(value),
   );
 
   it('nullable', () => {
