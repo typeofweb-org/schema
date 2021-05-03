@@ -29,25 +29,31 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
 
         if (isSchema(valueOrSchema)) {
           const r = valueOrSchema.__validate(value);
-          result[i] = r.value as unknown;
-          isError ||= r._t === 'left';
-          continue;
-        } else {
-          if (valueOrSchema === value) {
-            result[i] = value;
-            continue;
+          if (r._t === 'right' || r._t === 'nextValid') {
+            result[i] = r.value as unknown;
           } else {
-            // TODO: not sure what to do here actually
-            // @ts-expect-error
-            result[i] = new ValidationError(this, validatorsOrLiterals, {});
             isError = true;
-            continue;
+            result[i] = new ValidationError(valueOrSchema, value, r);
           }
+        } else if (valueOrSchema === value) {
+          result[i] = value;
+        } else {
+          // TODO: question: create constant/literal validator?
+          result[i] = new ValidationError(
+            // @ts-expect-error
+            valueOrSchema,
+            value,
+            t.left({
+              expected: 'literal',
+              got: value,
+            }),
+          );
+          isError = true;
         }
       }
 
       if (isError) {
-        return t.left({ expected: 'tuple', got: values });
+        return t.left({ expected: 'tuple', got: result });
       }
       return t.nextValid((result as unknown) as TypeOfResult);
     },

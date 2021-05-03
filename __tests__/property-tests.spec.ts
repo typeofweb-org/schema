@@ -176,16 +176,16 @@ describe('@typeofweb/schema', () => {
     });
 
     describe('object', () => {
-      it.only('should validate numbers', () =>
+      it('should validate numbers', () =>
         Fc.assert(
           Fc.property(
             Fc.record({
               a: Fc.integer(),
               b: Fc.string(),
               c: Fc.array(Fc.oneof(Fc.string(), Fc.integer(), Fc.boolean())),
-              // d: Fc.record({
-              //   e: Fc.string(),
-              // }),
+              d: Fc.record({
+                e: Fc.string(),
+              }),
             }),
             notThrows(
               validate(
@@ -193,7 +193,7 @@ describe('@typeofweb/schema', () => {
                   a: number(),
                   b: string(),
                   c: array(number(), string(), boolean())(),
-                  // d: object({ e: string() })(),
+                  d: object({ e: string() })(),
                 })(),
               ),
             ),

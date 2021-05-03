@@ -5,6 +5,7 @@ import {
   string,
   validate,
   date,
+  tuple,
   pipe,
   ValidationError,
   minStringLength,
@@ -183,28 +184,36 @@ describe('errors', () => {
     });
   });
 
-  // describe('tuple', () => {
-  //   it('throws expected error details', () => {
-  //     const validator = validate(tuple([string(), number()])());
-  //     expectToMatchError(() => validator([1231, 'test string']), {
-  //       expected: 'tuple',
-  //       got: [
-  //         new ValidationError(string(), 1231, {
-  //           _t: 'left',
-  //           value: {
-  //             expected: 'string',
-  //             got: 1231,
-  //           },
-  //         }),
-  //         new ValidationError(number(), 'test string', {
-  //           _t: 'left',
-  //           value: {
-  //             expected: 'number',
-  //             got: 'test string',
-  //           },
-  //         }),
-  //       ],
-  //     });
-  //   });
-  // });
+  describe('tuple', () => {
+    it('throws expected error details', () => {
+      const validator = validate(tuple(['some-constant', string(), number()])());
+      expectToMatchError(() => validator(['nope', 1231, 'test string']), {
+        expected: 'tuple',
+        got: [
+          // @ts-expect-error
+          new ValidationError('some-constant', 'nope', {
+            _t: 'left',
+            value: {
+              expected: 'literal',
+              got: 'nope',
+            },
+          }),
+          new ValidationError(string(), 1231, {
+            _t: 'left',
+            value: {
+              expected: 'string',
+              got: 1231,
+            },
+          }),
+          new ValidationError(number(), 'test string', {
+            _t: 'left',
+            value: {
+              expected: 'number',
+              got: 'test string',
+            },
+          }),
+        ],
+      });
+    });
+  });
 });
