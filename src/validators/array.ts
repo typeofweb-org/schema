@@ -20,8 +20,8 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
       const result = new Array(values.length);
       valuesLoop: for (let i = 0; i < values.length; ++i) {
         const value = values[i]! as unknown;
-        let r: Either<unknown> | Next<unknown>;
-        let validator: U[number];
+        let r: Either<unknown> | Next<unknown> | undefined = undefined;
+        let validator: U[number] | undefined = undefined;
         for (let k = 0; k < validators.length; ++k) {
           validator = validators[k]!;
           r = validator.__validate(value);
@@ -30,14 +30,7 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
             continue valuesLoop;
           }
         }
-        // Check just to make TS happy.
-        if (
-          // @ts-expect-error
-          r &&
-          // @ts-expect-error
-          validator &&
-          (r._t === 'nextNotValid' || r._t === 'left')
-        ) {
+        if (r && validator && (r._t === 'nextNotValid' || r._t === 'left')) {
           result[i] = new ValidationError(validator, value, r);
           isError = true;
         }
