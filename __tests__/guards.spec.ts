@@ -1,4 +1,4 @@
-import type { ErrorDataObject, ErrorDataBasic } from '../src';
+import type { ErrorDataObject } from '../src';
 import { isErrorDataObject } from '../src';
 
 describe('guards', () => {
@@ -10,14 +10,6 @@ describe('guards', () => {
         errors: [],
       };
       expect(isErrorDataObject(errorData)).toBeTruthy();
-    });
-
-    it('returns false for ErrorDataBasic', () => {
-      const errorData: ErrorDataBasic = {
-        expected: 'object',
-        got: 'some string',
-      };
-      expect(isErrorDataObject(errorData)).toBeFalsy();
     });
   });
 });

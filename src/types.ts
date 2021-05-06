@@ -53,19 +53,16 @@ export type UndefinedToOptional<T> = T extends PlainObject
     : Pretty<Required<T> & Optional<T>>
   : T;
 
-export interface ErrorDataBasic<T = unknown> {
-  readonly expected: string;
-  readonly got: T;
-  readonly args?: ReadonlyArray<unknown>;
-}
-
 export interface ErrorDataObjectEntry {
-  readonly path: string;
+  readonly path: keyof any;
   readonly error: ErrorData;
 }
 
-export interface ErrorDataObject<T = unknown> extends ErrorDataBasic<T> {
-  readonly errors: ReadonlyArray<ErrorDataObjectEntry>;
+export interface ErrorDataObject<T = unknown> {
+  readonly expected: string;
+  readonly got: T;
+  readonly args?: ReadonlyArray<unknown>;
+  readonly errors?: ReadonlyArray<ErrorDataObjectEntry>;
 }
 
-export type ErrorData<T = unknown> = ErrorDataObject<T> | ErrorDataBasic<T>;
+export type ErrorData<T = unknown> = ErrorDataObject<T>;

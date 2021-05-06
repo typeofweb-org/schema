@@ -3,6 +3,9 @@ import type { TupleOf } from '../types';
 
 export const minArrayLength = <L extends number>(minLength: L) =>
   refine((value: readonly unknown[], t) => {
+    if (!Array.isArray(value as any)) {
+      throw new TypeError();
+    }
     return value.length >= minLength
       ? t.nextValid(
           value as readonly [

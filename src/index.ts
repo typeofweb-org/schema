@@ -7,7 +7,6 @@ export type {
   TypeOf,
   ErrorData,
   ErrorDataObject,
-  ErrorDataBasic,
   ErrorDataObjectEntry,
 } from './types';
 export { isErrorDataObject } from './guards';
