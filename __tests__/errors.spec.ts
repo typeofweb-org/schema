@@ -106,7 +106,7 @@ describe('errors', () => {
         errors: [
           {
             path: 'tooShortString',
-            error: { expected: 'minStringLength(string)', got: 'too short', args: [10] }, // @todo or string(minStringLength)
+            error: { expected: 'minStringLength', got: 'too short', args: [10] },
           },
         ],
       },
@@ -225,8 +225,22 @@ describe('errors', () => {
         {
           path: 'shouldBeEmail',
           error: {
-            expected: 'email(string)', // @todo or string(email) ?
+            expected: 'string',
             got: 123,
+          },
+        },
+      ],
+    });
+
+    expectToMatchError(() => validator({ shouldBeEmail: 'notanemail' }), {
+      expected: 'object',
+      got: { shouldBeEmail: 123 },
+      errors: [
+        {
+          path: 'shouldBeEmail',
+          error: {
+            expected: 'email',
+            got: 'notanemail',
           },
         },
       ],
@@ -235,14 +249,14 @@ describe('errors', () => {
 
   it('nullable', () => {
     expectToMatchError(() => λ(string, nullable, validate)(123), {
-      expected: 'string | null',
+      expected: ['string', 'null'],
       got: 123,
     });
   });
 
   it('optional', () => {
     expectToMatchError(() => λ(string, optional, validate)(123), {
-      expected: 'string | undefined',
+      expected: ['string', 'undefined'],
       got: 123,
     });
   });
@@ -251,9 +265,9 @@ describe('errors', () => {
     const even = refine((value: number, t) =>
       value % 2 === 0 ? t.nextValid(value) : t.left({ expected: 'even', got: value }),
     );
-    expectToMatchError(() => λ(even, number, validate)(1), { expected: 'number(even)', got: 1 });
+    expectToMatchError(() => λ(even, number, validate)(1), { expected: 'even', got: 1 });
     expectToMatchError(() => λ(even, number, validate)('dsadsadsa'), {
-      expected: 'number(even)',
+      expected: 'number',
       got: 'dsadsadsa',
     });
   });
@@ -264,11 +278,11 @@ describe('errors', () => {
       return allUnique ? t.nextValid(arr) : t.left({ expected: 'noDuplicateItems', got: arr });
     });
     expectToMatchError(() => λ(noDuplicateItems, array(string()), validate)('siema'), {
-      expected: 'array(string)(noDuplicateItems)',
+      expected: 'array',
       got: 'siema',
     });
     expectToMatchError(() => λ(noDuplicateItems, array(string()), validate)(['a', 'b', 'a']), {
-      expected: 'array(string)(noDuplicateItems)',
+      expected: 'noDuplicateItems',
       got: ['a', 'b', 'a'],
     });
   });
@@ -278,7 +292,7 @@ describe('errors', () => {
       typeof value === 'number' ? t.nextValid(new Date(value)) : t.nextValid(value),
     );
     expectToMatchError(() => λ(date, allowTimestamps, validate)(''), {
-      expected: 'allowTimestamps(date)',
+      expected: 'date',
       got: '',
     });
   });
@@ -295,11 +309,11 @@ describe('errors', () => {
     pastDate.setMonth(futureDate.getMonth() - 10);
 
     expectToMatchError(() => λ(presentOrFuture, date, validate)(''), {
-      expected: 'date(presentOrFuture)',
+      expected: 'date',
       got: '',
     });
     expectToMatchError(() => λ(presentOrFuture, date, validate)(pastDate), {
-      expected: 'date(presentOrFuture)',
+      expected: 'presentOrFuture',
       got: pastDate,
     });
   });
@@ -316,6 +330,7 @@ describe('errors', () => {
   });
 
   describe('tuple', () => {
+    // @todo tuples are to be done…
     it('throws expected error details', () => {
       const validator = validate(tuple(['some-constant', string(), number()])());
       expectToMatchError(() => validator(['nope', 1231, 'test string']), {
