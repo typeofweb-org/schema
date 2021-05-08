@@ -59,7 +59,7 @@ export interface ErrorDataObjectEntry {
 }
 
 export interface ErrorDataObject<T = unknown> {
-  readonly expected: string | ReadonlyArray<string>;
+  readonly expected: string;
   readonly got: T;
   readonly args?: ReadonlyArray<unknown>;
   readonly errors?: ReadonlyArray<ErrorDataObjectEntry>;

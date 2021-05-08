@@ -250,14 +250,14 @@ describe('errors', () => {
 
   it('nullable', () => {
     expectToMatchError(() => λ(string, nullable, validate)(123), {
-      expected: ['string', 'null'],
+      expected: 'string',
       got: 123,
     });
   });
 
   it('optional', () => {
     expectToMatchError(() => λ(string, optional, validate)(123), {
-      expected: ['string', 'undefined'],
+      expected: 'string',
       got: 123,
     });
   });
