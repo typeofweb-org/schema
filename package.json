@@ -85,7 +85,7 @@
   },
   "lint-staged": {
     "**/*.ts": [
-      "yarn jest",
+      "yarn jest --passWithNoTests",
       "yarn eslint --fix",
       "yarn prettier --write"
     ],

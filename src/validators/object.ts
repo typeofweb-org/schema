@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
 import { refine } from '../refine';
 import { schemaToString, objectToPrint, quote } from '../stringify';
-import type { SomeSchema, TypeOf, UndefinedToOptional, ErrorDataObjectEntry } from '../types';
+import type { SomeSchema, TypeOf, UndefinedToOptional, ErrorDataEntry } from '../types';
 
 export interface ObjectSchemaOptions {
   readonly allowUnknownKeys?: boolean;
@@ -31,7 +31,7 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
       const allowUnknownKeys = !!options?.allowUnknownKeys;
 
       // eslint-disable-next-line functional/prefer-readonly-type
-      const errors: Array<ErrorDataObjectEntry> = [];
+      const errors: Array<ErrorDataEntry> = [];
 
       let isError = false;
       const result = {} as Record<string, unknown>;

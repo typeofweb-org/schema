@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
 import { refine } from '../refine';
 import { schemaToString, typeToPrint } from '../stringify';
-import type { SomeSchema, TypeOf, Either, Next, ErrorDataObjectEntry } from '../types';
+import type { SomeSchema, TypeOf, Either, Next, ErrorDataEntry } from '../types';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: readonly [...U]) => {
   type TypeOfResult = readonly TypeOf<U[number]>[];
@@ -18,7 +18,7 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
       let isError = false;
       const result = new Array(values.length);
       // eslint-disable-next-line functional/prefer-readonly-type
-      const errors: Array<ErrorDataObjectEntry> = [];
+      const errors: Array<ErrorDataEntry> = [];
       valuesLoop: for (let i = 0; i < values.length; ++i) {
         const value = values[i]! as unknown;
         let r: Either<unknown> | Next<unknown> | undefined = undefined;

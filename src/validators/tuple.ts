@@ -2,7 +2,7 @@
 import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
-import type { SomeSchema, TypeOf, ErrorDataObjectEntry } from '../types';
+import type { SomeSchema, TypeOf, ErrorDataEntry } from '../types';
 
 export const tuple = <U extends readonly SomeSchema<any>[]>(
   validatorsOrLiterals: readonly [...U],
@@ -23,7 +23,7 @@ export const tuple = <U extends readonly SomeSchema<any>[]>(
       let isError = false;
       const result = new Array(values.length);
       // eslint-disable-next-line functional/prefer-readonly-type
-      const errors: Array<ErrorDataObjectEntry> = [];
+      const errors: Array<ErrorDataEntry> = [];
       for (let i = 0; i < values.length; ++i) {
         const schema = validatorsOrLiterals[i];
         const value = values[i] as unknown;
