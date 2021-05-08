@@ -283,7 +283,7 @@ describe('@typeofweb/schema unit tests', () => {
     it('tuple should validate given items in given order', () => {
       const schema = object({
         a: tuple([])(),
-        b: tuple([1, 2, 3])(),
+        b: tuple([oneOf([1])(), oneOf([2])(), oneOf([3])()])(),
         c: tuple([number(), string()])(),
         d: nullable(tuple([string()])()),
       })();
@@ -301,9 +301,11 @@ describe('@typeofweb/schema unit tests', () => {
 
     it('tuple should throw on invalid values', () => {
       const validator1 = validate(tuple([])());
-      const validator2 = validate(tuple([1, 2, 3])());
+      const validator2 = validate(tuple([oneOf([1])(), oneOf([2])(), oneOf([3])()])());
       const validator3 = validate(tuple([number(), string()])());
-      const validator4 = validate(tuple([1, 2, 3, number(), string()])());
+      const validator4 = validate(
+        tuple([oneOf([1])(), oneOf([2])(), oneOf([3])(), number(), string()])(),
+      );
 
       expect(() => validator1([1, 2, 3])).toThrow();
       expect(() => validator2([1, 3, 2])).toThrow();
@@ -556,10 +558,10 @@ describe('@typeofweb/schema unit tests', () => {
     });
 
     it('should work for tuples', () => {
-      expect(schemaToString(tuple(['a', string(), number()])())).toMatchInlineSnapshot(
+      expect(schemaToString(tuple([oneOf(['a'])(), string(), number()])())).toMatchInlineSnapshot(
         `"[\\"a\\", string, number]"`,
       );
-      expect(schemaToString(tuple(['a'])())).toMatchInlineSnapshot(`"[\\"a\\"]"`);
+      expect(schemaToString(tuple([oneOf(['a'])()])())).toMatchInlineSnapshot(`"[\\"a\\"]"`);
       expect(schemaToString(tuple([number(), oneOf(['s', 'm', 'h'])()])())).toMatchInlineSnapshot(
         `"[number, (\\"s\\" | \\"m\\" | \\"h\\")]"`,
       );

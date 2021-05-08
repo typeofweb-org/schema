@@ -12,6 +12,7 @@ import {
   refine,
   nullable,
   optional,
+  oneOf,
   λ,
 } from '../src';
 import type { ErrorData } from '../src/types';
@@ -330,14 +331,13 @@ describe('errors', () => {
   });
 
   describe('tuple', () => {
-    // @todo tuples are to be done…
     it('throws expected error details', () => {
-      const validator = validate(tuple(['some-constant', string(), number()])());
+      const validator = validate(tuple([oneOf(['some-constant'])(), string(), number()])());
       expectToMatchError(() => validator(['nope', 1231, 'test string']), {
         expected: 'tuple',
         got: ['nope', 1231, 'test string'],
         errors: [
-          { path: 0, error: { expected: 'some-constant', got: 'nope' } },
+          { path: 0, error: { expected: 'oneOf', got: 'nope' } },
           { path: 1, error: { expected: 'string', got: 1231 } },
           { path: 2, error: { expected: 'number', got: 'test string' } },
         ],
