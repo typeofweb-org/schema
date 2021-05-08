@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
-import { ValidationError } from '../errors';
 import { refine } from '../refine';
 import { schemaToString, typeToPrint } from '../stringify';
-import type { SomeSchema, TypeOf, Either, Next } from '../types';
+import type { SomeSchema, TypeOf, Either, Next, ErrorDataObjectEntry } from '../types';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: readonly [...U]) => {
   type TypeOfResult = readonly TypeOf<U[number]>[];
@@ -18,6 +17,8 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
 
       let isError = false;
       const result = new Array(values.length);
+      // eslint-disable-next-line functional/prefer-readonly-type
+      const errors: Array<ErrorDataObjectEntry> = [];
       valuesLoop: for (let i = 0; i < values.length; ++i) {
         const value = values[i]! as unknown;
         let r: Either<unknown> | Next<unknown> | undefined = undefined;
@@ -31,7 +32,10 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
           }
         }
         if (r && validator && (r._t === 'nextNotValid' || r._t === 'left')) {
-          result[i] = new ValidationError(validator, value, r);
+          errors.push({
+            path: i,
+            error: r.value,
+          });
           isError = true;
         }
         continue;
@@ -40,7 +44,8 @@ export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: r
       if (isError) {
         return t.left({
           expected: 'array',
-          got: result as TypeOfResult,
+          got: values,
+          errors,
         });
       }
       return t.nextValid(result as TypeOfResult);

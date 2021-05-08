@@ -235,7 +235,7 @@ describe('errors', () => {
 
     expectToMatchError(() => validator({ shouldBeEmail: 'notanemail' }), {
       expected: 'object',
-      got: { shouldBeEmail: 123 },
+      got: { shouldBeEmail: 'notanemail' },
       errors: [
         {
           path: 'shouldBeEmail',
