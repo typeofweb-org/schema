@@ -1,5 +1,6 @@
 import { expectType } from 'tsd';
 
+import { object, number, pipe, string, optional } from '../src';
 import type {
   If,
   KeysOfType,
@@ -7,6 +8,7 @@ import type {
   Required,
   TupleOf,
   UndefinedToOptional,
+  TypeOf,
 } from '../src/types';
 
 /**
@@ -105,3 +107,18 @@ expectType<{
   readonly b?: number | undefined;
   readonly c?: object | undefined;
 }>(uto5);
+
+/**
+ * TypeOf
+ */
+const exampleObjectSchema = object({
+  a: number(),
+  b: pipe(string, optional),
+})();
+
+declare const objectType: TypeOf<typeof exampleObjectSchema>;
+
+expectType<{
+  readonly a: number;
+  readonly b?: string;
+}>(objectType);
