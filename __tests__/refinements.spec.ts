@@ -45,13 +45,13 @@ describe('refinements', () => {
     expect(() => λ(string, optional, validate)(123)).toThrow(ValidationError);
   });
 
-  it.only('even', () => {
+  it('even', () => {
     expect(λ(even, number, validate)(2)).toEqual(2);
     expect(() => λ(even, number, validate)(1)).toThrow(ValidationError);
     expect(() => λ(even, number, validate)('dsadsadsa')).toThrow(ValidationError);
   });
 
-  it.only('noDuplicateItems', () => {
+  it('noDuplicateItems', () => {
     expect(λ(noDuplicateItems, array(string()), validate)(['siema'])).toEqual(['siema']);
     expect(() => λ(noDuplicateItems, array(string()), validate)('siema')).toThrow(ValidationError);
     expect(() => λ(noDuplicateItems, array(string()), validate)(['a', 'b', 'a'])).toThrow(
@@ -59,7 +59,7 @@ describe('refinements', () => {
     );
   });
 
-  it.only('allowTimestamps', () => {
+  it('allowTimestamps', () => {
     expect(() => λ(date, allowTimestamps, validate)('')).toThrow(ValidationError);
     expect(λ(date, allowTimestamps, validate)(new Date(123123123))).toEqual(new Date(123123123));
     expect(λ(date, allowTimestamps, validate)(123123123)).toEqual(new Date(123123123));
@@ -76,7 +76,7 @@ describe('refinements', () => {
     expect(() => λ(presentOrFuture, date, validate)(pastDate)).toThrow(ValidationError);
   });
 
-  it.only('a', () => {
+  it('additional tests', () => {
     expect(λ(string, nullable, optional, validate)(null)).toEqual(null);
     expect(λ(string, nullable, optional, validate)(undefined)).toEqual(undefined);
     expect(λ(string, nullable, optional, validate)('adsadsad')).toEqual('adsadsad');
