@@ -10,5 +10,9 @@ export const minArrayLength = <L extends number>(minLength: L) =>
             ...(readonly typeof value[number][])
           ],
         )
-      : t.left(value);
+      : t.left({
+          expected: 'minArrayLength',
+          got: value,
+          args: [minLength],
+        });
   });

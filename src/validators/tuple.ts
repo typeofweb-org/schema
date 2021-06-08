@@ -1,11 +1,10 @@
 /* eslint-disable functional/no-loop-statement */
-import { ValidationError } from '../errors';
 import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
-import type { SomeSchema, TypeOf, Primitives } from '../types';
+import type { SomeSchema, TypeOf, ErrorDataEntry } from '../types';
 
-export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
+export const tuple = <U extends readonly SomeSchema<any>[]>(
   validatorsOrLiterals: readonly [...U],
 ) => {
   type TypeOfResult = {
@@ -15,34 +14,33 @@ export const tuple = <U extends readonly (Primitives | SomeSchema<any>)[]>(
   return refine(
     function (values, t) {
       if (!Array.isArray(values) || values.length !== validatorsOrLiterals.length) {
-        return t.left(values);
+        return t.left({
+          expected: 'tuple',
+          got: values,
+        });
       }
 
       let isError = false;
       const result = new Array(values.length);
+      // eslint-disable-next-line functional/prefer-readonly-type
+      const errors: Array<ErrorDataEntry> = [];
       for (let i = 0; i < values.length; ++i) {
-        const valueOrSchema = validatorsOrLiterals[i];
+        const schema = validatorsOrLiterals[i];
         const value = values[i] as unknown;
 
-        if (isSchema(valueOrSchema)) {
-          const r = valueOrSchema.__validate(value);
-          result[i] = r.value as unknown;
-          isError ||= r._t === 'left';
-          continue;
-        } else {
-          if (valueOrSchema === value) {
-            result[i] = value;
-            continue;
-          } else {
-            result[i] = new ValidationError(this, validatorsOrLiterals);
-            isError = true;
-            continue;
-          }
+        const r = schema.__validate(value);
+        result[i] = r.value as unknown;
+        if (r._t === 'left') {
+          isError = true;
+          errors.push({
+            path: i,
+            error: r.value,
+          });
         }
       }
 
       if (isError) {
-        return t.left((result as unknown) as TypeOfResult);
+        return t.left({ expected: 'tuple', got: values, errors });
       }
       return t.nextValid((result as unknown) as TypeOfResult);
     },

@@ -70,10 +70,12 @@
     "weak-napi": "2.0.2"
   },
   "scripts": {
-    "pretest": "yarn build",
-    "test": "yarn jest",
-    "jest": "jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
+    "prejest": "yarn build",
+    "jest": "jest",
+    "test": "yarn jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
+    "test:dev": "yarn jest --watch",
     "build": "rimraf dist && rollup --config",
+    "build:watch": "rollup --config --watch",
     "prepublishOnly": "yarn build"
   },
   "husky": {
@@ -83,7 +85,7 @@
   },
   "lint-staged": {
     "**/*.ts": [
-      "yarn jest",
+      "yarn jest --passWithNoTests",
       "yarn eslint --fix",
       "yarn prettier --write"
     ],

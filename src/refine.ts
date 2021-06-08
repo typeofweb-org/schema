@@ -64,11 +64,14 @@ export const refine = <Output, Input, ExitEarlyResult = never>(
       // eslint-disable-next-line functional/no-this-expression
       const innerResult = refinement.call(this, val as Input, refinementToolkit);
 
-      if (innerResult?._t === 'left' || innerResult?._t === 'right') {
+      if (innerResult._t === 'left' || innerResult._t === 'right') {
         return innerResult;
       }
       if (!schema) {
         return innerResult;
+      }
+      if (innerResult._t === 'nextNotValid') {
+        return schema.__validate(innerResult.value.got);
       }
       return schema.__validate(innerResult.value);
     },

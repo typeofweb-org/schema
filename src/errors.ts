@@ -1,30 +1,20 @@
 import { schemaToString } from './stringify';
-import type { SomeSchema } from './types';
+import type { Either, SomeSchema, Next, ErrorData } from './types';
 
 export class ValidationError extends Error {
-  public readonly details: ErrorDetails;
+  public readonly details: ErrorData;
 
-  constructor(schema: SomeSchema<any>, value: any) {
+  constructor(schema: SomeSchema<any>, value: any, context: Either<never> | Next<never>) {
     const expected = schemaToString(schema);
     const got = typeof value === 'function' ? String(value) : JSON.stringify(value);
 
-    const details: ErrorDetails = {
-      kind: 'TYPE_MISMATCH',
-      got,
-      expected,
-    };
-    super(`Invalid type! Expected ${details.expected} but got ${details.got}!`);
+    super(`Invalid type! Expected ${expected} but got ${got}!`);
 
-    this.details = details;
+    this.details = context.value;
+
     this.name = 'ValidationError';
     Error.captureStackTrace(this);
 
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
-
-type ErrorDetails = {
-  readonly kind: 'TYPE_MISMATCH';
-  readonly expected: string;
-  readonly got: string;
-};

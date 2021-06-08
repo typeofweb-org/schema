@@ -6,7 +6,10 @@ export const date = refine(
   (value, t) => {
     const parsedValue = parseDate(value);
     if (!isDate(parsedValue) || Number.isNaN(Number(parsedValue))) {
-      return t.left(parsedValue);
+      return t.left({
+        expected: 'date',
+        got: value,
+      });
     }
     return t.nextValid(parsedValue);
   },

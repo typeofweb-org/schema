@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
-import { ValidationError } from '../errors';
 import { refine } from '../refine';
 import { schemaToString, objectToPrint, quote } from '../stringify';
-import type { SomeSchema, TypeOf, UndefinedToOptional } from '../types';
+import type { SomeSchema, TypeOf, UndefinedToOptional, ErrorDataEntry } from '../types';
 
 export interface ObjectSchemaOptions {
   readonly allowUnknownKeys?: boolean;
@@ -21,12 +20,18 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
   return refine(
     function (obj, t) {
       if (typeof obj !== 'object' || obj === null) {
-        return t.left(obj);
+        return t.left({
+          expected: 'object',
+          got: obj,
+        });
       }
       const object = obj as Record<string, unknown>;
 
       const validators = schemasObject as Record<string, SomeSchema<any>>;
       const allowUnknownKeys = !!options?.allowUnknownKeys;
+
+      // eslint-disable-next-line functional/prefer-readonly-type
+      const errors: Array<ErrorDataEntry> = [];
 
       let isError = false;
       const result = {} as Record<string, unknown>;
@@ -40,7 +45,13 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         if (validator) {
           const r = validator.__validate(value);
           result[key] = r.value;
-          isError ||= r._t === 'left';
+          if (r._t === 'left') {
+            errors.push({
+              path: key,
+              error: r.value,
+            });
+            isError = true;
+          }
           continue;
         } else {
           if (allowUnknownKeys) {
@@ -48,7 +59,13 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
             continue;
           } else {
             isError = true;
-            result[key] = new ValidationError(this, object);
+            errors.push({
+              path: key,
+              error: {
+                expected: 'unknownKey',
+                got: value,
+              },
+            });
             continue;
           }
         }
@@ -64,11 +81,18 @@ export const object = <U extends Record<string, SomeSchema<any>>>(
         const validator = validators[key]!;
         const value = object[key];
         const r = validator.__validate(value);
-        isError ||= r._t === 'left';
+        if (r._t === 'left') {
+          errors.push({ path: key, error: r.value });
+          isError = true;
+        }
       }
 
       if (isError) {
-        return t.left(result as TypeOfResult);
+        return t.left({
+          expected: 'object',
+          got: obj,
+          errors,
+        });
       }
       return t.nextValid(result as TypeOfResult);
     },

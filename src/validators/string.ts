@@ -6,7 +6,10 @@ export const string = refine(
   (value, t) => {
     const parsedValue = parseString(value);
     if (typeof parsedValue !== 'string') {
-      return t.left(parsedValue);
+      return t.left({
+        expected: 'string',
+        got: value,
+      });
     }
     return t.nextValid(parsedValue);
   },
