@@ -1,9 +1,9 @@
 beforeAll(() => {
-  process.on('unhandledRejection', fail);
-  process.on('uncaughtException', fail);
+  process.on('unhandledRejection', (err) => fail(err));
+  process.on('uncaughtException', (err) => fail(err));
 });
 afterAll(() => {
-  process.removeListener('unhandledRejection', fail);
-  process.removeListener('uncaughtException', fail);
+  process.removeListener('unhandledRejection', (err) => fail(err));
+  process.removeListener('uncaughtException', (err) => fail(err));
 });
 export {};
