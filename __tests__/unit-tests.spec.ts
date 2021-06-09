@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import Qs from 'qs';
 
 import type { SomeSchema } from '../src';

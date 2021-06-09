@@ -1,12 +1,16 @@
-import { join } from 'path';
+import Path, { join } from 'path';
+import Url from 'url';
 
 import { identity } from 'ramda';
-import tsd from 'tsd';
+import TsdModule from 'tsd';
+
+// @ts-expect-error @todo
+const tsd = (TsdModule as { readonly default: typeof TsdModule }).default;
 
 describe('@typeofweb/schema', () => {
   it('tsd', async () => {
     const diagnostics = await tsd({
-      cwd: join(__dirname, '..'),
+      cwd: join(Path.dirname(Url.fileURLToPath(import.meta.url)), '..'),
       typingsFile: './dist/index.d.ts',
       testFiles: ['./__tests__/*.test-d.ts'],
     });

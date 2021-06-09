@@ -1,8 +1,14 @@
 {
   "name": "@typeofweb/schema",
   "version": "0.8.0-2",
-  "main": "dist/index.common.js",
-  "module": "dist/index.esm.js",
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.mjs",
+    "default": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
+    "browser": "./dist/index.umd.js"
+  },
+  "main": "./dist/index.cjs",
   "browser": "dist/index.umd.js",
   "unpkg": "dist/index.umd.js",
   "types": "dist/index.d.ts",
@@ -15,7 +21,7 @@
   "author": "Michał Miszczyszyn - Type of Web <hi@typeofweb.com> (https://typeofweb.com/)",
   "license": "MIT",
   "engines": {
-    "node": ">12.0.0"
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "publishConfig": {
     "access": "public"
@@ -41,6 +47,7 @@
     "@tsconfig/node12": "1.0.7",
     "@tsconfig/node14": "1.0.0",
     "@types/jest": "26.0.23",
+    "@types/node": "12",
     "@types/qs": "6.9.6",
     "@types/ramda": "0.27.40",
     "@typescript-eslint/eslint-plugin": "4.26.1",
@@ -50,6 +57,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-functional": "3.2.1",
     "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-unicorn": "33.0.1",
     "fast-check": "2.16.0",
     "husky": "6.0.0",
     "jest": "27.0.4",
@@ -71,8 +79,8 @@
   },
   "scripts": {
     "prejest": "yarn build",
-    "jest": "jest",
-    "test": "yarn jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
+    "jest": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules yarn jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
     "test:dev": "yarn jest --watch",
     "build": "rimraf dist && rollup --config",
     "build:watch": "rollup --config --watch",

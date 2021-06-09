@@ -1,12 +1,15 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
+  "env": {
+    "es6": true
+  },
   "parserOptions": {
     "sourceType": "module",
     "project": "tsconfig.eslint.json",
-    "ecmaVersion": 2017
+    "ecmaVersion": 2021
   },
-  "plugins": ["functional", "@typescript-eslint"],
+  "plugins": ["functional", "@typescript-eslint", "unicorn"],
   "extends": [
     "prettier",
     "plugin:import/errors",
@@ -25,6 +28,7 @@
     "import/order": ["error", { "newlines-between": "always", "alphabetize": { "order": "asc" } }],
     "import/no-duplicates": "error",
     "import/no-cycle": "error",
+    "unicorn/prefer-module": "error",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/consistent-type-imports": "error",

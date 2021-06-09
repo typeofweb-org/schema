@@ -19,7 +19,7 @@ const rollupConfig = [
         name: '@typeofweb/schema',
         format: 'es',
         dir: './',
-        entryFileNames: pkg.module,
+        entryFileNames: pkg.exports.import.replace(/^\.\//, ''),
         sourcemap: true,
         plugins: [
           shouldCompress
@@ -37,7 +37,7 @@ const rollupConfig = [
         name: '@typeofweb/schema',
         format: 'cjs',
         dir: './',
-        entryFileNames: pkg.main,
+        entryFileNames: pkg.exports.require.replace(/^\.\//, ''),
         sourcemap: true,
         plugins: [
           shouldCompress
@@ -53,7 +53,7 @@ const rollupConfig = [
       },
       {
         name: '@typeofweb/schema',
-        entryFileNames: pkg.browser,
+        entryFileNames: pkg.exports.browser.replace(/^\.\//, ''),
         sourcemap: true,
         format: 'umd',
         dir: './',
@@ -76,8 +76,6 @@ const rollupConfig = [
         declaration: true,
         declarationDir: 'dist/',
         rootDir: 'src/',
-        module: 'ES2020',
-        resolveJsonModule: false,
         include: ['src/**/*.ts'],
       }),
       filesize({}),

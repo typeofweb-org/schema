@@ -1,6 +1,8 @@
 {
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
+    "module": "ES2020",
+    "moduleResolution": "node",
     "isolatedModules": true,
     "strict": true,
     "alwaysStrict": true,
