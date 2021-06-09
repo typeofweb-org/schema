@@ -2,6 +2,7 @@
 import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
+
 import type { Primitives, SomeSchema, TypeOf } from '../types';
 
 // `U extends (Primitives)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly

@@ -1,47 +1,15 @@
 {
   "root": true,
-  "parser": "@typescript-eslint/parser",
-  "env": {
-    "es6": true
-  },
   "parserOptions": {
-    "sourceType": "module",
-    "project": "tsconfig.eslint.json",
-    "ecmaVersion": 2021
+    "project": "tsconfig.eslint.json"
   },
-  "plugins": ["functional", "@typescript-eslint", "unicorn"],
-  "extends": [
-    "prettier",
-    "plugin:import/errors",
-    "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
-  ],
+  "plugins": ["@typeofweb/eslint-plugin"],
+  "extends": ["plugin:@typeofweb/recommended"],
   "rules": {
-    "no-const-assign": "error",
-    "no-param-reassign": "error",
-    "prefer-const": "error",
-    "no-var": "error",
-    "require-await": "error",
-    "import/no-anonymous-default-export": "error",
-    "import/no-default-export": "error",
-    "import/dynamic-import-chunkname": "error",
-    "import/order": ["error", { "newlines-between": "always", "alphabetize": { "order": "asc" } }],
-    "import/no-duplicates": "error",
-    "import/no-cycle": "error",
-    "unicorn/prefer-module": "error",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-unsafe-return": "off",
-    "@typescript-eslint/consistent-type-imports": "error",
-    "functional/no-let": [
-      "error",
-      {
-        "allowLocalMutation": true,
-        "ignorePattern": "^mutable"
-      }
-    ],
-    "functional/prefer-readonly-type": "error",
-    "functional/no-this-expression": "error",
-    "functional/no-loop-statement": "error"
+    "@typescript-eslint/consistent-type-assertions": "off",
+    "eslint-comments/require-description": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off"
   },
   "overrides": [
     {

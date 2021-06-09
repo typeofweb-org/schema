@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
 import { refine } from '../refine';
 import { schemaToString, typeToPrint } from '../stringify';
+
 import type { SomeSchema, TypeOf, Either, Next, ErrorDataEntry } from '../types';
 
 export const array = <U extends readonly SomeSchema<unknown>[]>(...validators: readonly [...U]) => {

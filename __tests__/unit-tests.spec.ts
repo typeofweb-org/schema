@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
 import Qs from 'qs';
 
-import type { SomeSchema } from '../src';
 import {
   pipe,
   refine,
@@ -25,6 +24,8 @@ import {
 } from '../src';
 import { schemaToString } from '../src/stringify';
 import { isISODateString } from '../src/utils/dateUtils';
+
+import type { SomeSchema } from '../src';
 
 describe('@typeofweb/schema unit tests', () => {
   const simpleValidators: ReadonlyArray<() => SomeSchema<any>> = [boolean, date, number, string];

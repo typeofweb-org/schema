@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-loop-statement */
 import { refine } from '../refine';
 import { schemaToString, objectToPrint, quote } from '../stringify';
+
 import type { SomeSchema, TypeOf, UndefinedToOptional, ErrorDataEntry } from '../types';
 
 export interface ObjectSchemaOptions {

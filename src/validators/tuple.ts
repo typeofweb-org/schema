@@ -2,6 +2,7 @@
 import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
+
 import type { SomeSchema, TypeOf, ErrorDataEntry } from '../types';
 
 export const tuple = <U extends readonly SomeSchema<any>[]>(
@@ -42,7 +43,7 @@ export const tuple = <U extends readonly SomeSchema<any>[]>(
       if (isError) {
         return t.left({ expected: 'tuple', got: values, errors });
       }
-      return t.nextValid((result as unknown) as TypeOfResult);
+      return t.nextValid(result as unknown as TypeOfResult);
     },
     () =>
       '[' +

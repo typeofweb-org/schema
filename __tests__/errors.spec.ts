@@ -15,6 +15,7 @@ import {
   oneOf,
   λ,
 } from '../src';
+
 import type { ErrorData } from '../src/types';
 
 const expectToMatchError = (fn: () => any, details?: ErrorData) => {

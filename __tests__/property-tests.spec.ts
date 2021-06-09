@@ -1,7 +1,6 @@
 import Fc from 'fast-check';
 import { anyPass, complement, is, sort } from 'ramda';
 
-import type { SomeSchema } from '../src';
 import {
   validate,
   number,
@@ -24,33 +23,38 @@ import {
 } from '../src';
 import { isISODateString } from '../src/utils/dateUtils';
 
+import type { SomeSchema } from '../src';
+
 const shuffle = <T>(arr: readonly T[]) => sort(() => Math.random() - 0.5, arr);
 
-const throws = <T extends readonly unknown[], Err extends Error>(
-  predicate: (...args: T) => unknown,
-  ErrorClass?: { new (...args: readonly any[]): Err & { readonly message: string } },
-  message?: string,
-) => (...args: T) => {
-  try {
-    predicate(...args);
-    return false;
-  } catch (error: unknown) {
-    if (ErrorClass) {
-      const isValid = error instanceof ErrorClass && (!message || error.message === message);
-      if (!isValid) {
-        console.log(error);
+const throws =
+  <T extends readonly unknown[], Err extends Error>(
+    predicate: (...args: T) => unknown,
+    ErrorClass?: { new (...args: readonly any[]): Err & { readonly message: string } },
+    message?: string,
+  ) =>
+  (...args: T) => {
+    try {
+      predicate(...args);
+      return false;
+    } catch (error: unknown) {
+      if (ErrorClass) {
+        const isValid = error instanceof ErrorClass && (!message || error.message === message);
+        if (!isValid) {
+          console.log(error);
+        }
+        return isValid;
       }
-      return isValid;
+      return true;
     }
-    return true;
-  }
-};
+  };
 
 const isCoercibleToNum = (value: unknown) => !Number.isNaN(Number(value));
 
-const notThrows = <T extends readonly unknown[]>(predicate: (...args: T) => unknown) => (
-  ...args: T
-) => !throws(predicate)(...args);
+const notThrows =
+  <T extends readonly unknown[]>(predicate: (...args: T) => unknown) =>
+  (...args: T) =>
+    !throws(predicate)(...args);
 
 // eslint-disable-next-line
 const primitiveValidators: ((schema?: SomeSchema<any>) => SomeSchema<any>)[] = [

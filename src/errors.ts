@@ -1,4 +1,5 @@
 import { schemaToString } from './stringify';
+
 import type { Either, SomeSchema, Next, ErrorData } from './types';
 
 export class ValidationError extends Error {

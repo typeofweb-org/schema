@@ -1,6 +1,7 @@
 import { expectType } from 'tsd';
 
 import { object, number, pipe, string, optional } from '../src';
+
 import type {
   If,
   KeysOfType,
