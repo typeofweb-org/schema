@@ -1,7 +1,7 @@
 export { isSchema } from './schema';
 export { ValidationError } from './errors';
 export { λ, pipe } from './utils/pipe';
-export type { Schema, SomeSchema, TypeOf, ErrorData, ErrorDataEntry } from './types';
+export type { Schema, SomeSchema, TypeOf, ErrorData, ErrorDataEntry, Either } from './types';
 
 export { array } from './validators/array';
 export { boolean } from './validators/boolean';
@@ -21,3 +21,5 @@ export { minArrayLength } from './modifiers/minArrayLength';
 export { minStringLength } from './modifiers/minStringLength';
 
 export { refine } from './refine';
+
+export { left, right } from './utils/either';

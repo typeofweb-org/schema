@@ -76,7 +76,7 @@
     "prejest": "yarn build",
     "jest": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test": "NODE_OPTIONS=--experimental-vm-modules yarn jest --detectOpenHandles --forceExit --passWithNoTests --coverage",
-    "test:dev": "yarn jest --watch",
+    "test:dev": "NODE_OPTIONS=--experimental-vm-modules yarn jest --watch",
     "build": "rimraf dist && rollup --config",
     "build:watch": "rollup --config --watch",
     "prepublishOnly": "yarn build",
@@ -84,7 +84,7 @@
   },
   "lint-staged": {
     "**/*.ts": [
-      "yarn jest",
+      "yarn test",
       "yarn eslint --fix",
       "yarn prettier --write"
     ],
