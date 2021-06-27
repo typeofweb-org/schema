@@ -3,10 +3,10 @@
   "version": "0.8.0-5",
   "type": "module",
   "exports": {
-    "import": "./dist/index.mjs",
-    "default": "./dist/index.mjs",
     "require": "./dist/index.cjs",
-    "browser": "./dist/index.umd.js"
+    "import": "./dist/index.mjs",
+    "browser": "./dist/index.umd.js",
+    "default": "./dist/index.mjs"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
