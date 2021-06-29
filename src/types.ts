@@ -24,18 +24,28 @@ export type SomeSchema<T> = Schema<T>;
 export type TupleOf<
   T,
   Length extends number,
-  Acc extends readonly unknown[] = readonly []
+  Acc extends readonly unknown[] = readonly [],
 > = Acc['length'] extends Length ? Acc : TupleOf<T, Length, readonly [T, ...Acc]>;
 
 export type If<T, Condition, Y, N = never> = T extends Condition ? Y : N;
 
-export type Pretty<X> = X extends Date
+export type AnyObject = Record<keyof any, unknown>;
+
+export type Pretty<X> = X extends Json
   ? X
-  : X extends object | readonly unknown[]
+  : X extends AnyObject
   ? {
       readonly [K in keyof X]: X[K];
     }
   : X;
+
+export type JsonPrimitive = number | string | boolean | null;
+export interface JsonArray extends ReadonlyArray<Json> {}
+export interface JsonObject {
+  readonly [Key: string]: Json;
+  readonly [Key: number]: Json;
+}
+export type Json = JsonPrimitive | JsonObject | JsonArray;
 
 export type KeysOfType<T extends object, SelectedType> = {
   readonly [key in keyof T]: SelectedType extends T[key] ? key : never;
