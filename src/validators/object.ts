@@ -1,8 +1,10 @@
 /* eslint-disable functional/no-loop-statement */
+
 import { refine } from '../refine';
 import { schemaToString, objectToPrint, quote } from '../stringify';
 
-import type { SomeSchema, TypeOf, UndefinedToOptional, ErrorDataEntry } from '../types';
+import type { SomeSchema, TypeOf, ErrorDataEntry } from '../types';
+import type { UndefinedToOptional } from '@typeofweb/utils';
 
 export interface ObjectSchemaOptions {
   readonly allowUnknownKeys?: boolean;

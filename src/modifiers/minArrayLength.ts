@@ -1,6 +1,6 @@
 import { refine } from '../refine';
 
-import type { TupleOf } from '../types';
+import type { TupleOf } from '@typeofweb/utils';
 
 export const minArrayLength = <L extends number>(minLength: L) =>
   refine((value: readonly unknown[], t) => {
