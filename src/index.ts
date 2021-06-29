@@ -1,7 +1,16 @@
 export { isSchema } from './schema';
 export { ValidationError } from './errors';
 export { λ, pipe } from './utils/pipe';
-export type { Schema, SomeSchema, TypeOf, ErrorData, ErrorDataEntry, Either } from './types';
+export type {
+  Schema,
+  SomeSchema,
+  TypeOf,
+  ErrorData,
+  ErrorDataEntry,
+  Either,
+  SchemaRecord,
+  TypeOfRecord,
+} from './types';
 
 export { array } from './validators/array';
 export { boolean } from './validators/boolean';

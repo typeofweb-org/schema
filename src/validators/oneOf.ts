@@ -3,7 +3,8 @@ import { refine } from '../refine';
 import { isSchema } from '../schema';
 import { schemaToString } from '../stringify';
 
-import type { Primitives, SomeSchema, TypeOf } from '../types';
+import type { SomeSchema, TypeOf } from '../types';
+import type { Primitives } from '@typeofweb/utils';
 
 // `U extends (Primitives)[]` and `[...U]` is a trick to force TypeScript to narrow the type correctly
 // thanks to this, there's no need for "as const": oneOf(['a', 'b']) works as oneOf(['a', 'b'] as const)

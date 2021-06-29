@@ -883,6 +883,11 @@
     eslint-plugin-import "^2.23.4"
     eslint-plugin-unicorn "^33.0.1"
 
+"@typeofweb/utils@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@typeofweb/utils/-/utils-0.3.0.tgz#dd47c6d246f780c1c9339d22d0edcbce1e14bd06"
+  integrity sha512-SbaezfuTlVwh2zNipic+PrvsRn3zzqdSvdgQoJuLqhGWZRP7UmpsTvr4S/OVTeSx37GvMuO70N/dPeNXiuA11g==
+
 "@types/babel__core@^7.0.0":
   version "7.1.12"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.1.12.tgz"

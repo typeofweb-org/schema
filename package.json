@@ -92,5 +92,8 @@
     "**/*.{md,js,json}": [
       "yarn prettier --write"
     ]
+  },
+  "dependencies": {
+    "@typeofweb/utils": "0.3.0"
   }
 }
