@@ -76,17 +76,16 @@ const rollupConfig = [
         declaration: true,
         declarationDir: 'dist/',
         rootDir: 'src/',
-        include: ['src/**/*.ts'],
       }),
       filesize({}),
       license({
         banner: `
-<%= pkg.name %>@<%= pkg.version %>
-Copyright (c) <%= moment().format('YYYY') %> Type of Web - Michał Miszczyszyn
+      <%= pkg.name %>@<%= pkg.version %>
+      Copyright (c) <%= moment().format('YYYY') %> Type of Web - Michał Miszczyszyn
 
-This source code is licensed under the MIT license found in the
-LICENSE file in the root directory of this source tree.
-`.trim(),
+      This source code is licensed under the MIT license found in the
+      LICENSE file in the root directory of this source tree.
+      `.trim(),
       }),
     ],
   },
