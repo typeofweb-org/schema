@@ -140,7 +140,7 @@ describe('@typeofweb/schema', () => {
       it('should not allow other values', () =>
         Fc.assert(
           Fc.property(
-            Fc.anything().filter(complement(anyPass([is(Date), isISODateString]))),
+            Fc.anything().filter((x) => anyPass([is(Date), isISODateString])(x as string)),
             throws(validate(date()), ValidationError),
           ),
         ));

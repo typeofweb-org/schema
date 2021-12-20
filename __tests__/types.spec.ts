@@ -22,7 +22,7 @@ describe('@typeofweb/schema', () => {
           ` - ${test.severity} - ${test.message}`
         );
       });
-      fail('\n' + errorMessage.join('\n') + '\n');
+      throw new Error('\n' + errorMessage.join('\n') + '\n');
     }
   });
 });
