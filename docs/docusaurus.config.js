@@ -1,8 +1,10 @@
+// @ts-check
+/** @type {import('@docusaurus/types').Config} */
 module.exports = {
   title: '@typeofweb/schema',
   tagline:
     '@typeofweb/schema is a lightweight and extensible library for data validation with full TypeScript support!',
-  url: 'https://www.npmjs.com/package/@typeofweb/schema',
+  url: 'https://schema.typeofweb.com/',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
@@ -98,6 +100,7 @@ module.exports = {
   presets: [
     [
       '@docusaurus/preset-classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
       {
         docs: {
           showLastUpdateAuthor: true,

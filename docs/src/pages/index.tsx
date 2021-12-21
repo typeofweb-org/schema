@@ -60,6 +60,8 @@ function Home() {
   const { siteConfig = {} } = context;
   return (
     <Layout title={`${siteConfig.title} validation library`} description={siteConfig.tagline}>
+      <script defer data-domain="schema.typeofweb.com" data-api="https://typeofweb.com/api/event" src="https://typeofweb.com/js/script.js" />
+      
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
           <h1 className="hero__title">
