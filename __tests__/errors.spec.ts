@@ -27,7 +27,7 @@ const expectToMatchError = (fn: () => any, details?: ErrorData) => {
     }
     throw err;
   }
-  fail();
+  throw new Error(`Function did not throw: ${fn.toString()}`);
 };
 
 describe('errors', () => {
@@ -308,7 +308,7 @@ describe('errors', () => {
     const futureDate = new Date();
     futureDate.setMonth(futureDate.getMonth() + 10);
     const pastDate = new Date();
-    pastDate.setMonth(futureDate.getMonth() - 10);
+    pastDate.setMonth(pastDate.getMonth() - 10);
 
     expectToMatchError(() => λ(presentOrFuture, date, validate)(''), {
       expected: 'date',

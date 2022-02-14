@@ -69,7 +69,7 @@ describe('refinements', () => {
     const futureDate = new Date();
     futureDate.setMonth(futureDate.getMonth() + 10);
     const pastDate = new Date();
-    pastDate.setMonth(futureDate.getMonth() - 10);
+    pastDate.setMonth(pastDate.getMonth() - 10);
 
     expect(λ(presentOrFuture, date, validate)(futureDate)).toEqual(futureDate);
     expect(() => λ(presentOrFuture, date, validate)('')).toThrow(ValidationError);
